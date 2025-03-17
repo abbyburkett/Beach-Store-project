@@ -1,6 +1,6 @@
 import tkinter as tk
 from pages.Login import Login
-from pages.Dashboard import Dashboard
+from pages.DashboardEmp import DashboardEmployee
 
 class MyApp(tk.Frame):
     def __init__(self, root):
@@ -21,7 +21,7 @@ class MyApp(tk.Frame):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F in (Login, Dashboard):
+        for F in (Login, DashboardEmployee):
   
             frame = F(self.main_frame, self)
   
@@ -40,8 +40,8 @@ class MyApp(tk.Frame):
         frame = self.frames[cont]
         frame.tkraise()
 
-    def show_dashboard(self):
-        self.show_frame(Dashboard)
+    def show_dashboardEmp(self):
+        self.show_frame(DashboardEmployee)
 
 root = tk.Tk()
 root.title("Beach Store")
