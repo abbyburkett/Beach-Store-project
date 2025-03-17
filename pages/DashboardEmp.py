@@ -15,14 +15,14 @@ class DashboardEmployee(tk.Frame):
         super().__init__(parent, bg=BACKGROUND_COLOR)
 
         self.controller = controller
-        self.create_widgets()
-        self.display_widgets()
-
         self.today = "2025-03-17"
         self.user_id = 101
 
+        self.create_widgets()
+        self.display_widgets()
+
     def create_widgets(self):
-        self.dashboard_label = tk.Label(self, text="Welcome to the Employee Dashboard", font=("Arial", 40, "bold"), fg="#CDC1FF", bg=BACKGROUND_COLOR)
+        self.dashboard_label = tk.Label(self, text=f"Welcome to the Employee Dashboard", font=("Arial", 40, "bold"), fg="#CDC1FF", bg=BACKGROUND_COLOR)
 
         self.side_bar = tk.Frame(self, bg = SIDE_BAR_COLOR)
 
@@ -106,7 +106,7 @@ class DashboardEmployee(tk.Frame):
         self.profile_page = tk.Frame(self.main_content)
         self.profile_page.pack(fill="both", expand=True)
 
-        self.profile_label = tk.Label(self.profile_page, text="Profile Page", fg="black", font=("Helvetica", 16, "bold"))
+        self.profile_label = tk.Label(self.profile_page, text="Profile Page", fg=MAIN_CONTENT_COLOR, font=("Helvetica", 16, "bold"))
         self.profile_label.pack(pady=10)
 
         user_data = dashboard_functions.getUserProfileData(self.user_id) or []
