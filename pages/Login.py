@@ -48,6 +48,6 @@ class Login(tk.Frame):
 
         if login_functions.check_credentials(username, password, location):
             print(f"Login successful for {username}")
-            self.controller.show_dashboardManp()
+            self.controller.show_dashboardMan()
         else:
             print("Invalid credentials, please try again.")

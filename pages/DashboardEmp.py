@@ -34,6 +34,9 @@ class DashboardEmployee(tk.Frame):
 
         self.close_out_indicate = tk.Label(self.side_bar, text = "", bg = SIDE_BAR_COLOR)
         self.close_out_btn = tk.Button(self.side_bar, text = "Close Out", font = ("Bold", 15), bd = 0, fg = SIDEBAR_TEXT_COLOR, command = lambda: self.indicate(self.close_out_indicate, self.show_close_out))
+        
+        self.log_out_indicate = tk.Label(self.side_bar, text = "", bg = SIDE_BAR_COLOR)
+        self.log_out_btn = tk.Button(self.side_bar, text = "Log Out", font = ("Bold", 15), bd = 0, fg = SIDEBAR_TEXT_COLOR, command = self.handleLogout)
 
         self.main_content = tk.Frame(self, bg = MAIN_CONTENT_COLOR )
 
@@ -54,6 +57,9 @@ class DashboardEmployee(tk.Frame):
         self.close_out_btn.place(x = 10, y = 150)
         self.close_out_indicate.place(x = 3, y = 150, width = 5, height = 25)
 
+        self.log_out_btn.place(x = 10, y = 500)
+        self.log_out_indicate.place(x = 3, y = 500, width = 5, height = 25)
+
         self.main_content.pack(side = tk.LEFT)
         self.main_content.pack_propagate(False)
         self.main_content.configure(width = 840, height = 720)
@@ -72,6 +78,10 @@ class DashboardEmployee(tk.Frame):
     def clear_main_content(self):
         for widget in self.main_content.winfo_children():
             widget.destroy()
+    
+    def handleLogout(self):
+        print("Handle Logout")
+        self.controller.show_Login()
     
     def show_home_page(self):
         self.home_page = tk.Frame(self.main_content)

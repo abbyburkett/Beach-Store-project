@@ -14,7 +14,7 @@ class DashboardManager(DashboardEmployee):
         super().__init__(parent, controller)
         self.is_manager = True
 
-        self.dashboard_label.config(text=f"Welcome to the Mangager Dashboard")
+        self.dashboard_label.config(text=f"Welcome to the Manager Dashboard")
     def create_widgets(self):
         super().create_widgets()
 
@@ -26,7 +26,7 @@ class DashboardManager(DashboardEmployee):
         self.employees_btn = tk.Button(self.side_bar, text="View Reports", font=("Bold", 15), bd=0, fg=SIDEBAR_TEXT_COLOR, command=lambda: self.indicate(self.employees_indicate, self.show_employees))
 
         self.report_indicate = tk.Label(self.side_bar, text="", bg=SIDE_BAR_COLOR)
-        self.report_btn = tk.Button(self.side_bar, text="View Reports", font=("Bold", 15), bd=0, fg=SIDEBAR_TEXT_COLOR, command=lambda: self.indicate(self.report_indicate, self.show_reports))
+        self.report_btn = tk.Button(self.side_bar, text="Invoices", font=("Bold", 15), bd=0, fg=SIDEBAR_TEXT_COLOR, command=lambda: self.indicate(self.report_indicate, self.show_reports))
 
     def display_widgets(self):
         super().display_widgets()

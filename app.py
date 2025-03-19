@@ -3,6 +3,8 @@ from pages.Login import Login
 from pages.DashboardEmp import DashboardEmployee
 from pages.DashboardMan import DashboardManager
 
+
+# this part of the code is from GeeksforGeeks
 class MyApp(tk.Frame):
     def __init__(self, root):
         self.BACKGROUND_COLOR = "#FFF6E3"
@@ -40,11 +42,14 @@ class MyApp(tk.Frame):
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
+    
+    def show_Login(self):
+        self.show_frame(Login)
 
     def show_dashboardEmp(self):
         self.show_frame(DashboardEmployee)
     
-    def show_dashboardManp(self):
+    def show_dashboardMan(self):
         self.show_frame(DashboardManager)
 
 root = tk.Tk()
