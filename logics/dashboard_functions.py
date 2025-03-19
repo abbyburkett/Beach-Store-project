@@ -25,3 +25,6 @@ def getUserProfileData(employeeID):
     ]
 
     return user_data
+
+def createEmployee(username, password, location):
+    print("create employee")
