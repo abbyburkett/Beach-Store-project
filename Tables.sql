@@ -80,4 +80,3 @@ CREATE TABLE if not exists Invoice(
     Date datetime
 );
 
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'BeachStorePass';
