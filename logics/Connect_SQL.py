@@ -52,22 +52,3 @@ def run_sql_file(file_path):
     except mysql.connector.Error as e:
         print(f"Error: {e}")
 
-
-
-# Verify Login
-# def login_user():
-#     username = entry_username.get()
-#     password = entry_password.get()
-
-#     if not username or not password:
-#         messagebox.showerror("Error", "All fields are required!")
-#         return
-
-#     hashed_pw = hash_password(PinPassword)
-
-
-# cursor.execute('use BeachStore')
-# cursor.execute('show tables')
-
-# for x in cursor:
-#     print(x)

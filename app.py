@@ -42,6 +42,10 @@ class MyApp(tk.Frame):
     
     # to display the current frame passed as
     # parameter
+
+    def set_location(self, location):
+        self.location = location
+
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()

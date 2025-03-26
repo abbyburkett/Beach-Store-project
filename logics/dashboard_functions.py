@@ -13,7 +13,7 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 # Add User
-def createEmployee(username, password):
+def createEmployee(username, password, fname, lname):
 
     if not username or not password:
         # messagebox.showerror("Error", "All fields are required!")
@@ -34,7 +34,7 @@ def createEmployee(username, password):
 
 
         hashed_pw = hash_password(password)
-        cursor.execute("INSERT INTO Employee (UserName, PinPassword) VALUES (%s, %s)", (username, hashed_pw))
+        cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role) VALUES (%s, %s, %s, %s, %s)", (username, hashed_pw, fname, lname, 'Employee'))
         db.commit()
         # messagebox.showinfo("Success", "User registered successfully!")
         print("Successfullly register")
