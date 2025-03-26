@@ -1,7 +1,9 @@
 import mysql.connector
 import hashlib
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 
 db_password = os.getenv('MYSQL_PASSWORD')
 

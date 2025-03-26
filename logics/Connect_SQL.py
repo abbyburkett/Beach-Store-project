@@ -2,6 +2,8 @@
 # from tkinter import messagebox
 import mysql.connector
 import os
+from dotenv import load_dotenv
+load_dotenv()
 # import hashlib
 
 db_password = os.getenv('MYSQL_PASSWORD')
