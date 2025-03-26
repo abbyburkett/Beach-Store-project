@@ -3,11 +3,14 @@ from pages.Login import Login
 from pages.DashboardEmp import DashboardEmployee
 from pages.DashboardMan import DashboardManager
 
+from logics.Connect_SQL import run_sql_file
 
 # this part of the code is from GeeksforGeeks
 class MyApp(tk.Frame):
     def __init__(self, root):
         self.BACKGROUND_COLOR = "#FFF6E3"
+
+        run_sql_file(file_path="Tables.sql")
 
         super().__init__(
             root,

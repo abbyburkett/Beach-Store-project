@@ -72,13 +72,13 @@ class DashboardManager(DashboardEmployee):
         self.password_label = tk.Label(self.manage_employees_page, text="Password", font=("Arial", 25, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
         self.password_entry = tk.Entry(self.manage_employees_page, font=("Arial", 25, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
         self.create_employee_btn = tk.Button(self.manage_employees_page, text="Create Employee", fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0, highlightthickness=0, relief="flat", command=self.create_employee)
-        self.location_menu = tk.OptionMenu(self.manage_employees_page, self.selected_location, *self.location_list)
+        # self.location_menu = tk.OptionMenu(self.manage_employees_page, self.selected_location, *self.location_list)
 
         self.username_label.pack(pady=10)
         self.username_entry.pack(pady=10)
         self.password_label.pack(pady=10)
         self.password_entry.pack(pady=10)
-        self.location_menu.pack(pady=10)
+        # self.location_menu.pack(pady=10)
         self.create_employee_btn.pack(pady=20)   
 
     def show_reports(self):
@@ -94,6 +94,6 @@ class DashboardManager(DashboardEmployee):
     def create_employee(self):
         username = self.username_entry.get()
         password = self.password_entry.get()
-        location = self.selected_location.get()
+        # location = self.selected_location.get()
 
-        dashboard_functions.createEmployee(username, password, location)
+        dashboard_functions.createEmployee(username, password)
