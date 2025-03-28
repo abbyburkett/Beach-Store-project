@@ -1,10 +1,16 @@
 import tkinter as tk
 from pages.Login import Login
 from pages.DashboardEmp import DashboardEmployee
+from pages.DashboardMan import DashboardManager
 
+from logics.Connect_SQL import run_sql_file
+
+# this part of the code is from GeeksforGeeks
 class MyApp(tk.Frame):
     def __init__(self, root):
         self.BACKGROUND_COLOR = "#FFF6E3"
+
+        run_sql_file(file_path="Tables.sql")
 
         super().__init__(
             root,
@@ -21,7 +27,7 @@ class MyApp(tk.Frame):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F in (Login, DashboardEmployee):
+        for F in (Login, DashboardEmployee, DashboardManager):
   
             frame = F(self.main_frame, self)
   
@@ -36,12 +42,22 @@ class MyApp(tk.Frame):
     
     # to display the current frame passed as
     # parameter
+
+    def set_location(self, location):
+        self.location = location
+
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
+    
+    def show_Login(self):
+        self.show_frame(Login)
 
     def show_dashboardEmp(self):
         self.show_frame(DashboardEmployee)
+    
+    def show_dashboardMan(self):
+        self.show_frame(DashboardManager)
 
 root = tk.Tk()
 root.title("Beach Store")

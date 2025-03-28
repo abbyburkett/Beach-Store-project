@@ -1,82 +1,84 @@
-CREATE DATABASE BeachStore;
+CREATE DATABASE IF NOT EXISTS BeachStore;
 
-Use BeachStore;
-drop table if exists Employee;
-CREATE TABLE if not exists Employee(
-    EmployeeID int PRIMARY KEY NOT NULL,
-    FName varchar(255),
-    LName varchar(255),
-    PinPassword varchar(255),3
-    UserName varchar(255),
-    Role enum('Owner','Manager','Employee')
+USE BeachStore;
+
+DROP TABLE IF EXISTS Employee;
+CREATE TABLE IF NOT EXISTS Employee (
+    EmployeeID INT PRIMARY KEY AUTO_INCREMENT,
+    FName VARCHAR(255),
+    LName VARCHAR(255),
+    PinPassword VARCHAR(255) UNIQUE,
+    UserName VARCHAR(255) UNIQUE,
+    PayRate DOUBLE,
+    Role ENUM('Owner', 'Manager', 'Employee')
 );
-drop table if exists Location;
-CREATE TABLE if not exists Location(
-    LocationID int PRIMARY KEY NOT NULL,
-    Name varchar(255),
-    Address varchar(255),
-    ManagerID int,
+
+DROP TABLE IF EXISTS Location;
+CREATE TABLE IF NOT EXISTS Location (
+    LocationID INT PRIMARY KEY AUTO_INCREMENT,
+    Name VARCHAR(255),
+    Address VARCHAR(255),
+    ManagerID INT,
     FOREIGN KEY (ManagerID) REFERENCES Employee(EmployeeID)
 );
 
-drop table if exists Pay;
-Create TABLE if not exists Pay(
-    PaidID int PRIMARY KEY NOT NULL,
-    PayAmount double,
-    EmployeeID int,
-    BonusPercentage double,
-    GrossBonus double,
-    GrossPaid double,
+DROP TABLE IF EXISTS Pay;
+CREATE TABLE IF NOT EXISTS Pay (
+    PaidID INT PRIMARY KEY AUTO_INCREMENT,
+    PayAmount DOUBLE,
+    EmployeeID INT,
+    BonusPercentage DOUBLE,
+    GrossBonus DOUBLE,
+    GrossPaid DOUBLE,
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
 );
 
-drop table if exists ClockInOut;
-CREATE TABLE if not exists ClockInOut(
-    Date date,
-    EmployeeID int,
-    ClockIn datetime,
-    ClockOut datetime,
-    PaidRate double,
-    PaidID int,
+DROP TABLE IF EXISTS ClockInOut;
+CREATE TABLE IF NOT EXISTS ClockInOut (
+    Date DATE,
+    EmployeeID INT,
+    ClockIn DATETIME,
+    ClockOut DATETIME,
+    PaidRate DOUBLE,
+    PaidID INT,
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
     FOREIGN KEY (PaidID) REFERENCES Pay(PaidID)
 );
 
-drop table if exists Profit;
-CREATE TABLE if not exists Profit(
-    ProfitID int PRIMARY KEY,
-    EmployeeID int,
-    BeforeBal double,
-    AfterBal double,
-    Cash double,
-    Credit double,
-    GrossRevenue double,
-    Date date,
-    LocationID int,
+DROP TABLE IF EXISTS Profit;
+CREATE TABLE IF NOT EXISTS Profit (
+    ProfitID INT PRIMARY KEY AUTO_INCREMENT,
+    EmployeeID INT,
+    BeforeBal DOUBLE,
+    AfterBal DOUBLE,
+    Cash DOUBLE,
+    Credit DOUBLE,
+    GrossRevenue DOUBLE,
+    Date DATE,
+    LocationID INT,
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
     FOREIGN KEY (LocationID) REFERENCES Location(LocationID)
 );
 
-drop table if exists Expense;
-CREATE TABLE if not exists Expense(
-    ExpenseID int PRIMARY KEY,
-    Date datetime,
-    LocationID int,
-    Amount double,
-    isMerchandise boolean,
-    MerchType varchar(255),
+DROP TABLE IF EXISTS Expense;
+CREATE TABLE IF NOT EXISTS Expense (
+    ExpenseID INT PRIMARY KEY AUTO_INCREMENT,
+    Date DATETIME,
+    LocationID INT,
+    Amount DOUBLE,
+    isMerchandise BOOLEAN,
+    MerchType VARCHAR(255),
     FOREIGN KEY (LocationID) REFERENCES Location(LocationID)
 );
 
-drop table if exists Invoice;
-CREATE TABLE if not exists Invoice(
-    InvoiceNumber int PRIMARY KEY,
-    PaidWay enum('Cash','Credit','Check'),
-    AmountTotal double,
-    AmountPaid double,
-    Company varchar(255),
-    DueDate datetime,
-    Paid boolean,
-    Date datetime
+DROP TABLE IF EXISTS Invoice;
+CREATE TABLE IF NOT EXISTS Invoice (
+    InvoiceNumber INT PRIMARY KEY AUTO_INCREMENT,
+    PaidWay ENUM('Cash', 'Credit', 'Check'),
+    AmountTotal DOUBLE,
+    AmountPaid DOUBLE,
+    Company VARCHAR(255),
+    DueDate DATETIME,
+    Paid BOOLEAN,
+    Date DATETIME
 );
-

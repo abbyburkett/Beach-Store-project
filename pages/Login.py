@@ -40,14 +40,21 @@ class Login(tk.Frame):
         self.login_button.grid(row = 4, column = 0, columnspan = 2, pady = 25)
 
     def login_submit(self):
-        self.username_entry.get()
-
+        
         username = self.username_entry.get()
         password = self.password_entry.get()
         location = self.selected_location.get()
 
-        if login_functions.check_credentials(username, password, location):
+        if location:
+            self.controller.set_location(location)
+        
+        results = login_functions.check_credentials(username, password)
+        if results[0]:
             print(f"Login successful for {username}")
-            self.controller.show_dashboardEmp()
+
+            if results[1] == "Manager":
+                self.controller.show_dashboardMan()
+            elif results[1] == "Employee":
+                self.controller.show_dashboardEmp()
         else:
             print("Invalid credentials, please try again.")
