@@ -27,7 +27,7 @@ def check_credentials(username, password):
         db.close()
 
         if user:
-            user_role = user[5]  # Index 5 corresponds to the 'Role' field in the query result
+            user_role = user[6]  # Index 5 corresponds to the 'Role' field in the query result
             print(f"Login successful. User role: {user_role}")
             return True, user_role
         else:

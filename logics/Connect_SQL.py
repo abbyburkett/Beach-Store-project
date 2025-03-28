@@ -83,13 +83,18 @@ def run_sql_file(file_path = FILEPATH):
         # Insert default users (Employee, Manager, Owner) if they don't already exist
         cursor.execute("SELECT COUNT(*) FROM Employee WHERE UserName = 'Employee'")
         if cursor.fetchone()[0] == 0:
-            cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role) VALUES (%s, %s, %s, %s, %s)", ('Employee', hash_password("123"), "Emp", "loyee", 'Employee'))
+            cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role, PayRate) VALUES (%s, %s, %s, %s, %s, %s)", 
+                        ('Employee', hash_password("123"), "Emp", "loyee", 'Employee', 15.00))
+
         cursor.execute("SELECT COUNT(*) FROM Employee WHERE UserName = 'Manager'")
         if cursor.fetchone()[0] == 0:
-            cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role) VALUES (%s, %s, %s, %s, %s)", ('Manager', hash_password("456"), "Mana", "ger", 'Manager'))
+            cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role, PayRate) VALUES (%s, %s, %s, %s, %s, %s)", 
+                        ('Manager', hash_password("456"), "Mana", "ger", 'Manager', 20.00))
+
         cursor.execute("SELECT COUNT(*) FROM Employee WHERE UserName = 'Owner'")
         if cursor.fetchone()[0] == 0:
-            cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role) VALUES (%s, %s, %s, %s, %s)", ('Owner', hash_password("789"), "Own", "er", 'Owner'))
+            cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role, PayRate) VALUES (%s, %s, %s, %s, %s, %s)", 
+                        ('Owner', hash_password("789"), "Own", "er", 'Owner', 30.00))
 
         db.commit()
         

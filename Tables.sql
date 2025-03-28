@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS Employee (
     LName VARCHAR(255),
     PinPassword VARCHAR(255) UNIQUE,
     UserName VARCHAR(255) UNIQUE,
+    PayRate DOUBLE,
     Role ENUM('Owner', 'Manager', 'Employee')
 );
 

@@ -13,10 +13,9 @@ def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
 # Add User
-def createEmployee(username, password, fname, lname):
+def createEmployee(username, password, fname, lname, pay_rate):
 
     if not username or not password:
-        # messagebox.showerror("Error", "All fields are required!")
         return False
 
     try:
@@ -32,17 +31,88 @@ def createEmployee(username, password, fname, lname):
             
         cursor = db.cursor()
 
+        # Insert new employee into the database
+        cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role, PayRate) VALUES (%s, %s, %s, %s, %s, %s)", 
+                    (username, hash_password(password), fname, lname, 'Employee', pay_rate))
 
-        hashed_pw = hash_password(password)
-        cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role) VALUES (%s, %s, %s, %s, %s)", (username, hashed_pw, fname, lname, 'Employee'))
         db.commit()
-        # messagebox.showinfo("Success", "User registered successfully!")
-        print("Successfullly register")
+        print("Successfully registered")
+        cursor.close()
+        db.close()
         return True
     except mysql.connector.Error as err:
-        # messagebox.showerror("Error", f"Database error: {err}")
         print(f"Register Fail: {err}")
+        cursor.close()
+        db.close()
         return False
+    
+def get_all_Emp_data():
+        employee_data = []
+        try:
+            db = mysql.connector.connect(
+                host='localhost',
+                user='root',
+                password=db_password,
+                database='BeachStore'
+            )
+            cursor = db.cursor()
+
+            cursor.execute("SELECT UserName, FName, LName, Role, PayRate FROM Employee")
+            employees = cursor.fetchall()
+
+            # Store employee data in a list
+            for emp in employees:
+                employee_data.append(emp)
+
+            db.close()
+
+        except mysql.connector.Error as err:
+            print(f"Error fetching employee data: {err}")
+        
+        return employee_data
+
+def update_employee_in_db(username, fname, lname, pay_rate):
+    try:
+        db = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password=db_password,
+            database='BeachStore'
+        )
+        cursor = db.cursor()
+
+        # Update the employee in the database
+        cursor.execute("""
+            UPDATE Employee
+            SET FName = %s, LName = %s, PayRate = %s
+            WHERE UserName = %s
+        """, (fname, lname, pay_rate, username))
+
+        db.commit()
+        db.close()
+        return True
+    except mysql.connector.Error as err:
+        print(f"Error updating employee: {err}")
+        return False
+    
+def delete_employee_from_db(username):
+        try:
+            db = mysql.connector.connect(
+                host='localhost',
+                user='root',
+                password=db_password,
+                database='BeachStore'
+            )
+            cursor = db.cursor()
+
+            cursor.execute("DELETE FROM Employee WHERE UserName = %s", (username,))
+            db.commit()
+            db.close()
+            return True
+        except mysql.connector.Error as err:
+            print(f"Error deleting employee: {err}")
+            return False
+
 
 def getPayData(employeeID, columns):
     # Placeholder data: (PayAmount, BonusPercentage, GrossBonus, GrossPaid)
