@@ -67,27 +67,61 @@ class DashboardManager(DashboardEmployee):
         manage_label = tk.Label(self.manage_employees_page, text="Manage your employees here.", font=("Helvetica", 12))
         manage_label.pack(pady=20)
 
-        self.username_label = tk.Label(self.manage_employees_page, text="Username", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
-        self.username_entry = tk.Entry(self.manage_employees_page, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
-        self.fname_label = tk.Label(self.manage_employees_page, text="First Name", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
-        self.fname_entry = tk.Entry(self.manage_employees_page, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
-        self.lname_label = tk.Label(self.manage_employees_page, text="Last Name", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
-        self.lname_entry = tk.Entry(self.manage_employees_page, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
-        self.password_label = tk.Label(self.manage_employees_page, text="Password", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
-        self.password_entry = tk.Entry(self.manage_employees_page, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
-        self.create_employee_btn = tk.Button(self.manage_employees_page, text="Create Employee", fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0, highlightthickness=0, relief="flat", command=self.create_employee)
-        # self.location_menu = tk.OptionMenu(self.manage_employees_page, self.selected_location, *self.location_list)
+        # Details and Data Section
+        container_frame = tk.Frame(self.manage_employees_page)
+        container_frame.pack(fill="both", expand=True)
 
-        self.username_label.pack(pady=10)
-        self.username_entry.pack(pady=10)
-        self.fname_label.pack(pady=10)
-        self.fname_entry.pack(pady=10)
-        self.lname_label.pack(pady=10)
-        self.lname_entry.pack(pady=10)
-        self.password_label.pack(pady=10)
-        self.password_entry.pack(pady=10)
-        # self.location_menu.pack(pady=10)
-        self.create_employee_btn.pack(pady=20)   
+        detail_frame = tk.LabelFrame(container_frame, text="Enter Details", font=("Helvetica", 16, "bold"))
+        detail_frame.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
+
+        data_frame = tk.LabelFrame(container_frame, text="Employee Data", font=("Helvetica", 16, "bold"))
+        data_frame.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
+
+        container_frame.grid_columnconfigure(0, weight=1)
+        container_frame.grid_columnconfigure(1, weight=10)
+        container_frame.grid_rowconfigure(0, weight=1)
+
+        # Username
+        self.username_label = tk.Label(detail_frame, text="Username", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
+        self.username_label.grid(row=0, column=0, padx=5, pady=(5, 0), sticky="w")
+
+        self.username_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.username_entry.grid(row=1, column=0, padx=5, pady=(0, 10), sticky="w")
+
+        # First Name
+        self.fname_label = tk.Label(detail_frame, text="First Name", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
+        self.fname_label.grid(row=2, column=0, padx=5, pady=(5, 0), sticky="w")
+
+        self.fname_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.fname_entry.grid(row=3, column=0, padx=5, pady=(0, 10), sticky="w")
+
+        # Last Name
+        self.lname_label = tk.Label(detail_frame, text="Last Name", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
+        self.lname_label.grid(row=4, column=0, padx=5, pady=(5, 0), sticky="w")
+
+        self.lname_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.lname_entry.grid(row=5, column=0, padx=5, pady=(0, 10), sticky="w")
+
+        # Password
+        self.password_label = tk.Label(detail_frame, text="Password", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
+        self.password_label.grid(row=6, column=0, padx=5, pady=(5, 0), sticky="w")
+
+        self.password_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.password_entry.grid(row=7, column=0, padx=5, pady=(0, 10), sticky="w")
+
+
+        #Buttons
+        buttons_frame = tk.Frame(detail_frame, bg=BACKGROUND_COLOR)
+        buttons_frame.grid(row=9, column=0, columnspan=2, pady=2)
+
+        self.add_employee_btn = tk.Button(buttons_frame, text="Add", fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0, highlightthickness=0, relief="flat", command=self.create_employee)
+        self.add_employee_btn.pack(side="left", padx=2)
+
+        self.update_employee_btn = tk.Button(buttons_frame, text="Update", fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0, highlightthickness=0, relief="flat")
+        self.update_employee_btn.pack(side="left", padx=2) 
+
+        self.delete_employee_btn = tk.Button(buttons_frame, text="Delete", fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0, highlightthickness=0, relief="flat")
+        self.delete_employee_btn.pack(side="left", padx=2)
 
     def show_reports(self):
         self.reports_page = tk.Frame(self.main_content)
