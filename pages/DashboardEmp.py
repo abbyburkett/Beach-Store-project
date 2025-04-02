@@ -16,8 +16,8 @@ class DashboardEmployee(tk.Frame):
 
         self.controller = controller
         self.today = "2025-03-17"
-        self.user_id = 101
-
+        self.user_id = self.controller.user_id
+        print(self.user_id)
         self.create_widgets()
         self.display_widgets()
 

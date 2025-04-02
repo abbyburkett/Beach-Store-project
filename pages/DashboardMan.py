@@ -15,9 +15,9 @@ class DashboardManager(DashboardEmployee):
         super().__init__(parent, controller)
         self.is_manager = True
 
-        self.location_list = ["Aloha", "Olaho", "Olaola"]
-        self.selected_location = tk.StringVar()
-        self.selected_location.set(self.location_list[0])
+        # self.location_list = ["Aloha", "Olaho", "Olaola"]
+        # self.selected_location = tk.StringVar()
+        # self.selected_location.set(self.location_list[0])
 
         self.dashboard_label.config(text=f"Welcome to the Manager Dashboard")
     def create_widgets(self):

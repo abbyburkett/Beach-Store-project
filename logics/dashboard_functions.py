@@ -12,6 +12,20 @@ db_password = os.getenv('MYSQL_PASSWORD')
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
+# database connection
+def create_db_connection():
+    try:
+        db = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password=db_password,
+            database='BeachStore'
+        )
+        return db
+    except mysql.connector.Error as err:
+        print(f"Error connecting to database: {err}")
+        return None
+
 # Add User
 def createEmployee(username, password, fname, lname, pay_rate):
 
@@ -21,14 +35,12 @@ def createEmployee(username, password, fname, lname, pay_rate):
     try:
         if db_password is None:
             print("Error: MYSQL_PASSWORD environment variable is not set!")
-        else:
-            db = mysql.connector.connect(
-                host='localhost',
-                user='root',
-                password=db_password,
-                database='BeachStore'
-            )
-            
+            return False
+
+        db = create_db_connection()
+        if db is None:
+            return False
+
         cursor = db.cursor()
 
         # Insert new employee into the database
@@ -49,12 +61,9 @@ def createEmployee(username, password, fname, lname, pay_rate):
 def get_all_Emp_data():
         employee_data = []
         try:
-            db = mysql.connector.connect(
-                host='localhost',
-                user='root',
-                password=db_password,
-                database='BeachStore'
-            )
+            db = create_db_connection()
+            if db is None:
+                return employee_data
             cursor = db.cursor()
 
             cursor.execute("SELECT UserName, FName, LName, Role, PayRate FROM Employee")
@@ -73,12 +82,10 @@ def get_all_Emp_data():
 
 def update_employee_in_db(username, fname, lname, pay_rate):
     try:
-        db = mysql.connector.connect(
-            host='localhost',
-            user='root',
-            password=db_password,
-            database='BeachStore'
-        )
+        db = create_db_connection()
+        if db is None:
+            return False
+
         cursor = db.cursor()
 
         # Update the employee in the database
@@ -97,12 +104,10 @@ def update_employee_in_db(username, fname, lname, pay_rate):
     
 def delete_employee_from_db(username):
         try:
-            db = mysql.connector.connect(
-                host='localhost',
-                user='root',
-                password=db_password,
-                database='BeachStore'
-            )
+            db = create_db_connection()
+            if db is None:
+                return False
+
             cursor = db.cursor()
 
             cursor.execute("DELETE FROM Employee WHERE UserName = %s", (username,))
@@ -117,15 +122,46 @@ def delete_employee_from_db(username):
 def getPayData(employeeID, columns):
     # Placeholder data: (PayAmount, BonusPercentage, GrossBonus, GrossPaid)
 
-    data = [
-        (100, 10, 1000, 1100),
-        (200, 20, 2000, 1200),
-        (300, 30, 3000, 1300),
-        (400, 40, 4000, 1400),
-    ]
+    try:
+        db = create_db_connection()
+        if db is None:
+            return False
+        
+        cursor = db.cursor()
+        
+        sql_query = """
+            SELECT p.PayAmount, p.BonusPercentage, p.GrossBonus, p.GrossPaid
+            FROM Pay p
+            INNER JOIN Employee e ON p.EmployeeID = e.EmployeeID
+        """
+        if employeeID:
+            sql_query += " WHERE p.EmployeeID = %s"
+            cursor.execute(sql_query, (employeeID,))
+        else:
+            cursor.execute(sql_query)
 
+        data = cursor.fetchall()
 
-    return data
+        if columns:
+            column_indices = {
+                "PayAmount": 0,
+                "BonusPercentage": 1,
+                "GrossBonus": 2,
+                "GrossPaid": 3,
+            }
+
+            indices_to_return = [column_indices[col] for col in columns if col in column_indices]
+
+            data = [[entry[i] for i in indices_to_return] for entry in data]
+
+        cursor.close()
+
+        return data
+    
+    except mysql.connector.Error as err:
+            print(f"Error deleting employee: {err}")
+            return False
+ 
 
 def getCloseOutData(ProfitID, columns, target_date):
 

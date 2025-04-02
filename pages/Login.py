@@ -52,9 +52,9 @@ class Login(tk.Frame):
         if results[0]:
             print(f"Login successful for {username}")
 
-            if results[1] == "Manager":
-                self.controller.show_dashboardMan()
-            elif results[1] == "Employee":
-                self.controller.show_dashboardEmp()
+            if results[2] == "Manager":
+                self.controller.show_dashboardMan(results[1])
+            elif results[2] == "Employee":
+                self.controller.show_dashboardEmp(results[1])
         else:
             print("Invalid credentials, please try again.")

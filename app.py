@@ -24,6 +24,7 @@ class MyApp(tk.Frame):
 
         # initializing frames to an empty array
         self.frames = {}  
+        self.user_id = None
 
         # iterating through a tuple consisting
         # of the different page layouts
@@ -53,11 +54,15 @@ class MyApp(tk.Frame):
     def show_Login(self):
         self.show_frame(Login)
 
-    def show_dashboardEmp(self):
+    def show_dashboardEmp(self, user_id):
+        self.user_id = user_id
         self.show_frame(DashboardEmployee)
+        self.frames[DashboardEmployee].user_id = self.user_id
     
-    def show_dashboardMan(self):
+    def show_dashboardMan(self, user_id):
+        self.user_id = user_id
         self.show_frame(DashboardManager)
+        self.frames[DashboardManager].user_id = self.user_id
 
 root = tk.Tk()
 root.title("Beach Store")
