@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS Profit (
 DROP TABLE IF EXISTS Expense;
 CREATE TABLE IF NOT EXISTS Expense (
     ExpenseID INT PRIMARY KEY AUTO_INCREMENT,
-    Date DATETIME,
+    Date DATE,
     LocationID INT,
     Amount DOUBLE,
     isMerchandise BOOLEAN,
@@ -75,10 +75,12 @@ DROP TABLE IF EXISTS Invoice;
 CREATE TABLE IF NOT EXISTS Invoice (
     InvoiceNumber INT PRIMARY KEY AUTO_INCREMENT,
     PaidWay ENUM('Cash', 'Credit', 'Check'),
-    AmountTotal DOUBLE,
-    AmountPaid DOUBLE,
+    AmountTotal DECIMAL(10,2),
+    AmountPaid DECIMAL(10,2),
     Company VARCHAR(255),
-    DueDate DATETIME,
+    DueDate DATE,
     Paid BOOLEAN,
-    Date DATETIME
+    Date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+

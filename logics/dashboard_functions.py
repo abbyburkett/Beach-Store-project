@@ -178,3 +178,8 @@ def getUserProfileData(employeeID):
 
     return user_data
 
+#def ClockIn(employeeID):
+
+#def ClockOut(employeeID):
+
+

@@ -14,7 +14,7 @@ def check_credentials(username, password):
             host='localhost',
             user='root',
             password=db_password,
-            database='BeachStore'
+            database='BeachStore',
         )
         cursor = db.cursor()
 
@@ -36,7 +36,7 @@ def check_credentials(username, password):
             return False, None, None
 
     except mysql.connector.Error as err:
-        print(f"Error: {err}")
+        print(f"Erro in login functions.pyr: {err}")
         return False, None, None
 
 

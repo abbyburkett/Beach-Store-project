@@ -3,6 +3,7 @@ from tkinter import ttk
 from logics import dashboard_functions
 from pages.DashboardEmp import DashboardEmployee
 from tkinter import messagebox
+import mysql.connector
 
 BACKGROUND_COLOR = "#FFF6E3"
 SIDE_BAR_COLOR = "pink"
@@ -18,6 +19,13 @@ class DashboardManager(DashboardEmployee):
         # self.location_list = ["Aloha", "Olaho", "Olaola"]
         # self.selected_location = tk.StringVar()
         # self.selected_location.set(self.location_list[0])
+
+        #Establish database connection
+        self.db = dashboard_functions.create_db_connection()
+        if self.db is None:
+            messagebox.showerror("Database Error", "Database Error")
+        else:
+            self.cursor = self.db.cursor()
 
         self.dashboard_label.config(text=f"Welcome to the Manager Dashboard")
     def create_widgets(self):
@@ -52,11 +60,103 @@ class DashboardManager(DashboardEmployee):
         self.report_indicate.config(bg = SIDE_BAR_COLOR)
 
     def show_invoices(self):
+        #Clear previous frame if it exists
+        for widget in self.main_content.winfo_children():
+            widget.destroy()
+
         self.invoices_page = tk.Frame(self.main_content)
         self.invoices_page.pack(fill="both", expand=True)
 
+        #Title label
         self.invoices_label = tk.Label(self.invoices_page, text="Invoices", fg=MAIN_CONTENT_COLOR, font=("Helvetica", 16, "bold"))
         self.invoices_label.pack(pady=10)
+
+        # Table to display invoices
+        self.tree = ttk.Treeview(self.invoices_page, columns=("InvoiceNumber","Date", "Company", "AmountTotal", "DueDate", "PaidWay"),
+                                 show="headings")
+        self.tree.heading("InvoiceNumber", text= "Invoice Number")
+        self.tree.heading("Date", text="Date Received")
+        self.tree.heading("Company", text="Company")
+        self.tree.heading("AmountTotal", text="Amount")
+        self.tree.heading("DueDate", text="Due Date")
+        self.tree.heading("PaidWay", text="Paid Way")
+
+        self.tree.column("InvoiceNumber", width=80)
+        self.tree.column("Date", width=80)
+        self.tree.column("Company", width=150)
+        self.tree.column("AmountTotal", width=80)
+        self.tree.column("DueDate", width=100)
+        self.tree.column("PaidWay", width=80)
+
+        self.tree.pack(pady=10)
+
+        #Form to insert new invoice
+        self.form_frame = tk.Frame(self.invoices_page)
+        self.form_frame.pack(pady=10)
+
+        tk.Label(self.form_frame, text="Company:").grid(row=0, column=0)
+        self.company_entry = tk.Entry(self.form_frame)
+        self.company_entry.grid(row=0, column=1)
+
+        tk.Label(self.form_frame, text="Amount:").grid(row=0, column=2)
+        self.amount_entry = tk.Entry(self.form_frame)
+        self.amount_entry.grid(row=0, column=3)
+
+        tk.Label(self.form_frame, text="Due Date (YYYY-MM-DD):").grid(row=1, column=2)
+        self.due_date_entry = tk.Entry(self.form_frame)
+        self.due_date_entry.grid(row=1, column=3)
+
+        tk.Label(self.form_frame, text="Paid Way:").grid(row=0, column=4)
+        self.payway_entry = tk.Entry(self.form_frame)
+        self.payway_entry.grid(row=0, column=5)
+
+        #Submit button
+        self.submit_button = tk.Button(self.invoices_page, text="Add Invoice", command=self.insert_invoice)
+        self.submit_button.pack(pady=5)
+
+        #Load existing invoices
+        self.load_invoices()
+
+    def insert_invoice(self):
+        company = self.company_entry.get()
+        amount = self.amount_entry.get()
+        due_date = self.due_date_entry.get()
+        payway = self.payway_entry.get()
+
+        if not (company and amount and due_date and payway ):
+            messagebox.showerror("Error", "Please fill in all fields")
+            return
+
+        try:
+            #ensure amount is a valid float
+            amount = float(amount)
+            cursor = self.db.cursor()
+            query = ("INSERT INTO Invoice (Company, AmountTotal, PaidWay, DueDate)"
+                     "VALUES (%s, %s, %s, %s) ")
+            cursor.execute(query, (company, amount, payway, due_date))
+            self.db.commit()
+            cursor.close()
+            messagebox.showinfo("Invoice Added", "Invoice Added")
+            #Refresh invoice list
+            self.load_invoices()
+        except Exception as e:
+            messagebox.showerror("Error", e)
+
+    def load_invoices(self):
+        """Fetch and display invoices from the database."""
+        for row in self.tree.get_children():
+            self.tree.delete(row)  # Clear existing entries
+
+        try:
+            cursor = self.db.cursor()
+            cursor.execute("SELECT InvoiceNumber, Date, Company, AmountTotal, DueDate, PaidWay FROM Invoice")
+            invoices = cursor.fetchall()
+            cursor.close()
+
+            for invoice in invoices:
+                self.tree.insert("", "end", values=invoice)
+        except mysql.connector.Error as err:
+            messagebox.showerror("Database Error", f"Error: {err}")
 
     def show_employees(self):
         self.manage_employees_page = tk.Frame(self.main_content)
