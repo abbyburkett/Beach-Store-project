@@ -1,7 +1,10 @@
 import tkinter as tk
+
+from pages import DashboardOwner
 from pages.Login import Login
 from pages.DashboardEmp import DashboardEmployee
 from pages.DashboardMan import DashboardManager
+from pages.DashboardOwner import Dashboard_Owner
 
 from logics.Connect_SQL import run_sql_file
 
@@ -28,7 +31,7 @@ class MyApp(tk.Frame):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F in (Login, DashboardEmployee, DashboardManager):
+        for F in (Login, DashboardEmployee, DashboardManager, Dashboard_Owner):
   
             frame = F(self.main_frame, self)
   
@@ -63,6 +66,11 @@ class MyApp(tk.Frame):
         self.user_id = user_id
         self.show_frame(DashboardManager)
         self.frames[DashboardManager].user_id = self.user_id
+
+    def show_dashboardOwner(self, user_id):
+        self.user_id = user_id
+        self.show_frame(Dashboard_Owner)
+        self.frames[Dashboard_Owner].user_id = self.user_id
 
 root = tk.Tk()
 root.title("Beach Store")
