@@ -102,9 +102,9 @@ class DashboardManager(DashboardEmployee):
         self.amount_entry = tk.Entry(self.form_frame)
         self.amount_entry.grid(row=0, column=3)
 
-        tk.Label(self.form_frame, text="Due Date (YYYY-MM-DD):").grid(row=1, column=2)
+        tk.Label(self.form_frame, text="Due Date (YYYY-MM-DD):").grid(row=1, column=0)
         self.due_date_entry = tk.Entry(self.form_frame)
-        self.due_date_entry.grid(row=1, column=3)
+        self.due_date_entry.grid(row=1, column=1)
 
         tk.Label(self.form_frame, text="Paid Way:").grid(row=0, column=4)
         self.payway_entry = tk.Entry(self.form_frame)
