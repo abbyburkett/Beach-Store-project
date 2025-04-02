@@ -60,7 +60,7 @@ class Dashboard_Owner(DashboardManager):
         revenue_label.pack()
 
         # Add logic to calculate and update revenue dynamically
-
+        #...
     def create_employee(self):
         super().create_employee()
 
