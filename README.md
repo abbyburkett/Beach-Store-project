@@ -7,5 +7,5 @@
     * Username: Employee, Pw: 123
 - For Manager:
     * Username: Manager, Pw: 456
-  -For Owner:
-      * Username: Owner, Pw: 789
+- For Owner:
+    * Username: Owner, Pw: 789
