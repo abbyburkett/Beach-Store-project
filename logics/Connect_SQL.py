@@ -24,7 +24,8 @@ def run_sql_file(file_path = FILEPATH):
         db = mysql.connector.connect(
             host='localhost',
             user='root',
-            password=db_password
+            password=db_password,
+            auth_plugin='mysql_native_password'
         )
 
         cursor = db.cursor()
