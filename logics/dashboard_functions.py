@@ -119,7 +119,7 @@ def delete_employee_from_db(username):
             return False
 
 
-def getPayData(employeeID, columns):
+def get_pay_data(employeeID, columns):
     # Placeholder data: (PayAmount, BonusPercentage, GrossBonus, GrossPaid)
 
     try:
@@ -163,20 +163,37 @@ def getPayData(employeeID, columns):
             return False
  
 
-def getCloseOutData(ProfitID, columns, target_date):
+def get_close_out_data(ProfitID, columns, target_date):
 
     data = [(102, 300.50, 400.75, 80.00, 20.25, 100.25, "2025-03-16")]
     
 
     return data
 
-def getUserProfileData(employeeID):
+def get_user_profile_data(employeeID):
 
-    user_data = [
-        (101, "John", "Doe", "******", "johndoe", "Employee")
-    ]
+    try:
+        db = create_db_connection()
+        if db is None:
+            return False
+        
+        cursor = db.cursor()
+        
+        query = """
+                SELECT FName, LName, UserName, Role
+                FROM Employee
+                WHERE EmployeeID = %s
+                """
+        cursor.execute(query, (employeeID,))
+        data = cursor.fetchall()
 
-    return user_data
+        cursor.close()
+
+        return data
+    
+    except mysql.connector.Error as err:
+            print(f"Error deleting employee: {err}")
+            return False
 
 #def ClockIn(employeeID):
 
