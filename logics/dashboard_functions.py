@@ -188,7 +188,8 @@ def get_user_profile_data(employeeID):
         data = cursor.fetchall()
 
         cursor.close()
-
+        
+        print(data)
         return data
     
     except mysql.connector.Error as err:
