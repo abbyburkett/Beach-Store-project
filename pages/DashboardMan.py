@@ -169,7 +169,6 @@ class DashboardManager(DashboardEmployee):
             for invoice in invoices:
                 invoice_number, date_received, company, amount, amount_paid, due_date, paid_way, status = invoice
 
-                print(f"Date Received: {date_received}")
                 amount = float(amount)
                 amount_paid = float(amount_paid)
 
