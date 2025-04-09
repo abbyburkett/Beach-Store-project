@@ -66,7 +66,7 @@ def get_all_Emp_data():
                 return employee_data
             cursor = db.cursor()
 
-            cursor.execute("SELECT UserName, FName, LName, Role, PayRate FROM Employee")
+            cursor.execute("SELECT UserName, FName, LName, Role, PayRate, PayBonus FROM Employee")
             employees = cursor.fetchall()
 
             # Store employee data in a list
