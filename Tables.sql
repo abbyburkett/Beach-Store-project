@@ -23,14 +23,16 @@ CREATE TABLE IF NOT EXISTS Location (
     FOREIGN KEY (ManagerID) REFERENCES Employee(EmployeeID)
 );
 
-DROP TABLE IF EXISTS Pay;
-CREATE TABLE IF NOT EXISTS Pay (
-    PaidID INT PRIMARY KEY AUTO_INCREMENT,
-    PayAmount DOUBLE,
-    EmployeeID INT,
-    BonusPercentage DOUBLE,
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
-);
+-- DROP TABLE IF EXISTS Pay;
+-- CREATE TABLE IF NOT EXISTS Pay (
+--     PaidID INT PRIMARY KEY AUTO_INCREMENT,
+--     PayAmount DOUBLE,
+--     EmployeeID INT,
+--     BonusPercentage DOUBLE,
+--     GrossBonus DOUBLE,
+--     GrossPaid DOUBLE,
+--     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
+-- );
 
 DROP TABLE IF EXISTS ClockInOut;
 CREATE TABLE IF NOT EXISTS ClockInOut (
