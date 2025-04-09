@@ -89,8 +89,8 @@ class DashboardEmployee(tk.Frame):
         self.clock_in = tk.Button(self.home_page, text="Clock In", font=("Bold", 36), bd=0)
         self.clock_in.pack(pady=10)
 
-        self.pay_label = tk.Label(self.home_page, text = "Pay Table", fg = MAIN_CONTENT_COLOR)
-        self.pay_label.pack(pady=10)
+        pay_label = tk.Label(self.home_page, text = "Pay Table", fg = MAIN_CONTENT_COLOR)
+        pay_label.pack(pady=10)
 
         columns = ("PayAmount", "BonusPercentage", "GrossBonus", "GrossPaid")
         self.pay_table = ttk.Treeview(self.home_page, columns=columns, show="headings")
@@ -115,8 +115,8 @@ class DashboardEmployee(tk.Frame):
         self.profile_page = tk.Frame(self.main_content)
         self.profile_page.pack(fill="both", expand=True)
 
-        self.profile_label = tk.Label(self.profile_page, text="Profile Page", fg=MAIN_CONTENT_COLOR, font=("Helvetica", 16, "bold"))
-        self.profile_label.pack(pady=10)
+        profile_label = tk.Label(self.profile_page, text="Profile Page", fg=MAIN_CONTENT_COLOR, font=("Helvetica", 16, "bold"))
+        profile_label.pack(pady=10)
 
         user_data = dashboard_functions.get_user_profile_data(self.user_id) or []
 
@@ -148,8 +148,8 @@ class DashboardEmployee(tk.Frame):
         self.close_out = tk.Frame(self.main_content)
         self.close_out.pack(fill="both", expand=True)
 
-        self.close_out_label = tk.Label(self.close_out, text=f"Close Out Report - {self.today}", fg=MAIN_CONTENT_COLOR, font=("Helvetica", 16, "bold"))
-        self.close_out_label.pack(pady=10)
+        close_out_label = tk.Label(self.close_out, text=f"Close Out Report - {self.today}", fg=MAIN_CONTENT_COLOR, font=("Helvetica", 16, "bold"))
+        close_out_label.pack(pady=10)
 
         data = dashboard_functions.get_close_out_data(101, ["EmployeeID", "BeforeBal", "AfterBal", "Cash", "Credit", "GrossRevenue", "Date"], self.today) or []
 
