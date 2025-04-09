@@ -1,5 +1,3 @@
-CREATE DATABASE IF NOT EXISTS BeachStore;
-
 USE BeachStore;
 
 DROP TABLE IF EXISTS Employee;
@@ -23,17 +21,6 @@ CREATE TABLE IF NOT EXISTS Location (
     FOREIGN KEY (ManagerID) REFERENCES Employee(EmployeeID)
 );
 
-DROP TABLE IF EXISTS Pay;
-CREATE TABLE IF NOT EXISTS Pay (
-    PaidID INT PRIMARY KEY AUTO_INCREMENT,
-    PayAmount DOUBLE,
-    EmployeeID INT,
-    BonusPercentage DOUBLE,
-    GrossBonus DOUBLE,
-    GrossPaid DOUBLE,
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
-);
-
 DROP TABLE IF EXISTS ClockInOut;
 CREATE TABLE IF NOT EXISTS ClockInOut (
     Date DATE,
@@ -41,9 +28,7 @@ CREATE TABLE IF NOT EXISTS ClockInOut (
     ClockIn DATETIME,
     ClockOut DATETIME,
     PaidRate DOUBLE,
-    PaidID INT,
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
-    FOREIGN KEY (PaidID) REFERENCES Pay(PaidID)
+    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
 );
 
 DROP TABLE IF EXISTS Profit;
@@ -54,7 +39,6 @@ CREATE TABLE IF NOT EXISTS Profit (
     AfterBal DOUBLE,
     Cash DOUBLE,
     Credit DOUBLE,
-    GrossRevenue DOUBLE,
     Date DATE,
     LocationID INT,
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
