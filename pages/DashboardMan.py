@@ -169,6 +169,7 @@ class DashboardManager(DashboardEmployee):
             for invoice in invoices:
                 invoice_number, date_received, company, amount, amount_paid, due_date, paid_way, status = invoice
 
+                print(f"Date Received: {date_received}")
                 amount = float(amount)
                 amount_paid = float(amount_paid)
 
@@ -185,7 +186,7 @@ class DashboardManager(DashboardEmployee):
                     return
 
                 #Insert into treeview, adding the Date received (current date)
-                self.tree.insert("", "end", values=(invoice_number, company, "", amount, amount_paid, due_date, paid_way, status, date_received))
+                self.tree.insert("", "end", values=(invoice_number, date_received, company, amount, amount_paid, due_date, paid_way, status))
 
         except mysql.connector.Error as err:
             messagebox.showerror("Database Error", f"Error: {err}")
