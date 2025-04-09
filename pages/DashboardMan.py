@@ -198,8 +198,8 @@ class DashboardManager(DashboardEmployee):
         self.manage_employees_page = tk.Frame(self.main_content)
         self.manage_employees_page.pack(fill="both", expand=True)
 
-        self.manage_employees_label = tk.Label(self.manage_employees_page, text="Manage Employees", fg=MAIN_CONTENT_COLOR, font=("Helvetica", 16, "bold"))
-        self.manage_employees_label.pack(pady=10)
+        manage_employees_label = tk.Label(self.manage_employees_page, text="Manage Employees", fg=MAIN_CONTENT_COLOR, font=("Helvetica", 16, "bold"))
+        manage_employees_label.pack(pady=10)
 
         manage_label = tk.Label(self.manage_employees_page, text="Manage your employees here.", font=("Helvetica", 12))
         manage_label.pack(pady=20)
@@ -300,6 +300,14 @@ class DashboardManager(DashboardEmployee):
 
         for emp in employee_data:
             self.data_view.insert("", "end", values=emp)
+
+        #Scollbar
+        data_frame.grid_rowconfigure(0, weight=1)
+        data_frame.grid_columnconfigure(0, weight=1)
+        
+        tree_scroll_y = ttk.Scrollbar(data_frame, orient="vertical")
+        tree_scroll_y.grid(row=0, column=1, sticky="ns")
+        tree_scroll_y.config(command=self.data_view.xview)
 
     def show_reports(self):
         self.reports_page = tk.Frame(self.main_content)
