@@ -1,3 +1,5 @@
+DROP DATABASE IF EXISTS BeachStore;
+
 CREATE DATABASE IF NOT EXISTS BeachStore;
 
 USE BeachStore;
