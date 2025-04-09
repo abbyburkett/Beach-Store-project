@@ -43,9 +43,7 @@ CREATE TABLE IF NOT EXISTS ClockInOut (
     ClockIn DATETIME,
     ClockOut DATETIME,
     PaidRate DOUBLE,
-    PaidID INT,
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
-    FOREIGN KEY (PaidID) REFERENCES Pay(PaidID)
 );
 
 DROP TABLE IF EXISTS Profit;
