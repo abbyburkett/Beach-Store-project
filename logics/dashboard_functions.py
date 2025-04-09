@@ -27,7 +27,7 @@ def create_db_connection():
         return None
 
 # Add User
-def createEmployee(username, password, fname, lname, pay_rate):
+def create_employee(username, password, fname, lname, pay_rate, pay_bonus):
 
     if not username or not password:
         return False
@@ -44,8 +44,8 @@ def createEmployee(username, password, fname, lname, pay_rate):
         cursor = db.cursor()
 
         # Insert new employee into the database
-        cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role, PayRate) VALUES (%s, %s, %s, %s, %s, %s)", 
-                    (username, hash_password(password), fname, lname, 'Employee', pay_rate))
+        cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role, PayRate, PayBonus) VALUES (%s, %s, %s, %s, %s, %s, %s)", 
+                    (username, hash_password(password), fname, lname, 'Employee', pay_rate, pay_bonus))
 
         db.commit()
         print("Successfully registered")
@@ -80,7 +80,7 @@ def get_all_Emp_data():
         
         return employee_data
 
-def update_employee_in_db(username, fname, lname, pay_rate):
+def update_employee_in_db(username, fname, lname, pay_rate, bonus_rate):
     try:
         db = create_db_connection()
         if db is None:
@@ -91,9 +91,9 @@ def update_employee_in_db(username, fname, lname, pay_rate):
         # Update the employee in the database
         cursor.execute("""
             UPDATE Employee
-            SET FName = %s, LName = %s, PayRate = %s
+            SET FName = %s, LName = %s, PayRate = %s, PayBonus = %s
             WHERE UserName = %s
-        """, (fname, lname, pay_rate, username))
+        """, (fname, lname, pay_rate, bonus_rate, username))
 
         db.commit()
         db.close()

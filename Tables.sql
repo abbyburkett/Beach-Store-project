@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS Employee (
     PinPassword VARCHAR(255) UNIQUE,
     UserName VARCHAR(255) UNIQUE,
     PayRate DOUBLE,
+    PayBonus DOUBLE,
     Role ENUM('Owner', 'Manager', 'Employee')
 );
 

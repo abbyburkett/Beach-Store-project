@@ -31,9 +31,24 @@ class Dashboard_Owner(DashboardManager):
     def display_widgets(self):
         super().display_widgets()
 
-    def hide_indicator(self):
-        super().hide_indicator()
+    # def hide_indicator(self):
+    #     super().hide_indicator()
 
+<<<<<<< Updated upstream
+=======
+    # def show_invoices(self):
+    #     super().show_invoices()
+
+    # def insert_invoice(self):
+    #     super().insert_invoice()
+
+    # def load_invoices(self):
+    #     super().load_invoices()
+
+    # def show_employees(self):
+    #     super().show_employees()
+
+>>>>>>> Stashed changes
     def show_reports(self):
         super().show_reports()
         # Clear previous content
@@ -46,3 +61,20 @@ class Dashboard_Owner(DashboardManager):
         # Example: Show Total Revenue
         revenue_label = tk.Label(self.main_content, text="Total Revenue: $0.00", font=("Helvetica", 12))
         revenue_label.pack()
+<<<<<<< Updated upstream
+=======
+
+    # def create_employee(self):
+    #     super().create_employee()
+
+    # def update_employee(self):
+    #     super().update_employee()
+
+    # def delete_employee(self):
+    #     super().delete_employee()
+
+    # def on_employee_select(self, event):
+    #     super().on_employee_select()
+
+
+>>>>>>> Stashed changes

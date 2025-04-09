@@ -253,9 +253,16 @@ class DashboardManager(DashboardEmployee):
         self.pay_rate_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
         self.pay_rate_entry.grid(row=9, column=0, padx=5, pady=(0, 10), sticky="w")
 
+        # Pay Bonus
+        self.pay_bonus_label = tk.Label(detail_frame, text="Pay Bonus", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
+        self.pay_bonus_label.grid(row=10, column=0, padx=5, pady=(5, 0), sticky="w")
+
+        self.pay_bonus_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.pay_bonus_entry.grid(row=11, column=0, padx=5, pady=(0, 10), sticky="w")
+
         #Buttons
         buttons_frame = tk.Frame(detail_frame, bg=BACKGROUND_COLOR)
-        buttons_frame.grid(row=10, column=0, columnspan=2, pady=2)
+        buttons_frame.grid(row=12, column=0, columnspan=2, pady=2)
 
         self.add_employee_btn = tk.Button(buttons_frame, text="Add", fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0, highlightthickness=0, relief="flat", command=self.create_employee)
         self.add_employee_btn.pack(side="left", padx=2)
@@ -267,7 +274,7 @@ class DashboardManager(DashboardEmployee):
         self.delete_employee_btn.pack(side="left", padx=2)
 
         #Data Views
-        self.data_view = ttk.Treeview(data_frame, columns=("UserName", "First Name", "Last Name", "Role", "Pay Rate"), show="headings", height=10)
+        self.data_view = ttk.Treeview(data_frame, columns=("UserName", "First Name", "Last Name", "Role", "Pay Rate", "Pay Bonus"), show="headings", height=10)
         self.data_view.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
         self.data_view.heading("UserName", text="Username")
@@ -275,12 +282,14 @@ class DashboardManager(DashboardEmployee):
         self.data_view.heading("Last Name", text="Last Name")
         self.data_view.heading("Role", text="Role")
         self.data_view.heading("Pay Rate", text="Pay Rate")
+        self.data_view.heading("Pay Bonus", text="Pay Bonus")
 
         self.data_view.column("UserName", width=100)
         self.data_view.column("First Name", width=100)
         self.data_view.column("Last Name", width=100)
         self.data_view.column("Role", width=80)
-        self.data_view.column("Pay Rate", width=100)
+        self.data_view.column("Pay Rate", width=80)
+        self.data_view.column("Pay Bonus", width=80)
 
         self.data_view.bind('<<TreeviewSelect>>', self.on_employee_select)
 
@@ -307,18 +316,21 @@ class DashboardManager(DashboardEmployee):
         password = self.password_entry.get()
         fname = self.fname_entry.get()
         lname = self.lname_entry.get()
+
         try:
             pay_rate = float(self.pay_rate_entry.get())
+            pay_bonus = float(self.pay_bonus_entry.get())
 
         except ValueError:
             messagebox.showerror("Invalid Input", "Error: Pay rate must be a valid number.")
             print("Error: Pay rate must be a valid number.")
 
         
-        success = dashboard_functions.createEmployee(username, password, fname, lname, pay_rate)
+        success = dashboard_functions.create_employee(username, password, fname, lname, pay_rate, pay_bonus)
 
         if success:
             messagebox.showinfo("Success", "Employee successfully registered!")
+            self.show_employees()
         else:
             messagebox.showerror("Registration Failed", "Error: Could not register employee.")
 
@@ -335,14 +347,15 @@ class DashboardManager(DashboardEmployee):
         
         try:
             new_pay_rate = float(self.pay_rate_entry.get())
+            new_bonus_rate = float(self.pay_rate_entry.get())
         except ValueError:
             messagebox.showerror("Error", "Pay rate must be a valid number.")
             return
 
         result = messagebox.askyesno("Update Employee", f"Are you sure you want to update employee {employee_username}?")
         if result:
-            if dashboard_functions.update_employee_in_db(employee_username, new_fname, new_lname, new_pay_rate):
-                self.data_view.item(selected_item, values=(employee_username, new_fname, new_lname, "Employee", new_pay_rate))
+            if dashboard_functions.update_employee_in_db(employee_username, new_fname, new_lname, new_pay_rate, new_bonus_rate):
+                self.data_view.item(selected_item, values=(employee_username, new_fname, new_lname, "Employee", new_pay_rate, new_bonus_rate))
                 messagebox.showinfo("Success", "Employee updated successfully.")
             else:
                 messagebox.showerror("Error", "Failed to update employee.")
