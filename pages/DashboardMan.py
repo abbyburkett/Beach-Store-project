@@ -173,6 +173,9 @@ class DashboardManager(DashboardEmployee):
                 amount = float(amount)
                 amount_paid = float(amount_paid)
 
+                #Displays date_received as only yy/mm/dd
+                date_received = date_received.strftime("%Y-%m-%d")
+
                 #Set the status of the invoice
                 if amount_paid >= amount:
                     status = "Paid"

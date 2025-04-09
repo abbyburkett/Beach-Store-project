@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9dc159f0-02c1-4ced-ad09-2cf0697ac1c2" name="Changes" comment="fix gui part of invoice">
+    <list default="true" id="9dc159f0-02c1-4ced-ad09-2cf0697ac1c2" name="Changes" comment="Minor Change to invoice page; date receieved">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pages/DashboardMan.py" beforeDir="false" afterPath="$PROJECT_DIR$/pages/DashboardMan.py" afterDir="false" />
     </list>
