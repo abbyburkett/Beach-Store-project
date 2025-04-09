@@ -126,19 +126,19 @@ class DashboardEmployee(tk.Frame):
         else:
             user = user_data[0]
 
-            report_label = tk.Label(self.profile_page, text=f"EmployeeID: {user[0]}", font=("Helvetica", 12))
+            report_label = tk.Label(self.profile_page, text=f"EmployeeID: {self.user_id}", font=("Helvetica", 12))
             report_label.pack(anchor="w", padx=20, pady=5)
 
-            report_label = tk.Label(self.profile_page, text=f"First Name: {user[1]}", font=("Helvetica", 12))
+            report_label = tk.Label(self.profile_page, text=f"First Name: {user[0]}", font=("Helvetica", 12))
             report_label.pack(anchor="w", padx=20, pady=5)
 
-            report_label = tk.Label(self.profile_page, text=f"Last Name: {user[2]}", font=("Helvetica", 12))
+            report_label = tk.Label(self.profile_page, text=f"Last Name: {user[1]}", font=("Helvetica", 12))
             report_label.pack(anchor="w", padx=20, pady=5)
 
-            report_label = tk.Label(self.profile_page, text=f"Username: {user[3]}", font=("Helvetica", 12))
+            report_label = tk.Label(self.profile_page, text=f"Username: {user[2]}", font=("Helvetica", 12))
             report_label.pack(anchor="w", padx=20, pady=5)
 
-            report_label = tk.Label(self.profile_page, text=f"Role: {user[4]}", font=("Helvetica", 12))
+            report_label = tk.Label(self.profile_page, text=f"Role: {user[3]}", font=("Helvetica", 12))
             report_label.pack(anchor="w", padx=20, pady=5)
 
             separator = tk.Label(self.profile_page, text="--------------------------------------", font=("Helvetica", 12, "italic"))
