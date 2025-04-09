@@ -72,21 +72,26 @@ class DashboardManager(DashboardEmployee):
         self.invoices_label.pack(pady=10)
 
         # Table to display invoices
-        self.tree = ttk.Treeview(self.invoices_page, columns=("InvoiceNumber","Date", "Company", "AmountTotal", "DueDate", "PaidWay"),
+        self.tree = ttk.Treeview(self.invoices_page, columns=("InvoiceNumber","Date", "Company", "AmountTotal", "AmountPaid", "DueDate", "PaidWay", "Paid"),
                                  show="headings")
         self.tree.heading("InvoiceNumber", text= "Invoice Number")
         self.tree.heading("Date", text="Date Received")
         self.tree.heading("Company", text="Company")
         self.tree.heading("AmountTotal", text="Amount")
+        self.tree.heading("AmountPaid", text="Amount Paid")
         self.tree.heading("DueDate", text="Due Date")
         self.tree.heading("PaidWay", text="Paid Way")
+        self.tree.heading("Paid", text="Status")
+
 
         self.tree.column("InvoiceNumber", width=80)
         self.tree.column("Date", width=80)
         self.tree.column("Company", width=150)
         self.tree.column("AmountTotal", width=80)
+        self.tree.column("AmountPaid", width=80)
         self.tree.column("DueDate", width=100)
         self.tree.column("PaidWay", width=80)
+        self.tree.column("Paid", width=80)
 
         self.tree.pack(pady=10)
 
@@ -110,6 +115,10 @@ class DashboardManager(DashboardEmployee):
         self.payway_entry = tk.Entry(self.form_frame)
         self.payway_entry.grid(row=0, column=5)
 
+        tk.Label(self.form_frame, text="Amount Paid:").grid(row=1, column=2)
+        self.amount_paid_entry = tk.Entry(self.form_frame)
+        self.amount_paid_entry.grid(row=1, column=3)
+
         #Submit button
         self.submit_button = tk.Button(self.invoices_page, text="Add Invoice", command=self.insert_invoice)
         self.submit_button.pack(pady=5)
@@ -122,18 +131,22 @@ class DashboardManager(DashboardEmployee):
         amount = self.amount_entry.get()
         due_date = self.due_date_entry.get()
         payway = self.payway_entry.get()
+        amount_paid = self.amount_paid_entry.get()
 
-        if not (company and amount and due_date and payway ):
+
+        if not (company and amount and due_date and payway and amount_paid ):
             messagebox.showerror("Error", "Please fill in all fields")
             return
 
         try:
             #ensure amount is a valid float
             amount = float(amount)
+            amount_paid = float(amount_paid)
+
             cursor = self.db.cursor()
-            query = ("INSERT INTO Invoice (Company, AmountTotal, PaidWay, DueDate)"
-                     "VALUES (%s, %s, %s, %s) ")
-            cursor.execute(query, (company, amount, payway, due_date))
+            query = ("INSERT INTO Invoice (Company, AmountTotal, AmountPaid, PaidWay, DueDate)"
+                     "VALUES (%s, %s, %s, %s, %s) ")
+            cursor.execute(query, (company, amount, amount_paid, payway, due_date))
             self.db.commit()
             cursor.close()
             messagebox.showinfo("Invoice Added", "Invoice Added")
@@ -149,12 +162,31 @@ class DashboardManager(DashboardEmployee):
 
         try:
             cursor = self.db.cursor()
-            cursor.execute("SELECT InvoiceNumber, Date, Company, AmountTotal, DueDate, PaidWay FROM Invoice")
+            cursor.execute("SELECT InvoiceNumber, Date, Company, AmountTotal, AmountPaid, DueDate, PaidWay, Paid FROM Invoice")
             invoices = cursor.fetchall()
             cursor.close()
 
             for invoice in invoices:
-                self.tree.insert("", "end", values=invoice)
+                invoice_number, date_received, company, amount, amount_paid, due_date, paid_way, status = invoice
+
+                amount = float(amount)
+                amount_paid = float(amount_paid)
+
+                #Set the status of the invoice
+                if amount_paid >= amount:
+                    status = "Paid"
+                elif amount_paid < amount:
+                    status = "Partially Paid"
+                else:
+                    status = "Unpaid"
+
+                if amount_paid > amount:
+                    messagebox.showerror("Error", "Amount paid can't exceed total amount.")
+                    return
+
+                #Insert into treeview, adding the Date received (current date)
+                self.tree.insert("", "end", values=(invoice_number, company, "", amount, amount_paid, due_date, paid_way, status, date_received))
+
         except mysql.connector.Error as err:
             messagebox.showerror("Database Error", f"Error: {err}")
 
