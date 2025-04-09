@@ -29,8 +29,6 @@ CREATE TABLE IF NOT EXISTS Pay (
     PayAmount DOUBLE,
     EmployeeID INT,
     BonusPercentage DOUBLE,
-    GrossBonus DOUBLE,
-    GrossPaid DOUBLE,
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
 );
 
@@ -54,7 +52,6 @@ CREATE TABLE IF NOT EXISTS Profit (
     AfterBal DOUBLE,
     Cash DOUBLE,
     Credit DOUBLE,
-    GrossRevenue DOUBLE,
     Date DATE,
     LocationID INT,
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
