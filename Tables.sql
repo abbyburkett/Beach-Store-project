@@ -1,6 +1,10 @@
+-- This line will be removed after finish with the project
+DROP DATABASE IF EXISTS BeachStore; 
+
+CREATE DATABASE IF NOT EXISTS BeachStore;
+
 USE BeachStore;
 
-DROP TABLE IF EXISTS Employee;
 CREATE TABLE IF NOT EXISTS Employee (
     EmployeeID INT PRIMARY KEY AUTO_INCREMENT,
     FName VARCHAR(255),
@@ -12,26 +16,23 @@ CREATE TABLE IF NOT EXISTS Employee (
     Role ENUM('Owner', 'Manager', 'Employee')
 );
 
-DROP TABLE IF EXISTS Location;
 CREATE TABLE IF NOT EXISTS Location (
     LocationID INT PRIMARY KEY AUTO_INCREMENT,
-    Name VARCHAR(255),
+    Name VARCHAR(255) UNIQUE,
     Address VARCHAR(255),
     ManagerID INT,
     FOREIGN KEY (ManagerID) REFERENCES Employee(EmployeeID)
 );
 
-DROP TABLE IF EXISTS ClockInOut;
 CREATE TABLE IF NOT EXISTS ClockInOut (
     Date DATE,
     EmployeeID INT,
-    ClockIn DATETIME,
-    ClockOut DATETIME,
+    ClockIn TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ClockOut TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PaidRate DOUBLE,
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
 );
 
-DROP TABLE IF EXISTS Profit;
 CREATE TABLE IF NOT EXISTS Profit (
     ProfitID INT PRIMARY KEY AUTO_INCREMENT,
     EmployeeID INT,
@@ -45,7 +46,6 @@ CREATE TABLE IF NOT EXISTS Profit (
     FOREIGN KEY (LocationID) REFERENCES Location(LocationID)
 );
 
-DROP TABLE IF EXISTS Expense;
 CREATE TABLE IF NOT EXISTS Expense (
     ExpenseID INT PRIMARY KEY AUTO_INCREMENT,
     Date DATE,
@@ -56,7 +56,6 @@ CREATE TABLE IF NOT EXISTS Expense (
     FOREIGN KEY (LocationID) REFERENCES Location(LocationID)
 );
 
-DROP TABLE IF EXISTS Invoice;
 CREATE TABLE IF NOT EXISTS Invoice (
     InvoiceNumber INT PRIMARY KEY AUTO_INCREMENT,
     PaidWay ENUM('Cash', 'Credit', 'Check'),
@@ -67,5 +66,3 @@ CREATE TABLE IF NOT EXISTS Invoice (
     Paid BOOLEAN,
     Date DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-
-

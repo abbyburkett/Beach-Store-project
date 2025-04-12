@@ -274,9 +274,15 @@ class DashboardManager(DashboardEmployee):
         self.delete_employee_btn.pack(side="left", padx=2)
 
         #Data Views
-        self.data_view = ttk.Treeview(data_frame, columns=("UserName", "First Name", "Last Name", "Role", "Pay Rate", "Pay Bonus"), show="headings", height=10)
+        self.data_view = ttk.Treeview(
+            data_frame,
+            columns=("ID", "UserName", "First Name", "Last Name", "Role", "Pay Rate", "Pay Bonus"),
+            show="headings",
+            height=10
+        )
         self.data_view.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
+        self.data_view.heading("ID", text="ID")
         self.data_view.heading("UserName", text="Username")
         self.data_view.heading("First Name", text="First Name")
         self.data_view.heading("Last Name", text="Last Name")
@@ -284,6 +290,7 @@ class DashboardManager(DashboardEmployee):
         self.data_view.heading("Pay Rate", text="Pay Rate")
         self.data_view.heading("Pay Bonus", text="Pay Bonus")
 
+        self.data_view.column("ID", width=50)
         self.data_view.column("UserName", width=100)
         self.data_view.column("First Name", width=100)
         self.data_view.column("Last Name", width=100)
@@ -292,13 +299,12 @@ class DashboardManager(DashboardEmployee):
         self.data_view.column("Pay Bonus", width=80)
 
         self.data_view.bind('<<TreeviewSelect>>', self.on_employee_select)
-
         employee_data = dashboard_functions.get_all_Emp_data()
-        
         for item in self.data_view.get_children():
             self.data_view.delete(item)
 
         for emp in employee_data:
+            # Assuming emp = (id, username, fname, lname, role, pay_rate, pay_bonus)
             self.data_view.insert("", "end", values=emp)
 
         #Scollbar
@@ -391,13 +397,16 @@ class DashboardManager(DashboardEmployee):
             employee_data = self.data_view.item(selected_item)["values"]
 
             self.username_entry.delete(0, tk.END)
-            self.username_entry.insert(0, employee_data[0])  # Username
+            self.username_entry.insert(0, employee_data[1])  # Username
 
             self.fname_entry.delete(0, tk.END)
-            self.fname_entry.insert(0, employee_data[1])  # First Name
+            self.fname_entry.insert(0, employee_data[2])  # First Name
 
             self.lname_entry.delete(0, tk.END)
-            self.lname_entry.insert(0, employee_data[2])  # Last Name
+            self.lname_entry.insert(0, employee_data[3])  # Last Name
 
             self.pay_rate_entry.delete(0, tk.END)
-            self.pay_rate_entry.insert(0, employee_data[4])  # Pay Rate
+            self.pay_rate_entry.insert(0, employee_data[5])  # Pay Rate
+
+            self.pay_bonus_entry.delete(0, tk.END)
+            self.pay_bonus_entry.insert(0, employee_data[6])  # Pay Bonus

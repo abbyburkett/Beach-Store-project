@@ -66,10 +66,9 @@ def get_all_Emp_data():
                 return employee_data
             cursor = db.cursor()
 
-            cursor.execute("SELECT UserName, FName, LName, Role, PayRate, PayBonus FROM Employee")
+            cursor.execute("SELECT EmployeeID, UserName, FName, LName, Role, PayRate, PayBonus FROM Employee")
             employees = cursor.fetchall()
 
-            # Store employee data in a list
             for emp in employees:
                 employee_data.append(emp)
 
@@ -161,7 +160,94 @@ def get_pay_data(employeeID, columns):
     except mysql.connector.Error as err:
             print(f"Error deleting employee: {err}")
             return False
+    
+def get_location_data():
+    location_data = []
+    try:
+        db = create_db_connection()
+        if db is None:
+            return location_data
+
+        cursor = db.cursor()
+        cursor.execute("SELECT LocationID, Name, Address, ManagerID FROM Location")
+        locations = cursor.fetchall()
+
+        for loc in locations:
+            location_data.append(loc)
+
+        db.close()
+
+    except mysql.connector.Error as err:
+        print(f"Error fetching location data: {err}")
+
+    return location_data
  
+def add_location(name, address, manager_id):
+    try:
+        db = create_db_connection()
+        if db is None:
+            return False
+
+        cursor = db.cursor()
+        query = """
+            INSERT INTO Location (Name, Address, ManagerID)
+            VALUES (%s, %s, %s)
+        """
+        cursor.execute(query, (name, address, manager_id))
+        db.commit()
+
+        update_query = """
+            UPDATE Employee
+            SET Role = 'Manager'
+            WHERE EmployeeID = %s
+        """
+        cursor.execute(update_query, (manager_id,))
+        db.commit()
+
+        db.close()
+        return True
+
+    except mysql.connector.Error as err:
+        print(f"Error adding location: {err}")
+        return False
+
+def update_location(location_id, name, address, manager_id):
+    try:
+        db = create_db_connection()
+        if db is None:
+            return False
+
+        cursor = db.cursor()
+        query = """
+            UPDATE Location
+            SET Name = %s, Address = %s, ManagerID = %s
+            WHERE LocationID = %s
+        """
+        cursor.execute(query, (name, address, manager_id, location_id))
+        db.commit()
+        db.close()
+        return True
+    except mysql.connector.Error as err:
+        print(f"Error updating location: {err}")
+        return False
+
+def delete_location(location_id):
+    try:
+        db = create_db_connection()
+        if db is None:
+            return False
+
+        cursor = db.cursor()
+        
+        cursor.execute("DELETE FROM Location WHERE LocationID = %s", (location_id,))
+        
+        db.commit()
+        db.close()
+        return True
+    except mysql.connector.Error as err:
+        print(f"Error deleting location: {err}")
+        return False
+
 
 def get_close_out_data(ProfitID, columns, target_date):
 
