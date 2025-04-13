@@ -1,5 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
+
+import mysql
+
 from logics import dashboard_functions
 
 BACKGROUND_COLOR = "#FFF6E3"
@@ -87,8 +90,17 @@ class DashboardEmployee(tk.Frame):
         self.home_page = tk.Frame(self.main_content)
         self.home_page.pack(fill="both", expand=True)
 
+        self.inputLabel = tk.Label(self.home_page, text = "Enter current register balance: ", bg = SIDE_BAR_COLOR)
+        self.inputLabel.pack(pady=(20, 5))
+
+        self.inputBalanceIn = tk.Entry(self.home_page, font=("Arial", 16), width=30)
+        self.inputBalanceIn.pack(pady=(20, 5))
+
+
         self.clock_in = tk.Button(self.home_page, text="Clock In", font=("Bold", 36), bd=0)
         self.clock_in.pack(pady=10)
+
+
 
         self.pay_label = tk.Label(self.home_page, text = "Pay Table", fg = MAIN_CONTENT_COLOR)
         self.pay_label.pack(pady=10)
@@ -148,6 +160,22 @@ class DashboardEmployee(tk.Frame):
             separator = tk.Label(self.profile_page, text="--------------------------------------", font=("Helvetica", 12, "italic"))
             separator.pack(anchor="w", padx=20, pady=5)
 
+
+    def handleClockOut(self):
+        try:
+            success = dashboard_functions.clockOut(self.user_id, self.today)
+
+            if success:
+                tk.messagebox.showinfo("Clock Out", "You've been clocked out successfully")
+                self.controller.show_Login()
+
+            else:
+                tk.messagebox.showerror("Clock Out", "Clock Out failed.")
+
+        except mysql.connector.Error as err:
+            print(f"Error recording Clock Out: {err}")
+            return False
+
     def show_close_out(self):
         self.close_out = tk.Frame(self.main_content)
         self.close_out.pack(fill="both", expand=True)
@@ -187,5 +215,5 @@ class DashboardEmployee(tk.Frame):
             separator = tk.Label(self.close_out, text="--------------------------------------", font=("Helvetica", 12, "italic"))
             separator.pack(anchor="w", padx=20, pady=5)
 
-        self.clock_out = tk.Button(self.close_out, text="Clock Out", font=("Bold", 36), bd=0)
+        self.clock_out = tk.Button(self.close_out, text="Clock Out", font=("Bold", 36), bd=0, command=self.handleClockOut)
         self.clock_out.pack(pady=10)

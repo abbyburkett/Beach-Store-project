@@ -178,3 +178,22 @@ def getUserProfileData(employeeID):
 
     return user_data
 
+def clockOut(user_id, date):
+    try:
+        db = create_db_connection()
+        if db is None:
+            return False
+
+        cursor = db.cursor()
+
+        cursor.execute("""
+                   INSERT INTO ClockInOut (EmployeeID, ClockOut, Date)
+                   VALUES (%s, NOW(), %s)
+               """, (user_id, date))
+        db.commit()
+        db.close()
+        print("You have been successfully clocked out!")
+        return True
+    except mysql.connector.Error as err:
+        print(f"Error recording Clock Out: {err}")
+        return False
