@@ -97,7 +97,7 @@ class DashboardEmployee(tk.Frame):
         self.inputBalanceIn.pack(pady=(20, 5))
 
 
-        self.clock_in = tk.Button(self.home_page, text="Clock In", font=("Bold", 36), bd=0)
+        self.clock_in = tk.Button(self.home_page, text="Clock In", font=("Bold", 36), bd=0, command=self.handleClockIn)
         self.clock_in.pack(pady=10)
 
 
@@ -175,6 +175,21 @@ class DashboardEmployee(tk.Frame):
         except mysql.connector.Error as err:
             print(f"Error recording Clock Out: {err}")
             return False
+
+    def handleClockIn(self):
+        try:
+        # Call the backend function to perform clock-in
+            success = dashboard_functions.clockIn(self.user_id, self.today)
+
+        # Show a success or error message to the user
+            if success:
+                tk.messagebox.showinfo("Clock In", "Clock In completed successfully!")
+            else:
+                tk.messagebox.showerror("Clock In", "You have already been clocked in!")
+        except Exception as e:
+            tk.messagebox.showerror("Error", f"An error occurred: {e}")
+
+
 
     def show_close_out(self):
         self.close_out = tk.Frame(self.main_content)

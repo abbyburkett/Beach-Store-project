@@ -197,3 +197,37 @@ def clockOut(user_id, date):
     except mysql.connector.Error as err:
         print(f"Error recording Clock Out: {err}")
         return False
+
+def clockIn(user_id, date):
+    try:
+        db = create_db_connection()
+        if db is None:
+            return False
+
+        cursor = db.cursor()
+
+        # Check if a clock-in record already exists for the same employee and date
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM ClockInOut
+            WHERE EmployeeID = %s AND Date = %s
+        """, (user_id, date))
+        existing_clock_in = cursor.fetchone()[0]
+
+        if existing_clock_in > 0:
+            print("Clock In already recorded for today!")
+            return False # Prevent duplicate clock-ins
+
+        # Insert a new clock-in record
+        cursor.execute("""
+            INSERT INTO ClockInOut (EmployeeID, ClockIn, Date)
+            VALUES (%s, NOW(), %s)
+        """, (user_id, date))
+
+        db.commit()
+        db.close()
+        print("Clock In recorded successfully!")
+        return True
+    except mysql.connector.Error as err:
+        print(f"Error recording Clock In: {err}")
+        return False

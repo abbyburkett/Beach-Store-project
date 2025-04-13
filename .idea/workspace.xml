@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9dc159f0-02c1-4ced-ad09-2cf0697ac1c2" name="Changes" comment="">
+    <list default="true" id="9dc159f0-02c1-4ced-ad09-2cf0697ac1c2" name="Changes" comment="regular clock out function working">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logics/dashboard_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/logics/dashboard_functions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pages/DashboardEmp.py" beforeDir="false" afterPath="$PROJECT_DIR$/pages/DashboardEmp.py" afterDir="false" />
@@ -103,14 +103,27 @@
       <workItem from="1743604139645" duration="2208000" />
       <workItem from="1744034501433" duration="466000" />
       <workItem from="1744035023828" duration="3756000" />
-      <workItem from="1744497409297" duration="4710000" />
+      <workItem from="1744497409297" duration="6500000" />
     </task>
+    <task id="LOCAL-00001" summary="regular clock out function working">
+      <option name="closed" value="true" />
+      <created>1744577574077</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1744577574077</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="regular clock out function working" />
+    <option name="LAST_COMMIT_MESSAGE" value="regular clock out function working" />
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Beach_Store_project$app.coverage" NAME="app Coverage Results" MODIFIED="1744576970037" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Beach_Store_project$app.coverage" NAME="app Coverage Results" MODIFIED="1744579021280" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
