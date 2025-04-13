@@ -55,12 +55,20 @@ def run_sql_file(file_path = FILEPATH):
         with open(TRIGGERPATH, 'r') as file:
             trigger_sql = file.read()
 
-        for statement in trigger_sql.strip().split('END;'):
-            if statement.strip():
+        cleaned_sql = []
+        for line in trigger_sql.splitlines():
+            if not line.strip().upper().startswith('DELIMITER'):
+                cleaned_sql.append(line)
+        trigger_sql = "\n".join(cleaned_sql)
+
+        for statement in trigger_sql.split('//'):
+            statement = statement.strip()
+            if statement:
                 try:
-                    cursor.execute(statement + 'END;')
+                    cursor.execute(statement)
                 except mysql.connector.Error as e:
                     print(f"Error executing trigger: {e}")
+
 
         # Insert default users (Employee, Manager, Owner) if they don't already exist
         cursor.execute("SELECT COUNT(*) FROM Employee WHERE UserName = 'Employee'")

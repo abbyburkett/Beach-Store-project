@@ -176,10 +176,10 @@ class Dashboard_Owner(DashboardManager):
             messagebox.showerror("Error", "All fields must be filled out.")
             return
 
-        old_values = self.data_view.item(selected[0], "values")
-        success = dashboard_functions.update_location(old_values[0], name, address, manager_id)
+        location_id = self.data_view.item(selected[0], "values")[0]
+        success = dashboard_functions.update_location(location_id, name, address, manager_id)
         if success:
-            self.data_view.item(selected[0], values=(name, address, manager_id))
+            self.data_view.item(selected[0], values=(location_id, name, address, manager_id))
             messagebox.showinfo("Success", "Location updated successfully.")
             self.clear_location_entries()
         else:
@@ -201,7 +201,7 @@ class Dashboard_Owner(DashboardManager):
                 self.clear_location_entries()
             else:
                 messagebox.showerror("Error", "Failed to delete location.")
-                
+
     def clear_location_entries(self):
         self.location_name_entry.delete(0, tk.END)
         self.address_entry.delete(0, tk.END)
