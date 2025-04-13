@@ -11,6 +11,8 @@ db_password = os.getenv('MYSQL_PASSWORD')
 
 FILEPATH = "../Tables.sql"
 
+TRIGGERPATH = "logics/triggers.sql"
+
 def run_sql_file(file_path = FILEPATH):
     try:
         db_password = os.getenv('MYSQL_PASSWORD')
@@ -48,7 +50,25 @@ def run_sql_file(file_path = FILEPATH):
                 cursor.execute(command)
 
         db.commit()
-        print("SQL file executed successfully.")
+        print("Table SQL file executed successfully.")
+
+        with open(TRIGGERPATH, 'r') as file:
+            trigger_sql = file.read()
+
+        cleaned_sql = []
+        for line in trigger_sql.splitlines():
+            if not line.strip().upper().startswith('DELIMITER'):
+                cleaned_sql.append(line)
+        trigger_sql = "\n".join(cleaned_sql)
+
+        for statement in trigger_sql.split('//'):
+            statement = statement.strip()
+            if statement:
+                try:
+                    cursor.execute(statement)
+                except mysql.connector.Error as e:
+                    print(f"Error executing trigger: {e}")
+
 
         # Insert default users (Employee, Manager, Owner) if they don't already exist
         cursor.execute("SELECT COUNT(*) FROM Employee WHERE UserName = 'Employee'")
@@ -65,6 +85,14 @@ def run_sql_file(file_path = FILEPATH):
         if cursor.fetchone()[0] == 0:
             cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role, PayRate, PayBonus) VALUES (%s, %s, %s, %s, %s, %s, %s)", 
                         ('Owner', hash_password("789"), "Own", "er", 'Owner', 30.00, 10.00))
+            
+        # Insert default location if it doesn't already exist
+        cursor.execute("SELECT COUNT(*) FROM Location WHERE Name = 'Aloha'")
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("""
+                INSERT INTO Location (Name, Address, ManagerID)
+                VALUES (%s, %s, %s)
+            """, ("Aloha", "123 dfsadk sadjasnd", 2))
 
         db.commit()
         
