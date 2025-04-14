@@ -353,14 +353,16 @@ class DashboardManager(DashboardEmployee):
             messagebox.showerror("Error", "Please select an employee to update.")
             return
 
-        employee_username = self.data_view.item(selected_item)["values"][0]
+        employee_username = self.data_view.item(selected_item)["values"][1]
+        employee_id = self.data_view.item(selected_item)["values"][0]
+        employee_role = self.data_view.item(selected_item)["values"][4]
         
         new_fname = self.fname_entry.get()
         new_lname = self.lname_entry.get()
         
         try:
             new_pay_rate = float(self.pay_rate_entry.get())
-            new_bonus_rate = float(self.pay_rate_entry.get())
+            new_bonus_rate = float(self.pay_bonus_entry.get())
         except ValueError:
             messagebox.showerror("Error", "Pay rate must be a valid number.")
             return
@@ -368,7 +370,7 @@ class DashboardManager(DashboardEmployee):
         result = messagebox.askyesno("Update Employee", f"Are you sure you want to update employee {employee_username}?")
         if result:
             if dashboard_functions.update_employee_in_db(employee_username, new_fname, new_lname, new_pay_rate, new_bonus_rate):
-                self.data_view.item(selected_item, values=(employee_username, new_fname, new_lname, "Employee", new_pay_rate, new_bonus_rate))
+                self.data_view.item(selected_item, values=(employee_id, employee_username, new_fname, new_lname, employee_role, new_pay_rate, new_bonus_rate))
                 messagebox.showinfo("Success", "Employee updated successfully.")
             else:
                 messagebox.showerror("Error", "Failed to update employee.")
@@ -378,17 +380,24 @@ class DashboardManager(DashboardEmployee):
         if not selected_item:
             messagebox.showerror("Error", "Please select an employee to delete.")
             return
-
-        employee_username = self.data_view.item(selected_item)["values"][0]
         
-        # Confirm deletion
-        result = messagebox.askyesno("Delete Employee", f"Are you sure you want to delete employee {employee_username}?")
-        if result:
-            if dashboard_functions.delete_employee_from_db(employee_username):
-                self.data_view.delete(selected_item)
-                messagebox.showinfo("Success", "Employee deleted successfully.")
-            else:
-                messagebox.showerror("Error", "Failed to delete employee.")
+        employee_id = self.data_view.item(selected_item)["values"][0]
+        employee_username = self.data_view.item(selected_item)["values"][1]
+        employee_role = self.data_view.item(selected_item)["values"][4]
+
+        if (employee_id == self.user_id):
+            messagebox.showerror("Error", "You can't delete your own account. Please contact your supervisor")
+        elif (employee_role.lower() == "owner"):
+            messagebox.showerror("Error", "Don't delete an Owner account :(")
+        else:
+            # Confirm deletion
+            result = messagebox.askyesno("Delete Employee", f"Are you sure you want to delete employee {employee_username}?")
+            if result:
+                if dashboard_functions.delete_employee_from_db(employee_id):
+                    self.data_view.delete(selected_item)
+                    messagebox.showinfo("Success", "Employee deleted successfully.")
+                else:
+                    messagebox.showerror("Error", "Failed to delete employee.")
 
     def on_employee_select(self, event):
         selected_item = self.data_view.selection()

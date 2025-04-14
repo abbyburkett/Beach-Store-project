@@ -77,6 +77,7 @@ def get_all_Emp_data():
         except mysql.connector.Error as err:
             print(f"Error fetching employee data: {err}")
         
+        print(employee_data)
         return employee_data
 
 def update_employee_in_db(username, fname, lname, pay_rate, bonus_rate):
@@ -101,7 +102,7 @@ def update_employee_in_db(username, fname, lname, pay_rate, bonus_rate):
         print(f"Error updating employee: {err}")
         return False
     
-def delete_employee_from_db(username):
+def delete_employee_from_db(employee_id):
         try:
             db = create_db_connection()
             if db is None:
@@ -109,7 +110,7 @@ def delete_employee_from_db(username):
 
             cursor = db.cursor()
 
-            cursor.execute("DELETE FROM Employee WHERE UserName = %s", (username,))
+            cursor.execute("DELETE FROM Employee WHERE EmployeeID = %s", (employee_id,))
             db.commit()
             db.close()
             return True
