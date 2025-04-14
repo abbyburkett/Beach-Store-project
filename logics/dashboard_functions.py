@@ -77,7 +77,6 @@ def get_all_Emp_data():
         except mysql.connector.Error as err:
             print(f"Error fetching employee data: {err}")
         
-        print(employee_data)
         return employee_data
 
 def update_employee_in_db(username, fname, lname, pay_rate, bonus_rate):
