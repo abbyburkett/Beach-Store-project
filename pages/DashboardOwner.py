@@ -11,7 +11,7 @@ MAIN_CONTENT_COLOR = "green"
 
 SIDEBAR_TEXT_COLOR = "black"
 
-class Dashboard_Owner(DashboardManager):
+class DashboardOwner(DashboardManager):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
         self.is_owner = True

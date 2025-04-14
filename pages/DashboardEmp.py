@@ -13,12 +13,13 @@ SIDEBAR_TEXT_COLOR = "black"
 class DashboardEmployee(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent, bg=BACKGROUND_COLOR)
-
-        self.controller = controller
-        self.today = "2025-03-17"
-        self.user_id = self.controller.user_id
+        # self.controller = controller
+        # self.user_id = self.controller.user_id
+        self.today = controller.today
+        print(self.today)
         self.create_widgets()
         self.display_widgets()
+
 
     def create_widgets(self):
         self.dashboard_label = tk.Label(self, text=f"Welcome to the Employee Dashboard", font=("Arial", 40, "bold"), fg="#CDC1FF", bg=BACKGROUND_COLOR)
@@ -109,6 +110,8 @@ class DashboardEmployee(tk.Frame):
 
         self.pay_table.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
+
+        print("The current Employee ID is: ", self.user_id)
     
     def show_profile(self):
 

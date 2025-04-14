@@ -121,45 +121,7 @@ def delete_employee_from_db(username):
 def get_pay_data(employeeID, columns):
     # Placeholder data: (PayAmount, BonusPercentage, GrossBonus, GrossPaid)
 
-    try:
-        db = create_db_connection()
-        if db is None:
-            return False
-        
-        cursor = db.cursor()
-        
-        sql_query = """
-            SELECT p.PayAmount, p.BonusPercentage, p.GrossBonus, p.GrossPaid
-            FROM Pay p
-            INNER JOIN Employee e ON p.EmployeeID = e.EmployeeID
-        """
-        if employeeID:
-            sql_query += " WHERE p.EmployeeID = %s"
-            cursor.execute(sql_query, (employeeID,))
-        else:
-            cursor.execute(sql_query)
-
-        data = cursor.fetchall()
-
-        if columns:
-            column_indices = {
-                "PayAmount": 0,
-                "BonusPercentage": 1,
-                "GrossBonus": 2,
-                "GrossPaid": 3,
-            }
-
-            indices_to_return = [column_indices[col] for col in columns if col in column_indices]
-
-            data = [[entry[i] for i in indices_to_return] for entry in data]
-
-        cursor.close()
-
-        return data
-    
-    except mysql.connector.Error as err:
-            print(f"Error deleting employee: {err}")
-            return False
+    return [[1000, 0.32, 1234, 12334]]
     
 def get_location_data():
     location_data = []
@@ -275,7 +237,6 @@ def get_user_profile_data(employeeID):
 
         cursor.close()
         
-        print(data)
         return data
     
     except mysql.connector.Error as err:
