@@ -56,5 +56,7 @@ class Login(tk.Frame):
                 self.controller.show_dashboardMan(results[1])
             elif results[2] == "Employee":
                 self.controller.show_dashboardEmp(results[1])
+            elif results[2] == "Owner":
+                self.controller.show_dashboardOwner(results[1])
         else:
             print("Invalid credentials, please try again.")

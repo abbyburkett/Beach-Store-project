@@ -1,7 +1,11 @@
 import tkinter as tk
+
 from pages.Login import Login
 from pages.DashboardEmp import DashboardEmployee
 from pages.DashboardMan import DashboardManager
+from pages.DashboardOwner import DashboardOwner
+
+from datetime import datetime
 
 from logics.Connect_SQL import run_sql_file
 
@@ -11,6 +15,9 @@ class MyApp(tk.Frame):
         self.BACKGROUND_COLOR = "#FFF6E3"
 
         run_sql_file(file_path="Tables.sql")
+
+        #Get the Date today
+        self.today = datetime.today().strftime('%Y-%m-%d')
 
         super().__init__(
             root,
@@ -28,7 +35,7 @@ class MyApp(tk.Frame):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F in (Login, DashboardEmployee, DashboardManager):
+        for F in (Login, DashboardEmployee, DashboardManager, DashboardOwner):
   
             frame = F(self.main_frame, self)
   
@@ -63,6 +70,11 @@ class MyApp(tk.Frame):
         self.user_id = user_id
         self.show_frame(DashboardManager)
         self.frames[DashboardManager].user_id = self.user_id
+
+    def show_dashboardOwner(self, user_id):
+        self.user_id = user_id
+        self.show_frame(DashboardOwner)
+        self.frames[DashboardOwner].user_id = self.user_id
 
 root = tk.Tk()
 root.title("Beach Store")

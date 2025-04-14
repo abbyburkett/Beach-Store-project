@@ -16,13 +16,13 @@ SIDEBAR_TEXT_COLOR = "black"
 class DashboardEmployee(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent, bg=BACKGROUND_COLOR)
-
-        self.controller = controller
-        self.today = "2025-03-17"
-        self.user_id = self.controller.user_id
-        print(self.user_id)
+        # self.controller = controller
+        # self.user_id = self.controller.user_id
+        self.today = controller.today
+        print(self.today)
         self.create_widgets()
         self.display_widgets()
+
 
     def create_widgets(self):
         self.dashboard_label = tk.Label(self, text=f"Welcome to the Employee Dashboard", font=("Arial", 40, "bold"), fg="#CDC1FF", bg=BACKGROUND_COLOR)
@@ -99,12 +99,10 @@ class DashboardEmployee(tk.Frame):
 
         self.clock_in = tk.Button(self.home_page, text="Clock In", font=("Bold", 36), bd=0, command=self.handleClockIn)
         self.clock_in.pack(pady=10)
-
-
-
-        self.pay_label = tk.Label(self.home_page, text = "Pay Table", fg = MAIN_CONTENT_COLOR)
-        self.pay_label.pack(pady=10)
-
+        
+        pay_label = tk.Label(self.home_page, text = "Pay Table", fg = MAIN_CONTENT_COLOR)
+        pay_label.pack(pady=10)
+        
         columns = ("PayAmount", "BonusPercentage", "GrossBonus", "GrossPaid")
         self.pay_table = ttk.Treeview(self.home_page, columns=columns, show="headings")
 
@@ -112,7 +110,7 @@ class DashboardEmployee(tk.Frame):
             self.pay_table.heading(col, text=col)
             self.pay_table.column(col, anchor="center")
 
-        data = dashboard_functions.getPayData(self.user_id, columns)
+        data = dashboard_functions.get_pay_data(self.user_id, columns)
 
         for row in data:
             self.pay_table.insert("", "end", values=row)
@@ -122,16 +120,18 @@ class DashboardEmployee(tk.Frame):
 
         self.pay_table.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
+
+        print("The current Employee ID is: ", self.user_id)
     
     def show_profile(self):
 
         self.profile_page = tk.Frame(self.main_content)
         self.profile_page.pack(fill="both", expand=True)
 
-        self.profile_label = tk.Label(self.profile_page, text="Profile Page", fg=MAIN_CONTENT_COLOR, font=("Helvetica", 16, "bold"))
-        self.profile_label.pack(pady=10)
+        profile_label = tk.Label(self.profile_page, text="Profile Page", fg=MAIN_CONTENT_COLOR, font=("Helvetica", 16, "bold"))
+        profile_label.pack(pady=10)
 
-        user_data = dashboard_functions.getUserProfileData(self.user_id) or []
+        user_data = dashboard_functions.get_user_profile_data(self.user_id) or []
 
         if not user_data:
             report_label = tk.Label(self.profile_page, text="No profile data found", fg="red", font=("Helvetica", 12))
@@ -139,22 +139,19 @@ class DashboardEmployee(tk.Frame):
         else:
             user = user_data[0]
 
-            report_label = tk.Label(self.profile_page, text=f"EmployeeID: {user[0]}", font=("Helvetica", 12))
+            report_label = tk.Label(self.profile_page, text=f"EmployeeID: {self.user_id}", font=("Helvetica", 12))
             report_label.pack(anchor="w", padx=20, pady=5)
 
-            report_label = tk.Label(self.profile_page, text=f"First Name: {user[1]}", font=("Helvetica", 12))
+            report_label = tk.Label(self.profile_page, text=f"First Name: {user[0]}", font=("Helvetica", 12))
             report_label.pack(anchor="w", padx=20, pady=5)
 
-            report_label = tk.Label(self.profile_page, text=f"Last Name: {user[2]}", font=("Helvetica", 12))
+            report_label = tk.Label(self.profile_page, text=f"Last Name: {user[1]}", font=("Helvetica", 12))
             report_label.pack(anchor="w", padx=20, pady=5)
 
-            report_label = tk.Label(self.profile_page, text=f"Pin Password: {user[3]}", font=("Helvetica", 12))
+            report_label = tk.Label(self.profile_page, text=f"Username: {user[2]}", font=("Helvetica", 12))
             report_label.pack(anchor="w", padx=20, pady=5)
 
-            report_label = tk.Label(self.profile_page, text=f"Username: {user[4]}", font=("Helvetica", 12))
-            report_label.pack(anchor="w", padx=20, pady=5)
-
-            report_label = tk.Label(self.profile_page, text=f"Role: {user[5]}", font=("Helvetica", 12))
+            report_label = tk.Label(self.profile_page, text=f"Role: {user[3]}", font=("Helvetica", 12))
             report_label.pack(anchor="w", padx=20, pady=5)
 
             separator = tk.Label(self.profile_page, text="--------------------------------------", font=("Helvetica", 12, "italic"))
@@ -195,10 +192,10 @@ class DashboardEmployee(tk.Frame):
         self.close_out = tk.Frame(self.main_content)
         self.close_out.pack(fill="both", expand=True)
 
-        self.close_out_label = tk.Label(self.close_out, text=f"Close Out Report - {self.today}", fg=MAIN_CONTENT_COLOR, font=("Helvetica", 16, "bold"))
-        self.close_out_label.pack(pady=10)
+        close_out_label = tk.Label(self.close_out, text=f"Close Out Report - {self.today}", fg=MAIN_CONTENT_COLOR, font=("Helvetica", 16, "bold"))
+        close_out_label.pack(pady=10)
 
-        data = dashboard_functions.getCloseOutData(101, ["EmployeeID", "BeforeBal", "AfterBal", "Cash", "Credit", "GrossRevenue", "Date"], self.today) or []
+        data = dashboard_functions.get_close_out_data(101, ["EmployeeID", "BeforeBal", "AfterBal", "Cash", "Credit", "GrossRevenue", "Date"], self.today) or []
 
         if not data:
             report_label = tk.Label(self.close_out, text="No data found for this date", fg="red", font=("Helvetica", 12))

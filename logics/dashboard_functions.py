@@ -27,7 +27,7 @@ def create_db_connection():
         return None
 
 # Add User
-def createEmployee(username, password, fname, lname, pay_rate):
+def create_employee(username, password, fname, lname, pay_rate, pay_bonus):
 
     if not username or not password:
         return False
@@ -44,8 +44,8 @@ def createEmployee(username, password, fname, lname, pay_rate):
         cursor = db.cursor()
 
         # Insert new employee into the database
-        cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role, PayRate) VALUES (%s, %s, %s, %s, %s, %s)", 
-                    (username, hash_password(password), fname, lname, 'Employee', pay_rate))
+        cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role, PayRate, PayBonus) VALUES (%s, %s, %s, %s, %s, %s, %s)", 
+                    (username, hash_password(password), fname, lname, 'Employee', pay_rate, pay_bonus))
 
         db.commit()
         print("Successfully registered")
@@ -66,10 +66,9 @@ def get_all_Emp_data():
                 return employee_data
             cursor = db.cursor()
 
-            cursor.execute("SELECT UserName, FName, LName, Role, PayRate FROM Employee")
+            cursor.execute("SELECT EmployeeID, UserName, FName, LName, Role, PayRate, PayBonus FROM Employee")
             employees = cursor.fetchall()
 
-            # Store employee data in a list
             for emp in employees:
                 employee_data.append(emp)
 
@@ -80,7 +79,7 @@ def get_all_Emp_data():
         
         return employee_data
 
-def update_employee_in_db(username, fname, lname, pay_rate):
+def update_employee_in_db(username, fname, lname, pay_rate, bonus_rate):
     try:
         db = create_db_connection()
         if db is None:
@@ -91,9 +90,9 @@ def update_employee_in_db(username, fname, lname, pay_rate):
         # Update the employee in the database
         cursor.execute("""
             UPDATE Employee
-            SET FName = %s, LName = %s, PayRate = %s
+            SET FName = %s, LName = %s, PayRate = %s, PayBonus = %s
             WHERE UserName = %s
-        """, (fname, lname, pay_rate, username))
+        """, (fname, lname, pay_rate, bonus_rate, username))
 
         db.commit()
         db.close()
@@ -102,7 +101,7 @@ def update_employee_in_db(username, fname, lname, pay_rate):
         print(f"Error updating employee: {err}")
         return False
     
-def delete_employee_from_db(username):
+def delete_employee_from_db(employee_id):
         try:
             db = create_db_connection()
             if db is None:
@@ -110,7 +109,7 @@ def delete_employee_from_db(username):
 
             cursor = db.cursor()
 
-            cursor.execute("DELETE FROM Employee WHERE UserName = %s", (username,))
+            cursor.execute("DELETE FROM Employee WHERE EmployeeID = %s", (employee_id,))
             db.commit()
             db.close()
             return True
@@ -119,8 +118,107 @@ def delete_employee_from_db(username):
             return False
 
 
-def getPayData(employeeID, columns):
+def get_pay_data(employeeID, columns):
     # Placeholder data: (PayAmount, BonusPercentage, GrossBonus, GrossPaid)
+
+    return [[1000, 0.32, 1234, 12334]]
+    
+def get_location_data():
+    location_data = []
+    try:
+        db = create_db_connection()
+        if db is None:
+            return location_data
+
+        cursor = db.cursor()
+        cursor.execute("SELECT LocationID, Name, Address, ManagerID FROM Location")
+        locations = cursor.fetchall()
+
+        for loc in locations:
+            location_data.append(loc)
+
+        db.close()
+
+    except mysql.connector.Error as err:
+        print(f"Error fetching location data: {err}")
+
+    return location_data
+ 
+def add_location(name, address, manager_id):
+    try:
+        db = create_db_connection()
+        if db is None:
+            return False
+
+        cursor = db.cursor()
+        query = """
+            INSERT INTO Location (Name, Address, ManagerID)
+            VALUES (%s, %s, %s)
+        """
+        cursor.execute(query, (name, address, manager_id))
+        db.commit()
+
+        update_query = """
+            UPDATE Employee
+            SET Role = 'Manager'
+            WHERE EmployeeID = %s
+        """
+        cursor.execute(update_query, (manager_id,))
+        db.commit()
+
+        db.close()
+        return True
+
+    except mysql.connector.Error as err:
+        print(f"Error adding location: {err}")
+        return False
+
+def update_location(location_id, name, address, manager_id):
+    try:
+        db = create_db_connection()
+        if db is None:
+            return False
+
+        cursor = db.cursor()
+        query = """
+            UPDATE Location
+            SET Name = %s, Address = %s, ManagerID = %s
+            WHERE LocationID = %s
+        """
+        cursor.execute(query, (name, address, manager_id, location_id))
+        db.commit()
+        db.close()
+        return True
+    except mysql.connector.Error as err:
+        print(f"Error updating location: {err}")
+        return False
+
+def delete_location(location_id):
+    try:
+        db = create_db_connection()
+        if db is None:
+            return False
+
+        cursor = db.cursor()
+        
+        cursor.execute("DELETE FROM Location WHERE LocationID = %s", (location_id,))
+        
+        db.commit()
+        db.close()
+        return True
+    except mysql.connector.Error as err:
+        print(f"Error deleting location: {err}")
+        return False
+
+
+def get_close_out_data(ProfitID, columns, target_date):
+
+    data = [(102, 300.50, 400.75, 80.00, 20.25, 100.25, "2025-03-16")]
+    
+
+    return data
+
+def get_user_profile_data(employeeID):
 
     try:
         db = create_db_connection()
@@ -129,54 +227,26 @@ def getPayData(employeeID, columns):
         
         cursor = db.cursor()
         
-        sql_query = """
-            SELECT p.PayAmount, p.BonusPercentage, p.GrossBonus, p.GrossPaid
-            FROM Pay p
-            INNER JOIN Employee e ON p.EmployeeID = e.EmployeeID
-        """
-        if employeeID:
-            sql_query += " WHERE p.EmployeeID = %s"
-            cursor.execute(sql_query, (employeeID,))
-        else:
-            cursor.execute(sql_query)
-
+        query = """
+                SELECT FName, LName, UserName, Role
+                FROM Employee
+                WHERE EmployeeID = %s
+                """
+        cursor.execute(query, (employeeID,))
         data = cursor.fetchall()
 
-        if columns:
-            column_indices = {
-                "PayAmount": 0,
-                "BonusPercentage": 1,
-                "GrossBonus": 2,
-                "GrossPaid": 3,
-            }
-
-            indices_to_return = [column_indices[col] for col in columns if col in column_indices]
-
-            data = [[entry[i] for i in indices_to_return] for entry in data]
-
         cursor.close()
-
+        
         return data
     
     except mysql.connector.Error as err:
             print(f"Error deleting employee: {err}")
             return False
- 
 
-def getCloseOutData(ProfitID, columns, target_date):
+#def ClockIn(employeeID):
 
-    data = [(102, 300.50, 400.75, 80.00, 20.25, 100.25, "2025-03-16")]
-    
+#def ClockOut(employeeID):
 
-    return data
-
-def getUserProfileData(employeeID):
-
-    user_data = [
-        (101, "John", "Doe", "******", "johndoe", "Employee")
-    ]
-
-    return user_data
 
 def clockOut(user_id, date):
     try:

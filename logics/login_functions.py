@@ -14,7 +14,7 @@ def check_credentials(username, password):
             host='localhost',
             user='root',
             password=db_password,
-            database='BeachStore'
+            database='BeachStore',
         )
         cursor = db.cursor()
 
@@ -28,7 +28,7 @@ def check_credentials(username, password):
 
         if user:
             user_id = user[0]
-            user_role = user[6]  # Index 5 corresponds to the 'Role' field in the query result
+            user_role = user[7]  # Index 5 corresponds to the 'Role' field in the query result
             print(f"Login successful. User role: {user_role}")
             return True, user_id, user_role
         else:
@@ -36,7 +36,7 @@ def check_credentials(username, password):
             return False, None, None
 
     except mysql.connector.Error as err:
-        print(f"Error: {err}")
+        print(f"Erro in login functions.pyr: {err}")
         return False, None, None
 
 
