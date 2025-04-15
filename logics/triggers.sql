@@ -14,7 +14,7 @@ BEFORE UPDATE ON Location
 FOR EACH ROW
 BEGIN
     IF NEW.ManagerID != OLD.ManagerID THEN
-        IF EXISTS (SELECT 1 FROM Employee WHERE EmployeeID = NEW.ManagerID) THEN
+        IF EXISTS (SELECT 1 FROM Employee WHERE (EmployeeID = NEW.ManagerID AND Role != "Owner")) THEN
             UPDATE Employee
             SET Role = 'Manager'
             WHERE EmployeeID = NEW.ManagerID;
@@ -26,7 +26,7 @@ BEGIN
         ) THEN
             UPDATE Employee
             SET Role = 'Employee'
-            WHERE EmployeeID = OLD.ManagerID;
+            WHERE EmployeeID = OLD.ManagerID AND Role != "Owner";
         END IF;
     END IF;
 END //
