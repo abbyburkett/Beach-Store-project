@@ -242,12 +242,7 @@ def get_user_profile_data(employeeID):
     except mysql.connector.Error as err:
             print(f"Error deleting employee: {err}")
             return False
-
-#def ClockIn(employeeID):
-
-#def ClockOut(employeeID):
-
-
+    
 def clockOut(user_id, date):
     try:
         db = create_db_connection()
@@ -257,8 +252,9 @@ def clockOut(user_id, date):
         cursor = db.cursor()
 
         cursor.execute("""
-                   INSERT INTO ClockInOut (EmployeeID, ClockOut, Date)
-                   VALUES (%s, NOW(), %s)
+                    UPDATE ClockInOut
+                    Set ClockOut = NOW()
+                    Where EmployeeID = %s and Date = %s
                """, (user_id, date))
         db.commit()
         db.close()
@@ -276,17 +272,17 @@ def clockIn(user_id, date):
 
         cursor = db.cursor()
 
-        # Check if a clock-in record already exists for the same employee and date
-        cursor.execute("""
-            SELECT COUNT(*) 
-            FROM ClockInOut
-            WHERE EmployeeID = %s AND Date = %s
-        """, (user_id, date))
-        existing_clock_in = cursor.fetchone()[0]
+        # # Check if a clock-in record already exists for the same employee and date
+        # cursor.execute("""
+        #     SELECT COUNT(*) 
+        #     FROM ClockInOut
+        #     WHERE EmployeeID = %s AND Date = %s
+        # """, (user_id, date))
+        # existing_clock_in = cursor.fetchone()[0]
 
-        if existing_clock_in > 0:
-            print("Clock In already recorded for today!")
-            return False # Prevent duplicate clock-ins
+        # if existing_clock_in > 0:
+        #     print("Clock In already recorded for today!")
+        #     return False # Prevent duplicate clock-ins
 
         # Insert a new clock-in record
         cursor.execute("""
