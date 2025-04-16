@@ -1,9 +1,6 @@
 import mysql.connector
 import hashlib
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 db_password = os.getenv('MYSQL_PASSWORD')
 
@@ -98,6 +95,11 @@ def update_employee_in_db(username, fname, lname, pay_rate, bonus_rate):
         db.close()
         return True
     except mysql.connector.Error as err:
+        print("The username ", username)
+        print("The fname ", fname)
+        print("The lname ", lname)
+        print("The payRate ", pay_rate)
+        print("The bonus ", bonus_rate)
         print(f"Error updating employee: {err}")
         return False
     
@@ -243,7 +245,7 @@ def get_user_profile_data(employeeID):
             print(f"Error deleting employee: {err}")
             return False
     
-def clockOut(user_id, date):
+def clock_out(user_id, date):
     try:
         db = create_db_connection()
         if db is None:
@@ -264,7 +266,7 @@ def clockOut(user_id, date):
         print(f"Error recording Clock Out: {err}")
         return False
 
-def clockIn(user_id, date):
+def clock_in(user_id, date):
     try:
         db = create_db_connection()
         if db is None:
@@ -284,7 +286,6 @@ def clockIn(user_id, date):
         #     print("Clock In already recorded for today!")
         #     return False # Prevent duplicate clock-ins
 
-        # Insert a new clock-in record
         cursor.execute("""
             INSERT INTO ClockInOut (EmployeeID, ClockIn, Date)
             VALUES (%s, NOW(), %s)
@@ -297,3 +298,22 @@ def clockIn(user_id, date):
     except mysql.connector.Error as err:
         print(f"Error recording Clock In: {err}")
         return False
+
+def update_BefBalance_clock_in(employeeID, bef_bal, date, locationID):
+    # try:
+    #     db = create_db_connection()
+    #     if db is None:
+    #         return False
+
+    #     cursor = db.cursor()
+
+    #     cursor.execute("""
+    #         INSERT INTO Profit (EmployeeID, ClockIn, Date)
+    #         VALUES (%s, NOW(), %s)
+    #     """, (user_id, date))
+
+    # except mysql.connector.Error as err:
+    #     print(f"Error at updating before Balance: {err}")
+    #     return False
+
+    return

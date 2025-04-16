@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 from logics import login_functions
 
 BACKGROUND_COLOR = "#FFF6E3"
@@ -6,7 +7,14 @@ BACKGROUND_COLOR = "#FFF6E3"
 class Login(tk.Frame):
     def __init__(self, parent, controller):
         self.bg = BACKGROUND_COLOR
-        self.location_list = ["Aloha", "Olaho", "Olaola"]
+
+        location_data = login_functions.get_location_list()
+        if not location_data:
+            messagebox.showinfo("No Locations", "No locations available in the system.")
+            return
+
+        self.location_list = [location[1] for location in location_data]
+        self.location_id = [location[0] for location in location_data]
 
         self.selected_location = tk.StringVar()
         self.selected_location.set(self.location_list[0])
@@ -46,7 +54,7 @@ class Login(tk.Frame):
         location = self.selected_location.get()
 
         if location:
-            self.controller.set_location(location)
+            self.controller.set_location(self.location_id[self.location_list.index(location)])
         
         results = login_functions.check_credentials(username, password)
         if results[0]:

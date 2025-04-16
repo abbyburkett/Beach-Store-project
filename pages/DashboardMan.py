@@ -304,7 +304,6 @@ class DashboardManager(DashboardEmployee):
             self.data_view.delete(item)
 
         for emp in employee_data:
-            # Assuming emp = (id, username, fname, lname, role, pay_rate, pay_bonus)
             self.data_view.insert("", "end", values=emp)
 
         #Scollbar
@@ -353,8 +352,8 @@ class DashboardManager(DashboardEmployee):
             messagebox.showerror("Error", "Please select an employee to update.")
             return
 
-        employee_username = self.data_view.item(selected_item)["values"][1]
         employee_id = self.data_view.item(selected_item)["values"][0]
+        employee_username = str(self.data_view.item(selected_item)["values"][1])
         employee_role = self.data_view.item(selected_item)["values"][4]
         
         new_fname = self.fname_entry.get()
@@ -369,6 +368,7 @@ class DashboardManager(DashboardEmployee):
 
         result = messagebox.askyesno("Update Employee", f"Are you sure you want to update employee {employee_username}?")
         if result:
+
             if dashboard_functions.update_employee_in_db(employee_username, new_fname, new_lname, new_pay_rate, new_bonus_rate):
                 self.data_view.item(selected_item, values=(employee_id, employee_username, new_fname, new_lname, employee_role, new_pay_rate, new_bonus_rate))
                 messagebox.showinfo("Success", "Employee updated successfully.")

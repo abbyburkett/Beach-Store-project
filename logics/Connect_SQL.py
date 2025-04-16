@@ -1,11 +1,6 @@
-# import tkinter as tk
-# from tkinter import messagebox
 import mysql.connector
 import os
-from dotenv import load_dotenv
-load_dotenv()
 from logics.dashboard_functions import hash_password
-# import hashlib
 
 db_password = os.getenv('MYSQL_PASSWORD')
 
@@ -93,6 +88,11 @@ def run_sql_file(file_path = FILEPATH):
                 INSERT INTO Location (Name, Address, ManagerID)
                 VALUES (%s, %s, %s)
             """, ("Aloha", "123 dfsadk sadjasnd", 2))
+
+            cursor.execute("""
+                INSERT INTO Location (Name, Address, ManagerID)
+                VALUES (%s, %s, %s)
+            """, ("Olaho", "456 dfsadk sadjasnd", 2))
 
         db.commit()
         

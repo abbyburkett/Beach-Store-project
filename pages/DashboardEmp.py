@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-
+from tkinter import messagebox
 import mysql
 
 from logics import dashboard_functions
@@ -19,7 +19,6 @@ class DashboardEmployee(tk.Frame):
         self.controller = controller
         # self.user_id = self.controller.user_id
         self.today = controller.today
-        print(self.today)
         self.create_widgets()
         self.display_widgets()
 
@@ -90,14 +89,13 @@ class DashboardEmployee(tk.Frame):
         self.home_page = tk.Frame(self.main_content)
         self.home_page.pack(fill="both", expand=True)
 
-        self.inputLabel = tk.Label(self.home_page, text = "Enter current register balance: ", bg = SIDE_BAR_COLOR)
-        self.inputLabel.pack(pady=(20, 5))
+        self.input_label = tk.Label(self.home_page, text = "Enter current register balance: ", bg = SIDE_BAR_COLOR)
+        self.input_label.pack(pady=(20, 5))
 
-        self.inputBalanceIn = tk.Entry(self.home_page, font=("Arial", 16), width=30)
-        self.inputBalanceIn.pack(pady=(20, 5))
+        self.input_balance_in = tk.Entry(self.home_page, font=("Arial", 16), width=30)
+        self.input_balance_in.pack(pady=(20, 5))
 
-
-        self.clock_in = tk.Button(self.home_page, text="Clock In", font=("Bold", 36), bd=0, command=self.handleClockIn)
+        self.clock_in = tk.Button(self.home_page, text="Clock In", font=("Bold", 36), bd=0, command=self.handle_clock_in)
         self.clock_in.pack(pady=10)
         
         pay_label = tk.Label(self.home_page, text = "Pay Table", fg = MAIN_CONTENT_COLOR)
@@ -158,9 +156,9 @@ class DashboardEmployee(tk.Frame):
             separator.pack(anchor="w", padx=20, pady=5)
 
 
-    def handleClockOut(self):
+    def handle_clock_out(self):
         try:
-            success = dashboard_functions.clockOut(self.user_id, self.today)
+            success = dashboard_functions.clock_out(self.user_id, self.today)
 
             if success:
                 tk.messagebox.showinfo("Clock Out", "You've been clocked out successfully")
@@ -173,20 +171,22 @@ class DashboardEmployee(tk.Frame):
             print(f"Error recording Clock Out: {err}")
             return False
 
-    def handleClockIn(self):
+    def handle_clock_in(self):
+        
         try:
-        # Call the backend function to perform clock-in
-            success = dashboard_functions.clockIn(self.user_id, self.today)
-
-        # Show a success or error message to the user
+            balance = float(self.input_balance_in.get())
+            success = dashboard_functions.clock_in(self.user_id, self.today)
             if success:
                 tk.messagebox.showinfo("Clock In", "Clock In completed successfully!")
             else:
                 tk.messagebox.showerror("Clock In", "You have already been clocked in!")
+
+            dashboard_functions.update_BefBalance_clock_in(self.user_id, balance, self.today, self.location)
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Error: Please check your balance.")
+            print("Error: In DashboardEmp, the balance is not valid.")
         except Exception as e:
             tk.messagebox.showerror("Error", f"An error occurred: {e}")
-
-
 
     def show_close_out(self):
         self.close_out = tk.Frame(self.main_content)
@@ -227,5 +227,5 @@ class DashboardEmployee(tk.Frame):
             separator = tk.Label(self.close_out, text="--------------------------------------", font=("Helvetica", 12, "italic"))
             separator.pack(anchor="w", padx=20, pady=5)
 
-        self.clock_out = tk.Button(self.close_out, text="Clock Out", font=("Bold", 36), bd=0, command=self.handleClockOut)
+        self.clock_out = tk.Button(self.close_out, text="Clock Out", font=("Bold", 36), bd=0, command=self.handle_clock_out)
         self.clock_out.pack(pady=10)

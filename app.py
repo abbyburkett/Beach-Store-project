@@ -1,4 +1,5 @@
 import tkinter as tk
+from dotenv import load_dotenv
 
 from pages.Login import Login
 from pages.DashboardEmp import DashboardEmployee
@@ -13,6 +14,8 @@ from logics.Connect_SQL import run_sql_file
 class MyApp(tk.Frame):
     def __init__(self, root):
         self.BACKGROUND_COLOR = "#FFF6E3"
+
+        load_dotenv()
 
         run_sql_file(file_path="Tables.sql")
 
@@ -51,8 +54,9 @@ class MyApp(tk.Frame):
     # to display the current frame passed as
     # parameter
 
-    def set_location(self, location):
-        self.location = location
+    def set_location(self, locationID):
+        self.location = locationID
+        print(self.location)
 
     def show_frame(self, cont):
         frame = self.frames[cont]
@@ -65,16 +69,19 @@ class MyApp(tk.Frame):
         self.user_id = user_id
         self.show_frame(DashboardEmployee)
         self.frames[DashboardEmployee].user_id = self.user_id
+        self.frames[DashboardEmployee].location = self.location
     
     def show_dashboardMan(self, user_id):
         self.user_id = user_id
         self.show_frame(DashboardManager)
         self.frames[DashboardManager].user_id = self.user_id
+        self.frames[DashboardManager].location = self.location
 
     def show_dashboardOwner(self, user_id):
         self.user_id = user_id
         self.show_frame(DashboardOwner)
         self.frames[DashboardOwner].user_id = self.user_id
+        self.frames[DashboardOwner].location = self.location
 
 root = tk.Tk()
 root.title("Beach Store")

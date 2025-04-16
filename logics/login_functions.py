@@ -1,13 +1,10 @@
 import os
 import mysql.connector
-from dotenv import load_dotenv
 from logics.dashboard_functions import hash_password
 
-load_dotenv()
-
-db_password = os.getenv('MYSQL_PASSWORD')
-
 def check_credentials(username, password):
+
+    db_password = os.getenv('MYSQL_PASSWORD')
 
     try:
         db = mysql.connector.connect(
@@ -40,20 +37,26 @@ def check_credentials(username, password):
         return False, None, None
 
 
-# Verify Login
-# def login_user():
-#     username = entry_username.get()
-#     password = entry_password.get()
+def get_location_list():
 
-#     if not username or not password:
-#         messagebox.showerror("Error", "All fields are required!")
-#         return
+    db_password = os.getenv('MYSQL_PASSWORD')
 
-#     hashed_pw = hash_password(PinPassword)
+    try:
+        db = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password=db_password,
+            database='BeachStore',
+        )
+        cursor = db.cursor()
 
+        cursor.execute("SELECT LocationID, Name FROM Location")
+        location_list = cursor.fetchall()
+        cursor.close()
+        db.close()
+        
+        return location_list
 
-# cursor.execute('use BeachStore')
-# cursor.execute('show tables')
-
-# for x in cursor:
-#     print(x)
+    except mysql.connector.Error as err:
+        print(f"Erro in login functions.py: {err}")
+        return False
