@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
+import datetime
 import mysql
 
 from logics import dashboard_functions
@@ -176,6 +177,7 @@ class DashboardEmployee(tk.Frame):
         tk.Label(left_frame, text="Date (YYYY-MM-DD):").grid(row=row, column=0, sticky="w", padx=10, pady=2)
         self.expense_date = tk.Entry(left_frame)
         self.expense_date.grid(row=row, column=1, sticky="ew", padx=10)
+        self.expense_date.insert(0, self.today)
         
         row += 1
         tk.Label(left_frame, text="Amount:").grid(row=row, column=0, sticky="w", padx=10, pady=2)
@@ -189,16 +191,17 @@ class DashboardEmployee(tk.Frame):
 
         row += 1
         tk.Label(left_frame, text="Is Merchandise?").grid(row=row, column=0, sticky="w", padx=10, pady=2)
-        self.is_merch_var = tk.BooleanVar()
-        tk.Checkbutton(left_frame, variable=self.is_merch_var).grid(row=row, column=1, sticky="w", padx=10)
+        self.is_merch = tk.BooleanVar()
+        self.is_merch.trace_add("write", lambda *args: self.toggle_merchandise_fields())
+        tk.Checkbutton(left_frame, variable=self.is_merch).grid(row=row, column=1, sticky="w", padx=10)
 
         row += 1
-        tk.Label(left_frame, text="Merchandise Type:").grid(row=row, column=0, sticky="w", padx=10, pady=2)
+        self.merch_label = tk.Label(left_frame, text="Merchandise Type:")
         self.merch_type = tk.Entry(left_frame)
-        self.merch_type.grid(row=row, column=1, sticky="ew", padx=10)
+        self.merch_row = row
 
         row += 1
-        expense_btn = tk.Button(left_frame, text="Add Expense", font=("Helvetica", 14, "bold"))
+        expense_btn = tk.Button(left_frame, text="Add Expense", font=("Helvetica", 14, "bold"), command=self.add_expense)
         expense_btn.grid(row=row, column=0, columnspan=2, pady=10)
 
         # CloseOut on the Right
@@ -209,11 +212,6 @@ class DashboardEmployee(tk.Frame):
 
         row += 1
         tk.Label(right_frame, text=f"BeforeBal: {before_data}", font=("Helvetica", 12)).grid(row=row, column=0, columnspan=2, sticky="w", padx=20, pady=5)
-
-        row += 1
-        tk.Label(right_frame, text="After Balance:").grid(row=row, column=0, sticky="w", padx=20, pady=2)
-        self.after_bal_entry = tk.Entry(right_frame)
-        self.after_bal_entry.grid(row=row, column=1, sticky="ew", padx=20)
 
         row += 1
         tk.Label(right_frame, text="Cash:").grid(row=row, column=0, sticky="w", padx=20, pady=2)
@@ -229,6 +227,53 @@ class DashboardEmployee(tk.Frame):
         row += 1
         clock_out_btn = tk.Button(right_frame, text="Close Out", font=("Helvetica", 18, "bold"), command=self.handle_clock_out)
         clock_out_btn.grid(row=row, column=0, columnspan=2, pady=20)
+    
+    def toggle_merchandise_fields(self):
+        if self.is_merch.get():
+
+            self.merch_label.grid(row=self.merch_row, column=0, sticky="w", padx=10, pady=2)
+            self.merch_type.grid(row=self.merch_row, column=1, sticky="ew", padx=10)
+
+            self.expense_type.delete(0, tk.END)
+            self.expense_type.insert(0, "Merchandise")
+            self.expense_type.config(state="disabled")
+        else:
+            self.merch_label.grid_remove()
+            self.merch_type.grid_remove()
+            self.expense_type.config(state="normal")
+            self.expense_type.delete(0, tk.END)
+    
+    def add_expense(self):
+        date = self.expense_date.get()
+        amount = self.expense_amount.get()
+        expense_type = self.expense_type.get()
+        is_merch = self.is_merch.get()
+        merch_type = self.merch_type.get() if is_merch else None
+
+        try:
+            amount = float(amount)
+            if amount <= 0:
+                raise ValueError
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Please enter a valid positive number for Amount.")
+            return
+
+        try:
+            expense_date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+            today = datetime.date.today()
+            if expense_date > today:
+                messagebox.showerror("Invalid Input", "Date cannot be in the future.")
+                return
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Date must be in YYYY-MM-DD format.")
+            return
+
+        success = dashboard_functions.add_expense(date, self.location, amount, expense_type, is_merch, merch_type)
+
+        if success:
+                tk.messagebox.showinfo("Expense", "Expense added completed successfully!")
+        else:
+            tk.messagebox.showerror("Expense", "Expense failed")
  
     def handle_clock_in(self):
         
@@ -239,7 +284,7 @@ class DashboardEmployee(tk.Frame):
             if success:
                 tk.messagebox.showinfo("Clock In", "Clock In completed successfully!")
             else:
-                tk.messagebox.showerror("Clock In failed")
+                tk.messagebox.showerror("Clock In", "Clock In failed")
 
         except ValueError:
             messagebox.showerror("Invalid Input", "Error: Please check your balance.")
@@ -248,16 +293,26 @@ class DashboardEmployee(tk.Frame):
             tk.messagebox.showerror("Error", f"An error occurred: {e}")
 
     def handle_clock_out(self):
+        cash = self.cash_entry.get()
+        credit = self.credit_entry.get()
+
         try:
+            cash = float(cash)
+            credit = float(credit)
+            if cash < 0 or credit < 0: 
+                raise ValueError
+            
             success = dashboard_functions.clock_out(self.user_id, self.today, self.location)
+            success = dashboard_functions.handle_close_out(self.user_id, self.today, self.location, cash, credit)
 
             if success:
-                tk.messagebox.showinfo("Clock Out", "You've been clocked out successfully")
+                tk.messagebox.showinfo("Close Out", "Close Out completed successfully!")
+                self.cash_entry.delete(0, tk.END)
+                self.credit_entry.delete(0, tk.END)
                 self.controller.show_Login()
-
             else:
-                tk.messagebox.showerror("Clock Out", "Clock Out failed.")
+                tk.messagebox.showerror("Close Out", "Close Out failed")
 
-        except mysql.connector.Error as err:
-            print(f"Error recording Clock Out: {err}")
-            return False
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Please enter a valid positive number for Amount.")
+            return

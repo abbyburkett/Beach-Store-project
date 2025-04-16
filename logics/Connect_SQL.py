@@ -2,8 +2,6 @@ import mysql.connector
 import os
 from logics.dashboard_functions import hash_password
 
-db_password = os.getenv('MYSQL_PASSWORD')
-
 FILEPATH = "../Tables.sql"
 
 TRIGGERPATH = "logics/triggers.sql"

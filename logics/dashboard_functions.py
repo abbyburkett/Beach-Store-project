@@ -3,9 +3,6 @@ import hashlib
 from tkinter import messagebox
 import os
 
-#db_password = os.getenv('MYSQL_PASSWORD')
-
-
 # Hash Password
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
@@ -32,10 +29,6 @@ def create_employee(username, password, fname, lname, pay_rate, pay_bonus):
         return False
 
     try:
-        if db_password is None:
-            print("Error: MYSQL_PASSWORD environment variable is not set!")
-            return False
-
         db = create_db_connection()
         if db is None:
             return False
@@ -327,4 +320,60 @@ def clock_in(user_id, date, locationID, balance):
         return True
     except mysql.connector.Error as err:
         print(f"Error recording Clock In: {err}")
+        return False
+    
+def add_expense(date, locationID, amount, expense_type, is_merch, merch_type):
+    try:
+        db = create_db_connection()
+        if db is None:
+            return False
+
+        cursor = db.cursor()
+
+        insert_query = """
+            INSERT INTO Expense (Date, LocationID, Amount, ExpenseType, isMerchandise, MerchType)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """
+
+        cursor.execute(insert_query, (date, locationID, amount, expense_type, is_merch, merch_type))
+        db.commit()
+
+        cursor.close()
+        db.close()
+        return True
+
+    except mysql.connector.Error as err:
+        print(f"Error recording Clock In: {err}")
+        return False
+    
+def handle_close_out(employeeID, date, locationID, cash, credit):
+
+    try:
+        db = create_db_connection()
+        if db is None:
+            return False
+
+        cursor = db.cursor()
+        after_balance = cash + credit
+
+        insert_profit = """
+            INSERT INTO Profit (EmployeeID, Cash, Credit, Date, LocationID)
+            VALUES (%s, %s, %s, %s, %s)
+        """
+        cursor.execute(insert_profit, (employeeID, cash, credit, date, locationID))
+
+        update_clock_out = """
+            UPDATE ClockInOut
+            SET AfterBal = %s
+            WHERE EmployeeID = %s AND Date = %s AND LocationID = %s AND ClockIn != ClockOut 
+        """
+        cursor.execute(update_clock_out, (after_balance, employeeID, date, locationID))
+
+        db.commit()
+        cursor.close()
+        db.close()
+        return True
+
+    except mysql.connector.Error as err:
+        print(f"Error during handle_close_out: {err}")
         return False
