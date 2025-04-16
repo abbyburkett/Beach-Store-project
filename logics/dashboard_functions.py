@@ -3,7 +3,7 @@ import hashlib
 from tkinter import messagebox
 import os
 
-db_password = os.getenv('MYSQL_PASSWORD')
+#db_password = os.getenv('MYSQL_PASSWORD')
 
 
 # Hash Password
@@ -13,6 +13,7 @@ def hash_password(password):
 # database connection
 def create_db_connection():
     try:
+        db_password = os.getenv('MYSQL_PASSWORD')
         db = mysql.connector.connect(
             host='localhost',
             user='root',
