@@ -421,6 +421,7 @@ class DashboardManager(DashboardEmployee):
 
         if success:
             messagebox.showinfo("Success", "Employee successfully registered!")
+            self.indicate(self.employees_indicate, self.show_employees)
         else:
             messagebox.showerror("Registration Failed", "Error: Could not register employee.")
 

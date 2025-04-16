@@ -157,6 +157,7 @@ class DashboardOwner(DashboardManager):
         success = dashboard_functions.add_location(name, address, manager_id)
         if success:
             messagebox.showinfo("Success", "Location added successfully.")
+            self.indicate(self.location_indicate, self.show_locations)
             self.clear_location_entries()
         else:
             messagebox.showerror("Error", "Failed to add location.")
