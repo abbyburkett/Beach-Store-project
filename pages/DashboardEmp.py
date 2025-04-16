@@ -155,39 +155,6 @@ class DashboardEmployee(tk.Frame):
             separator = tk.Label(self.profile_page, text="--------------------------------------", font=("Helvetica", 12, "italic"))
             separator.pack(anchor="w", padx=20, pady=5)
 
-
-    def handle_clock_out(self):
-        try:
-            success = dashboard_functions.clock_out(self.user_id, self.today)
-
-            if success:
-                tk.messagebox.showinfo("Clock Out", "You've been clocked out successfully")
-                self.controller.show_Login()
-
-            else:
-                tk.messagebox.showerror("Clock Out", "Clock Out failed.")
-
-        except mysql.connector.Error as err:
-            print(f"Error recording Clock Out: {err}")
-            return False
-
-    def handle_clock_in(self):
-        
-        try:
-            balance = float(self.input_balance_in.get())
-            success = dashboard_functions.clock_in(self.user_id, self.today)
-            if success:
-                tk.messagebox.showinfo("Clock In", "Clock In completed successfully!")
-            else:
-                tk.messagebox.showerror("Clock In", "You have already been clocked in!")
-
-            dashboard_functions.update_BefBalance_clock_in(self.user_id, balance, self.today, self.location)
-        except ValueError:
-            messagebox.showerror("Invalid Input", "Error: Please check your balance.")
-            print("Error: In DashboardEmp, the balance is not valid.")
-        except Exception as e:
-            tk.messagebox.showerror("Error", f"An error occurred: {e}")
-
     def show_close_out(self):
         self.close_out = tk.Frame(self.main_content)
         self.close_out.pack(fill="both", expand=True)
@@ -229,3 +196,36 @@ class DashboardEmployee(tk.Frame):
 
         self.clock_out = tk.Button(self.close_out, text="Clock Out", font=("Bold", 36), bd=0, command=self.handle_clock_out)
         self.clock_out.pack(pady=10)
+    
+    def handle_clock_in(self):
+        
+        try:
+            balance = float(self.input_balance_in.get())
+            success = dashboard_functions.clock_in(self.user_id, self.today, self.location)
+            insert_balance = dashboard_functions.update_BefBalance_clock_in(self.user_id, balance, self.today, self.location)
+
+            if success and insert_balance:
+                tk.messagebox.showinfo("Clock In", "Clock In completed successfully!")
+            else:
+                tk.messagebox.showerror("Clock In failed")
+
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Error: Please check your balance.")
+            print("Error: In DashboardEmp, the balance is not valid.")
+        except Exception as e:
+            tk.messagebox.showerror("Error", f"An error occurred: {e}")
+
+    def handle_clock_out(self):
+        try:
+            success = dashboard_functions.clock_out(self.user_id, self.today, self.location)
+
+            if success:
+                tk.messagebox.showinfo("Clock Out", "You've been clocked out successfully")
+                self.controller.show_Login()
+
+            else:
+                tk.messagebox.showerror("Clock Out", "Clock Out failed.")
+
+        except mysql.connector.Error as err:
+            print(f"Error recording Clock Out: {err}")
+            return False

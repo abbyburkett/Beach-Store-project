@@ -29,7 +29,9 @@ CREATE TABLE IF NOT EXISTS ClockInOut (
     EmployeeID INT,
     ClockIn TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ClockOut TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
+    LocationID INT,
+    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
+    FOREIGN KEY (LocationID) REFERENCES Location(LocationID)
 );
 
 CREATE TABLE IF NOT EXISTS Profit (

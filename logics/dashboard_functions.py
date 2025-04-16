@@ -70,6 +70,7 @@ def get_all_Emp_data():
                 employee_data.append(emp)
 
             db.close()
+            cursor.close()
 
         except mysql.connector.Error as err:
             print(f"Error fetching employee data: {err}")
@@ -93,6 +94,7 @@ def update_employee_in_db(username, fname, lname, pay_rate, bonus_rate):
 
         db.commit()
         db.close()
+        cursor.close()
         return True
     except mysql.connector.Error as err:
         print("The username ", username)
@@ -114,6 +116,7 @@ def delete_employee_from_db(employee_id):
             cursor.execute("DELETE FROM Employee WHERE EmployeeID = %s", (employee_id,))
             db.commit()
             db.close()
+            cursor.close()
             return True
         except mysql.connector.Error as err:
             print(f"Error deleting employee: {err}")
@@ -140,6 +143,7 @@ def get_location_data():
             location_data.append(loc)
 
         db.close()
+        cursor.close()
 
     except mysql.connector.Error as err:
         print(f"Error fetching location data: {err}")
@@ -169,6 +173,7 @@ def add_location(name, address, manager_id):
         db.commit()
 
         db.close()
+        cursor.close()
         return True
 
     except mysql.connector.Error as err:
@@ -190,6 +195,7 @@ def update_location(location_id, name, address, manager_id):
         cursor.execute(query, (name, address, manager_id, location_id))
         db.commit()
         db.close()
+        cursor.close()
         return True
     except mysql.connector.Error as err:
         print(f"Error updating location: {err}")
@@ -207,6 +213,7 @@ def delete_location(location_id):
         
         db.commit()
         db.close()
+        cursor.close()
         return True
     except mysql.connector.Error as err:
         print(f"Error deleting location: {err}")
@@ -238,14 +245,14 @@ def get_user_profile_data(employeeID):
         data = cursor.fetchall()
 
         cursor.close()
-        
+        db.close()
         return data
     
     except mysql.connector.Error as err:
             print(f"Error deleting employee: {err}")
             return False
     
-def clock_out(user_id, date):
+def clock_out(user_id, date, locationID):
     try:
         db = create_db_connection()
         if db is None:
@@ -256,17 +263,18 @@ def clock_out(user_id, date):
         cursor.execute("""
                     UPDATE ClockInOut
                     Set ClockOut = NOW()
-                    Where EmployeeID = %s and Date = %s
-               """, (user_id, date))
+                    Where EmployeeID = %s and Date = %s and LocationID = %s
+               """, (user_id, date, locationID))
         db.commit()
         db.close()
+        cursor.close()
         print("You have been successfully clocked out!")
         return True
     except mysql.connector.Error as err:
         print(f"Error recording Clock Out: {err}")
         return False
 
-def clock_in(user_id, date):
+def clock_in(user_id, date, locationID):
     try:
         db = create_db_connection()
         if db is None:
@@ -287,12 +295,13 @@ def clock_in(user_id, date):
         #     return False # Prevent duplicate clock-ins
 
         cursor.execute("""
-            INSERT INTO ClockInOut (EmployeeID, ClockIn, Date)
-            VALUES (%s, NOW(), %s)
-        """, (user_id, date))
+            INSERT INTO ClockInOut (EmployeeID, ClockIn, Date, LocationID)
+            VALUES (%s, NOW(), %s, %s)
+        """, (user_id, date, locationID))
 
         db.commit()
         db.close()
+        cursor.close()
         print("Clock In recorded successfully!")
         return True
     except mysql.connector.Error as err:
@@ -300,20 +309,28 @@ def clock_in(user_id, date):
         return False
 
 def update_BefBalance_clock_in(employeeID, bef_bal, date, locationID):
-    # try:
-    #     db = create_db_connection()
-    #     if db is None:
-    #         return False
+    try:
+        db = create_db_connection()
+        if db is None:
+            return False
 
-    #     cursor = db.cursor()
+        cursor = db.cursor()
 
-    #     cursor.execute("""
-    #         INSERT INTO Profit (EmployeeID, ClockIn, Date)
-    #         VALUES (%s, NOW(), %s)
-    #     """, (user_id, date))
+        cursor.execute("""
+            INSERT INTO Profit (EmployeeID, BeforeBal, Date, LocationID)
+            VALUES (%s, %s, %s, %s)
+        """, (employeeID, bef_bal, date, locationID))
 
-    # except mysql.connector.Error as err:
-    #     print(f"Error at updating before Balance: {err}")
-    #     return False
+        db.commit()
+        db.close()
+        cursor.close()
+
+        print("Update before balance successfully")
+
+        return True
+
+    except mysql.connector.Error as err:
+        print(f"Error at updating before Balance: {err}")
+        return False
 
     return
