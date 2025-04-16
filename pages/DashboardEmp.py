@@ -156,55 +156,87 @@ class DashboardEmployee(tk.Frame):
             separator.pack(anchor="w", padx=20, pady=5)
 
     def show_close_out(self):
-        self.close_out = tk.Frame(self.main_content)
-        self.close_out.pack(fill="both", expand=True)
+        self.close_out_page = tk.Frame(self.main_content)
+        self.close_out_page.pack(fill="both", expand=True)
 
-        close_out_label = tk.Label(self.close_out, text=f"Close Out Report - {self.today}", fg=MAIN_CONTENT_COLOR, font=("Helvetica", 16, "bold"))
-        close_out_label.pack(pady=10)
+        container_frame = tk.Frame(self.close_out_page)
+        container_frame.pack(fill="both", expand=True)
+        container_frame.grid_rowconfigure(0, weight=1)
+        container_frame.grid_columnconfigure(0, weight=1)
+        container_frame.grid_columnconfigure(1, weight=1)
 
-        data = dashboard_functions.get_close_out_data(101, ["EmployeeID", "BeforeBal", "AfterBal", "Cash", "Credit", "GrossRevenue", "Date"], self.today) or []
+        left_frame = tk.LabelFrame(container_frame, text="Left", font=("Helvetica", 16, "bold"))
+        left_frame.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
-        if not data:
-            report_label = tk.Label(self.close_out, text="No data found for this date", fg="red", font=("Helvetica", 12))
-            report_label.pack(pady=10)
-        else:
-            row = data[0]
+        right_frame = tk.LabelFrame(container_frame, text="right", font=("Helvetica", 16, "bold"))
+        right_frame.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
 
-            report_label = tk.Label(self.close_out, text=f"EmployeeID: {row[0]}", font=("Helvetica", 12))
-            report_label.pack(anchor="w", padx=20, pady=5)
+        # Expense on the Left
+        row = 0
+        tk.Label(left_frame, text="Date (YYYY-MM-DD):").grid(row=row, column=0, sticky="w", padx=10, pady=2)
+        self.expense_date = tk.Entry(left_frame)
+        self.expense_date.grid(row=row, column=1, sticky="ew", padx=10)
+        
+        row += 1
+        tk.Label(left_frame, text="Amount:").grid(row=row, column=0, sticky="w", padx=10, pady=2)
+        self.expense_amount = tk.Entry(left_frame)
+        self.expense_amount.grid(row=row, column=1, sticky="ew", padx=10)
 
-            report_label = tk.Label(self.close_out, text=f"BeforeBal: {row[1]}", font=("Helvetica", 12))
-            report_label.pack(anchor="w", padx=20, pady=5)
+        row += 1
+        tk.Label(left_frame, text="Expense Type:").grid(row=row, column=0, sticky="w", padx=10, pady=2)
+        self.expense_type = tk.Entry(left_frame)
+        self.expense_type.grid(row=row, column=1, sticky="ew", padx=10)
 
-            report_label = tk.Label(self.close_out, text=f"AfterBal: {row[2]}", font=("Helvetica", 12))
-            report_label.pack(anchor="w", padx=20, pady=5)
+        row += 1
+        tk.Label(left_frame, text="Is Merchandise?").grid(row=row, column=0, sticky="w", padx=10, pady=2)
+        self.is_merch_var = tk.BooleanVar()
+        tk.Checkbutton(left_frame, variable=self.is_merch_var).grid(row=row, column=1, sticky="w", padx=10)
 
-            report_label = tk.Label(self.close_out, text=f"Cash: {row[3]}", font=("Helvetica", 12))
-            report_label.pack(anchor="w", padx=20, pady=5)
+        row += 1
+        tk.Label(left_frame, text="Merchandise Type:").grid(row=row, column=0, sticky="w", padx=10, pady=2)
+        self.merch_type = tk.Entry(left_frame)
+        self.merch_type.grid(row=row, column=1, sticky="ew", padx=10)
 
-            report_label = tk.Label(self.close_out, text=f"Credit: {row[4]}", font=("Helvetica", 12))
-            report_label.pack(anchor="w", padx=20, pady=5)
+        row += 1
+        expense_btn = tk.Button(left_frame, text="Add Expense", font=("Helvetica", 14, "bold"))
+        expense_btn.grid(row=row, column=0, columnspan=2, pady=10)
 
-            report_label = tk.Label(self.close_out, text=f"GrossRevenue: {row[5]}", font=("Helvetica", 12))
-            report_label.pack(anchor="w", padx=20, pady=5)
+        # CloseOut on the Right
+        before_data = dashboard_functions.get_before_balance(self.user_id, self.today, self.location)
 
-            report_label = tk.Label(self.close_out, text=f"Date: {row[6]}", font=("Helvetica", 12))
-            report_label.pack(anchor="w", padx=20, pady=5)
+        row = 0
+        tk.Label(right_frame, text=f"Close Out Report - {self.today}", fg=MAIN_CONTENT_COLOR, font=("Helvetica", 16, "bold")).grid(row=row, column=0, columnspan=2, pady=10)
 
-            separator = tk.Label(self.close_out, text="--------------------------------------", font=("Helvetica", 12, "italic"))
-            separator.pack(anchor="w", padx=20, pady=5)
+        row += 1
+        tk.Label(right_frame, text=f"BeforeBal: {before_data}", font=("Helvetica", 12)).grid(row=row, column=0, columnspan=2, sticky="w", padx=20, pady=5)
 
-        self.clock_out = tk.Button(self.close_out, text="Clock Out", font=("Bold", 36), bd=0, command=self.handle_clock_out)
-        self.clock_out.pack(pady=10)
-    
+        row += 1
+        tk.Label(right_frame, text="After Balance:").grid(row=row, column=0, sticky="w", padx=20, pady=2)
+        self.after_bal_entry = tk.Entry(right_frame)
+        self.after_bal_entry.grid(row=row, column=1, sticky="ew", padx=20)
+
+        row += 1
+        tk.Label(right_frame, text="Cash:").grid(row=row, column=0, sticky="w", padx=20, pady=2)
+        self.cash_entry = tk.Entry(right_frame)
+        self.cash_entry.grid(row=row, column=1, sticky="ew", padx=20)
+
+        row += 1
+        tk.Label(right_frame, text="Credit:").grid(row=row, column=0, sticky="w", padx=20, pady=2)
+        self.credit_entry = tk.Entry(right_frame)
+        self.credit_entry.grid(row=row, column=1, sticky="ew", padx=20)
+
+        # Close Out button
+        row += 1
+        clock_out_btn = tk.Button(right_frame, text="Close Out", font=("Helvetica", 18, "bold"), command=self.handle_clock_out)
+        clock_out_btn.grid(row=row, column=0, columnspan=2, pady=20)
+ 
     def handle_clock_in(self):
         
         try:
             balance = float(self.input_balance_in.get())
-            success = dashboard_functions.clock_in(self.user_id, self.today, self.location)
-            insert_balance = dashboard_functions.update_BefBalance_clock_in(self.user_id, balance, self.today, self.location)
+            success = dashboard_functions.clock_in(self.user_id, self.today, self.location, balance)
 
-            if success and insert_balance:
+            if success:
                 tk.messagebox.showinfo("Clock In", "Clock In completed successfully!")
             else:
                 tk.messagebox.showerror("Clock In failed")

@@ -221,12 +221,30 @@ def delete_location(location_id):
         return False
 
 
-def get_close_out_data(ProfitID, columns, target_date):
+def get_before_balance(employeeID, date, locationID):
 
-    data = [(102, 300.50, 400.75, 80.00, 20.25, 100.25, "2025-03-16")]
+    try:
+        db = create_db_connection()
+        if db is None:
+            return False
+        
+        cursor = db.cursor()
+        
+        query = """
+                SELECT BeforeBal
+                FROM ClockInOut
+                WHERE EmployeeID = %s AND Date = %s AND LocationID = %s
+                """
+        cursor.execute(query, (employeeID, date, locationID))
+        result = cursor.fetchone()
+
+        cursor.close()
+        db.close()
+        return result[0] if result else 0.0
     
-
-    return data
+    except mysql.connector.Error as err:
+            print(f"Error deleting employee: {err}")
+            return False
 
 def get_user_profile_data(employeeID):
 
@@ -275,7 +293,7 @@ def clock_out(user_id, date, locationID):
         print(f"Error recording Clock Out: {err}")
         return False
 
-def clock_in(user_id, date, locationID):
+def clock_in(user_id, date, locationID, balance):
     try:
         db = create_db_connection()
         if db is None:
@@ -297,9 +315,9 @@ def clock_in(user_id, date, locationID):
             return False
 
         cursor.execute("""
-            INSERT INTO ClockInOut (EmployeeID, ClockIn, Date, LocationID)
-            VALUES (%s, NOW(), %s, %s)
-        """, (user_id, date, locationID))
+            INSERT INTO ClockInOut (EmployeeID, ClockIn, Date, LocationID, BeforeBal)
+            VALUES (%s, NOW(), %s, %s, %s)
+        """, (user_id, date, locationID, balance))
 
         db.commit()
         db.close()
@@ -309,30 +327,3 @@ def clock_in(user_id, date, locationID):
     except mysql.connector.Error as err:
         print(f"Error recording Clock In: {err}")
         return False
-
-def update_BefBalance_clock_in(employeeID, bef_bal, date, locationID):
-    try:
-        db = create_db_connection()
-        if db is None:
-            return False
-
-        cursor = db.cursor()
-
-        cursor.execute("""
-            INSERT INTO Profit (EmployeeID, BeforeBal, Date, LocationID)
-            VALUES (%s, %s, %s, %s)
-        """, (employeeID, bef_bal, date, locationID))
-
-        db.commit()
-        db.close()
-        cursor.close()
-
-        print("Update before balance successfully")
-
-        return True
-
-    except mysql.connector.Error as err:
-        print(f"Error at updating before Balance: {err}")
-        return False
-
-    return

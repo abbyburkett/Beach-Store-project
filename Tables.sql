@@ -30,6 +30,8 @@ CREATE TABLE IF NOT EXISTS ClockInOut (
     ClockIn TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ClockOut TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     LocationID INT,
+    BeforeBal DOUBLE,
+    AfterBal DOUBLE,
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
     FOREIGN KEY (LocationID) REFERENCES Location(LocationID)
 );
@@ -37,8 +39,6 @@ CREATE TABLE IF NOT EXISTS ClockInOut (
 CREATE TABLE IF NOT EXISTS Profit (
     ProfitID INT PRIMARY KEY AUTO_INCREMENT,
     EmployeeID INT,
-    BeforeBal DOUBLE,
-    AfterBal DOUBLE,
     Cash DOUBLE,
     Credit DOUBLE,
     Date DATE,
