@@ -54,11 +54,4 @@ BEGIN
      END IF;
  END//
 
---  CREATE TRIGGER RecordTheLatestProfit
---  BEFORE INSERT ON Profit
---  FOR EACH ROW
---  BEGIN
---      IF
---  END//
-
 DELIMITER ;

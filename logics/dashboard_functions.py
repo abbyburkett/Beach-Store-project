@@ -356,11 +356,23 @@ def handle_close_out(employeeID, date, locationID, cash, credit):
         cursor = db.cursor()
         after_balance = cash + credit
 
-        insert_profit = """
-            INSERT INTO Profit (EmployeeID, Cash, Credit, Date, LocationID)
-            VALUES (%s, %s, %s, %s, %s)
-        """
-        cursor.execute(insert_profit, (employeeID, cash, credit, date, locationID))
+        cursor.execute("""
+            SELECT ProfitID FROM Profit WHERE Date = %s AND LocationID = %s
+        """, (date, locationID))
+        
+        existing = cursor.fetchone()
+
+        if existing:
+            cursor.execute("""
+                UPDATE Profit
+                SET Cash = %s, Credit = %s, EmployeeID = %s
+                WHERE ProfitID = %s
+            """, (cash, credit, employeeID, existing[0]))
+        else:
+            cursor.execute("""
+                INSERT INTO Profit (EmployeeID, Cash, Credit, Date, LocationID)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (employeeID, cash, credit, date, locationID))
 
         update_clock_out = """
             UPDATE ClockInOut
