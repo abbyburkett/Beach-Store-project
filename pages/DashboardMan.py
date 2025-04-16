@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import simpledialog
 from logics import dashboard_functions
 from pages.DashboardEmp import DashboardEmployee
 from tkinter import messagebox
@@ -123,6 +124,14 @@ class DashboardManager(DashboardEmployee):
         self.submit_button = tk.Button(self.invoices_page, text="Add Invoice", command=self.insert_invoice)
         self.submit_button.pack(pady=5)
 
+        # Partial Payment Button
+        self.pay_button = tk.Button(self.invoices_page, text="Make Payment", command=self.prompt_partial_payment)
+        self.pay_button.pack(pady=10)
+
+        #Delete invoice button in case of duplicates
+        self.delete_invoice_button = tk.Button(self.invoices_page, text= "Delete Invoice", command=self.delete_invoice)
+        self.delete_invoice_button.pack(pady=5)
+
         #Load existing invoices
         self.load_invoices()
 
@@ -142,6 +151,10 @@ class DashboardManager(DashboardEmployee):
             #ensure amount is a valid float
             amount = float(amount)
             amount_paid = float(amount_paid)
+
+            if amount_paid > amount:
+                messagebox.showerror("Error", "Amount paid cannot exceed total amount.")
+                return
 
             cursor = self.db.cursor()
             query = ("INSERT INTO Invoice (Company, AmountTotal, AmountPaid, PaidWay, DueDate)"
@@ -169,7 +182,6 @@ class DashboardManager(DashboardEmployee):
             for invoice in invoices:
                 invoice_number, date_received, company, amount, amount_paid, due_date, paid_way, status = invoice
 
-                print(f"Date Received: {date_received}")
                 amount = float(amount)
                 amount_paid = float(amount_paid)
 
@@ -193,6 +205,72 @@ class DashboardManager(DashboardEmployee):
 
         except mysql.connector.Error as err:
             messagebox.showerror("Database Error", f"Error: {err}")
+
+    def update_invoice_payment(self, invoice_number, new_payment):
+        try:
+            cursor = self.db.cursor()
+
+            cursor.execute("SELECT AmountPaid, AmountTotal FROM Invoice WHERE InvoiceNumber = %s", (invoice_number,))
+            result = cursor.fetchone()
+
+            if result:
+                amount_paid, amount = result
+                updated_amount = float(amount_paid) + float(new_payment)
+
+                if updated_amount > amount:
+                    messagebox.showerror("Error", "Payment exceeds total amount.")
+                    return
+
+                # Update the AmountPaid
+                cursor.execute("UPDATE Invoice SET AmountPaid = %s WHERE InvoiceNumber = %s",
+                            (updated_amount, invoice_number))
+                self.db.commit()
+
+                messagebox.showinfo("Success", "Invoice payment updated successfully.")
+                self.load_invoices()  # Refresh the table
+            else:
+                messagebox.showerror("Error", "Invoice not found.")
+
+                cursor.close()
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Could not update invoice payment.\n{e}")
+
+    def prompt_partial_payment(self):
+        selected_item = self.tree.selection()
+        if not selected_item:
+            messagebox.showerror("Error", "Please select an invoice.")
+            return
+
+        invoice = self.tree.item(selected_item)
+        invoice_number = invoice['values'][0]
+
+        # Simple input popup <FROM CHATGPT>
+        payment = simpledialog.askfloat("Partial Payment", "Enter payment amount:")
+        if payment is not None:
+            self.update_invoice_payment(invoice_number, payment)
+
+    def delete_invoice(self):
+        selected_item = self.tree.selection()
+        if not selected_item:
+            messagebox.showerror("Error", "Please select an invoice.")
+            return
+
+        invoice = self.tree.item(selected_item)
+        invoice_number = invoice['values'][0]
+
+        # Confirm deletion
+        result = messagebox.askyesno("Delete Invoice", f"Are you sure you want to delete Invoice #{invoice_number}?")
+        if result:
+            try:
+                cursor = self.db.cursor()
+                cursor.execute("DELETE FROM Invoice WHERE InvoiceNumber = %s",(invoice_number,))
+                self.db.commit()
+                cursor.close()
+                messagebox.showinfo("Success", "Invoice deleted successfully.")
+                self.load_invoices()
+            except Exception as e:
+                messagebox.showerror("Error", "Failed to delete invoice. {e}")
 
     def show_employees(self):
         self.manage_employees_page = tk.Frame(self.main_content)

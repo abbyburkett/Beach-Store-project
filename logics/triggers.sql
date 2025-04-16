@@ -31,4 +31,27 @@ BEGIN
     END IF;
 END //
 
+CREATE TRIGGER UpdateInvoicePaidStatus
+BEFORE UPDATE ON Invoice
+FOR EACH ROW
+BEGIN
+     IF NEW.AmountPaid >= OLD.AmountTotal THEN
+        SET NEW.Paid = TRUE;
+    ELSE
+        SET NEW.Paid = FALSE;
+    END IF;
+END //
+
+
+CREATE TRIGGER SetPaidOnInsert
+BEFORE INSERT ON Invoice
+FOR EACH ROW
+BEGIN
+     IF NEW.AmountPaid >= NEW.AmountTotal THEN
+         SET NEW.Paid = TRUE;
+     ELSE
+         SET NEW.Paid = FALSE;
+     END IF;
+ END//
+
 DELIMITER ;

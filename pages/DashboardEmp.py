@@ -13,7 +13,7 @@ SIDEBAR_TEXT_COLOR = "black"
 class DashboardEmployee(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent, bg=BACKGROUND_COLOR)
-        # self.controller = controller
+        self.controller = controller
         # self.user_id = self.controller.user_id
         self.today = controller.today
         print(self.today)
