@@ -1,5 +1,6 @@
 import mysql.connector
 import hashlib
+from tkinter import messagebox
 import os
 
 db_password = os.getenv('MYSQL_PASSWORD')
@@ -263,7 +264,7 @@ def clock_out(user_id, date, locationID):
         cursor.execute("""
                     UPDATE ClockInOut
                     Set ClockOut = NOW()
-                    Where EmployeeID = %s and Date = %s and LocationID = %s
+                    Where EmployeeID = %s AND Date = %s AND LocationID = %s AND ClockIn = ClockOut 
                """, (user_id, date, locationID))
         db.commit()
         db.close()
@@ -282,17 +283,18 @@ def clock_in(user_id, date, locationID):
 
         cursor = db.cursor()
 
-        # # Check if a clock-in record already exists for the same employee and date
-        # cursor.execute("""
-        #     SELECT COUNT(*) 
-        #     FROM ClockInOut
-        #     WHERE EmployeeID = %s AND Date = %s
-        # """, (user_id, date))
-        # existing_clock_in = cursor.fetchone()[0]
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM ClockInOut
+            WHERE EmployeeID = %s AND Date = %s AND locationID = %s AND ClockIn = ClockOut
+        """, (user_id, date, locationID))
+        existing_clock_in = cursor.fetchone()[0]
 
-        # if existing_clock_in > 0:
-        #     print("Clock In already recorded for today!")
-        #     return False # Prevent duplicate clock-ins
+        if existing_clock_in > 0:
+            messagebox.showwarning("Already Clocked In", "You have to clock out first!")
+            db.close()
+            cursor.close()
+            return False
 
         cursor.execute("""
             INSERT INTO ClockInOut (EmployeeID, ClockIn, Date, LocationID)

@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS Expense (
     Date DATE,
     LocationID INT,
     Amount DOUBLE,
+    ExpenseType VARCHAR(255),
     isMerchandise BOOLEAN,
     MerchType VARCHAR(255),
     FOREIGN KEY (LocationID) REFERENCES Location(LocationID)
