@@ -112,7 +112,7 @@ class DashboardEmployee(tk.Frame):
             self.pay_table.heading(col, text=col)
             self.pay_table.column(col, anchor="center")
 
-        data = dashboard_functions.get_pay_data(self.user_id)
+        data = dashboard_functions.get_pay_data(self.user_id, self.location)
 
         for row in data:
             self.pay_table.insert("", "end", values=row)

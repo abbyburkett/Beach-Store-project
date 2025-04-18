@@ -118,7 +118,7 @@ def delete_employee_from_db(employee_id):
             return False
 
 
-def get_pay_data(employeeID):
+def get_pay_data(employeeID, locationID):
     try:
             db = create_db_connection()
             if db is None:
@@ -132,8 +132,8 @@ def get_pay_data(employeeID):
                 Bonus_Pay AS GrossBonus,
                 (Base_Salary + Bonus_Pay) AS GrossPaid
                 FROM Employee_Pay
-                WHERE EmployeeID = %s
-            """, (employeeID,))
+                WHERE EmployeeID = %s AND LocationID = %s
+            """, (employeeID, locationID))
             rows = cursor.fetchall()
             db.close()
             cursor.close()
