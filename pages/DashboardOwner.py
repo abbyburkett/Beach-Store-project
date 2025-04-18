@@ -16,7 +16,10 @@ SIDEBAR_TEXT_COLOR = "black"
 class DashboardOwner(DashboardManager):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        self.is_owner = True
+
+        self.isEmployee = False
+        self.isManager = False
+        self.isOwner = True
 
         # Establish database connection
         self.db = dashboard_functions.create_db_connection()
@@ -42,6 +45,50 @@ class DashboardOwner(DashboardManager):
     def hide_indicator(self):
         super().hide_indicator()
         self.location_indicate.config(bg = SIDE_BAR_COLOR)
+
+    def show_employees(self):
+        super().show_employees()
+
+        self.create_owner_btn = tk.Button(
+            self.buttons_frame,
+            text="Create Owner",
+            fg=MAIN_CONTENT_COLOR,
+            bg=BACKGROUND_COLOR,
+            bd=0,
+            highlightthickness=0,
+            relief="flat",
+            command=self.create_owner
+        )
+        self.create_owner_btn.pack(side="left", padx=2)
+    
+    def create_owner(self):
+        username = self.username_entry.get()
+        first_name = self.fname_entry.get()
+        last_name = self.lname_entry.get()
+        password = self.password_entry.get()
+        pay_rate = self.pay_rate_entry.get()
+        pay_bonus = self.pay_bonus_entry.get()
+
+        # You can also add validation here if needed
+        if not all([username, first_name, last_name, password, pay_rate, pay_bonus]):
+            messagebox.showerror("Error", "All fields must be filled.")
+            return
+
+        success = dashboard_functions.create_employee(
+            username=username,
+            password=password,
+            fname=first_name,
+            lname=last_name,
+            role="Owner",
+            pay_rate=pay_rate,
+            pay_bonus=pay_bonus
+        )
+
+        if success:
+            messagebox.showinfo("Success", "Owner created successfully.")
+            self.indicate(self.employees_indicate, self.show_employees)
+        else:
+            messagebox.showerror("Error", "Failed to create owner.")
 
     def show_reports(self):
         # Clear previous content

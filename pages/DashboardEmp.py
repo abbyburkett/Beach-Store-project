@@ -23,6 +23,9 @@ class DashboardEmployee(tk.Frame):
         self.create_widgets()
         self.display_widgets()
 
+        self.isEmployee = True
+        self.isManager = False
+        self.isOwner = False
 
     def create_widgets(self):
         self.dashboard_label = tk.Label(self, text=f"Welcome to the Employee Dashboard", font=("Arial", 40, "bold"), fg="#CDC1FF", bg=BACKGROUND_COLOR)

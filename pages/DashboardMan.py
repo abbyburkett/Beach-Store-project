@@ -17,11 +17,10 @@ SIDEBAR_TEXT_COLOR = "black"
 class DashboardManager(DashboardEmployee):
     def __init__(self, parent, controller):
         super().__init__(parent, controller)
-        self.is_manager = True
+        self.isEmployee = False
+        self.isManager = True
+        self.isOwner = False
 
-        # self.location_list = ["Aloha", "Olaho", "Olaola"]
-        # self.selected_location = tk.StringVar()
-        # self.selected_location.set(self.location_list[0])
 
         #Establish database connection
         self.db = dashboard_functions.create_db_connection()
@@ -341,16 +340,16 @@ class DashboardManager(DashboardEmployee):
         self.pay_bonus_entry.grid(row=11, column=0, padx=5, pady=(0, 10), sticky="w")
 
         #Buttons
-        buttons_frame = tk.Frame(detail_frame, bg=BACKGROUND_COLOR)
-        buttons_frame.grid(row=12, column=0, columnspan=2, pady=2)
+        self.buttons_frame = tk.Frame(detail_frame, bg=BACKGROUND_COLOR)
+        self.buttons_frame.grid(row=12, column=0, columnspan=2, pady=2)
 
-        self.add_employee_btn = tk.Button(buttons_frame, text="Add", fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0, highlightthickness=0, relief="flat", command=self.create_employee)
+        self.add_employee_btn = tk.Button(self.buttons_frame, text="Add", fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0, highlightthickness=0, relief="flat", command=self.create_employee)
         self.add_employee_btn.pack(side="left", padx=2)
 
-        self.update_employee_btn = tk.Button(buttons_frame, text="Update", fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0, highlightthickness=0, relief="flat", command=self.update_employee)
+        self.update_employee_btn = tk.Button(self.buttons_frame, text="Update", fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0, highlightthickness=0, relief="flat", command=self.update_employee)
         self.update_employee_btn.pack(side="left", padx=2) 
 
-        self.delete_employee_btn = tk.Button(buttons_frame, text="Delete", fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0, highlightthickness=0, relief="flat", command = self.delete_employee)
+        self.delete_employee_btn = tk.Button(self.buttons_frame, text="Delete", fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0, highlightthickness=0, relief="flat", command = self.delete_employee)
         self.delete_employee_btn.pack(side="left", padx=2)
 
         #Data Views
@@ -493,6 +492,7 @@ class DashboardManager(DashboardEmployee):
         employee_username = str(self.data_view.item(selected_item)["values"][1])
         employee_role = self.data_view.item(selected_item)["values"][4]
         
+
         new_fname = self.fname_entry.get()
         new_lname = self.lname_entry.get()
         
@@ -504,7 +504,14 @@ class DashboardManager(DashboardEmployee):
             return
 
         result = messagebox.askyesno("Update Employee", f"Are you sure you want to update employee {employee_username}?")
+        
         if result:
+            if (employee_id == self.user_id):
+                messagebox.showerror("Error", "You can't update your own account. Please contact your supervisor")
+                return
+            if (employee_role.lower() == "owner" and not self.isOwner):
+                messagebox.showerror("Error", "You cannot update an Owner account hello????")
+                return
 
             if dashboard_functions.update_employee_in_db(employee_username, new_fname, new_lname, new_pay_rate, new_bonus_rate):
                 self.data_view.item(selected_item, values=(employee_id, employee_username, new_fname, new_lname, employee_role, new_pay_rate, new_bonus_rate))
@@ -524,7 +531,7 @@ class DashboardManager(DashboardEmployee):
 
         if (employee_id == self.user_id):
             messagebox.showerror("Error", "You can't delete your own account. Please contact your supervisor")
-        elif (employee_role.lower() == "owner"):
+        elif (employee_role.lower() == "owner" and not self.isOwner):
             messagebox.showerror("Error", "Don't delete an Owner account :(")
         else:
             # Confirm deletion

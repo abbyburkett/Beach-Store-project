@@ -23,7 +23,7 @@ def create_db_connection():
         return None
 
 # Add User
-def create_employee(username, password, fname, lname, pay_rate, pay_bonus):
+def create_employee(username, password, fname, lname, pay_rate, pay_bonus, role = "Employee"):
 
     if not username or not password:
         return False
@@ -37,7 +37,7 @@ def create_employee(username, password, fname, lname, pay_rate, pay_bonus):
 
         # Insert new employee into the database
         cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role, PayRate, PayBonus) VALUES (%s, %s, %s, %s, %s, %s, %s)", 
-                    (username, hash_password(password), fname, lname, 'Employee', pay_rate, pay_bonus))
+                    (username, hash_password(password), fname, lname, role, pay_rate, pay_bonus))
 
         db.commit()
         print("Successfully registered")
