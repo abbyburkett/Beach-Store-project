@@ -397,7 +397,7 @@ class DashboardManager(DashboardEmployee):
         self.data_view.bind('<<TreeviewSelect>>', self.on_employee_select)
         self.employee_data = dashboard_functions.get_all_Emp_data()
         self.update_employee_data_view(self.employee_data)
-        
+
         #Scollbar
         data_frame.grid_rowconfigure(0, weight=1)
         data_frame.grid_columnconfigure(0, weight=1)
@@ -405,72 +405,6 @@ class DashboardManager(DashboardEmployee):
         tree_scroll_y = ttk.Scrollbar(data_frame, orient="vertical")
         tree_scroll_y.grid(row=0, column=1, sticky="ns")
         tree_scroll_y.config(command=self.data_view.xview)
-
-    def show_reports(self):
-        self.clear_main_content()
-
-        self.reports_page = tk.Frame(self.main_content)
-        self.reports_page.pack(fill="both", expand=True)
-
-        self.reports_label = tk.Label(
-            self.reports_page, text="Monthly Report",
-            fg="green", font=("Helvetica", 16, "bold")
-        )
-        self.reports_label.pack(pady=10)
-
-        # Define table columns
-        columns = ("Day", "Date", "Gross Profit", "Expense", "Merchandise", "Payroll")
-
-        self.report_tree = ttk.Treeview(self.reports_page, columns=columns, show="headings", height=20)
-
-        for col in columns:
-            self.report_tree.heading(col, text=col)
-            self.report_tree.column(col, width=130, anchor="center")
-
-        style = ttk.Style()
-        style.configure("Treeview.Heading", font=("Helvetica", 12, "bold"))
-        style.configure("Treeview", font=("Helvetica", 11))
-
-        self.report_tree.pack(fill="both", expand=True, padx=10, pady=10)
-
-        self.load_reports()
-
-    def load_reports(self):
-        # Get report data from database
-        report_data = dashboard_functions.get_daily_report_data(self.db, is_manager=self.is_manager)
-
-        # A dictionary to aggregate by day
-        aggregated = {}
-
-        for row in report_data:
-            key = row['Date']
-            if key not in aggregated:
-                aggregated[key] = {
-                    "Day": row["Day"],
-                    "Date": row["Date"],
-                    "Cash": float(row["Cash"]),
-                    "Credit": float(row["Credit"]),
-                    "Expense": 0.0,
-                    "Merchandise": 0.0,
-                    "Payroll": 0.0  # optional; calculate if you add logic
-                }
-
-            if row["ExpenseAmount"]:
-                aggregated[key]["Expense"] += float(row["ExpenseAmount"])
-            if row["MerchandiseAmount"]:
-                aggregated[key]["Merchandise"] += float(row["MerchandiseAmount"])
-
-        # Insert into treeview
-        for date, data in aggregated.items():
-            gross_profit = data["Cash"] + data["Credit"]
-            self.report_tree.insert("", "end", values=(
-                data["Day"],
-                data["Date"],
-                f"${gross_profit:,.2f}",
-                f"${data['Expense']:,.2f}",
-                f"${data['Merchandise']:,.2f}",
-                f"${data['Payroll']:,.2f}"  # Update if you implement payroll
-            ))
 
     def create_employee(self):
         username = self.username_entry.get()
@@ -607,3 +541,207 @@ class DashboardManager(DashboardEmployee):
 
             self.pay_bonus_entry.delete(0, tk.END)
             self.pay_bonus_entry.insert(0, employee_data[6])  # Pay Bonus
+
+    def show_reports(self):
+        self.clear_main_content()
+
+        self.reports_page = tk.Frame(self.main_content)
+        self.reports_page.pack(fill="both", expand=True)
+
+        self.reports_label = tk.Label(
+            self.reports_page, text="Monthly Report",
+            fg="green", font=("Helvetica", 16, "bold")
+        )
+        self.reports_label.pack(pady=10)
+
+        # Define table columns
+        columns = ("Day", "Date", "Gross Profit", "Expense", "Merchandise", "Payroll")
+
+        self.report_tree = ttk.Treeview(self.reports_page, columns=columns, show="headings", height=20)
+
+        for col in columns:
+            self.report_tree.heading(col, text=col)
+            self.report_tree.column(col, width=130, anchor="center")
+
+        style = ttk.Style()
+        style.configure("Treeview.Heading", font=("Helvetica", 12, "bold"))
+        style.configure("Treeview", font=("Helvetica", 11))
+
+        self.report_tree.pack(fill="both", expand=True, padx=10, pady=10)
+
+        self.load_reports()
+
+    def load_reports(self):
+        # Get report data from database
+        report_data = dashboard_functions.get_daily_report_data(self.db, is_manager=self.isManager)
+
+        # A dictionary to aggregate by day
+        aggregated = {}
+
+        for row in report_data:
+            key = row['Date']
+            if key not in aggregated:
+                aggregated[key] = {
+                    "Day": row["Day"],
+                    "Date": row["Date"],
+                    "Cash": float(row["Cash"]),
+                    "Credit": float(row["Credit"]),
+                    "Expense": 0.0,
+                    "Merchandise": 0.0,
+                    "Payroll": 0.0  # optional; calculate if you add logic
+                }
+
+            if row["ExpenseAmount"]:
+                aggregated[key]["Expense"] += float(row["ExpenseAmount"])
+            if row["MerchandiseAmount"]:
+                aggregated[key]["Merchandise"] += float(row["MerchandiseAmount"])
+
+        # Insert into treeview
+        for date, data in aggregated.items():
+            gross_profit = data["Cash"] + data["Credit"]
+            self.report_tree.insert("", "end", values=(
+                data["Day"],
+                data["Date"],
+                f"${gross_profit:,.2f}",
+                f"${data['Expense']:,.2f}",
+                f"${data['Merchandise']:,.2f}",
+                f"${data['Payroll']:,.2f}"  # Update if you implement payroll
+            ))
+
+    def show_close_out(self):
+        super().show_close_out()
+        table_frame = tk.Frame(self.close_out_container_frame)
+        table_frame.grid(row=1, column=0, columnspan=2, pady=10, sticky="nsew")
+
+        self.expenses_treeview = ttk.Treeview(
+                table_frame,
+                columns=("ID", "Date", "Amount", "Expense Type", "isMerchandise", "Merchandise Type"),
+                show="headings", height=8
+            )
+
+        self.expenses_treeview.pack(fill="both", expand=True)
+
+        self.expenses_treeview.heading("Date", text="Date")
+        self.expenses_treeview.heading("Amount", text="Amount")
+        self.expenses_treeview.heading("Expense Type", text="Expense Type")
+        self.expenses_treeview.heading("isMerchandise", text="Is Merchandise")
+        self.expenses_treeview.heading("Merchandise Type", text="Merchandise Type")
+
+        self.expenses_treeview.column("Date", width=100)
+        self.expenses_treeview.column("Amount", width=80)
+        self.expenses_treeview.column("Expense Type", width=100)
+        self.expenses_treeview.column("isMerchandise", width=120)
+        self.expenses_treeview.column("Merchandise Type", width=120)
+
+        self.load_expense_data()
+
+        self.expenses_treeview.bind("<Double-1>", self.open_edit_expense_window)
+
+    def load_expense_data(self):
+        for i in self.expenses_treeview.get_children():
+            self.expenses_treeview.delete(i)
+
+        expense_data = dashboard_functions.get_expense_for_the_month(self.today)
+        for expense in expense_data:
+            expense_id = expense[0]
+            date = expense[1]
+            amount = expense[2]
+            expense_type = expense[3]
+            is_merchandise = "Yes" if expense[4] else "No"
+            merch_type = expense[5] if expense[4] else ""
+            self.expenses_treeview.insert(
+                "", "end",
+                values=(expense_id, date, amount, expense_type, is_merchandise, merch_type)
+            )
+    def open_edit_expense_window(self, event):
+        selected_item = self.expenses_treeview.selection()
+        if not selected_item:
+            return
+
+        values = self.expenses_treeview.item(selected_item, "values")
+        expense_id = values[0]
+        date = values[1]
+        amount = values[2]
+        expense_type = values[3]
+        is_merchandise = values[4] == "Yes"
+        merch_type = values[5]
+
+        edit_window = tk.Toplevel(self)
+        edit_window.title("Edit Expense")
+        edit_window.geometry("400x300")
+
+        tk.Label(edit_window, text="Date:").pack()
+        date_entry = tk.Entry(edit_window)
+        date_entry.insert(0, date)
+        date_entry.pack()
+
+        tk.Label(edit_window, text="Amount:").pack()
+        amount_entry = tk.Entry(edit_window)
+        amount_entry.insert(0, amount)
+        amount_entry.pack()
+
+        tk.Label(edit_window, text="Expense Type:").pack()
+        expense_type_entry = tk.Entry(edit_window)
+        expense_type_entry.insert(0, expense_type)
+        expense_type_entry.pack()
+
+        is_merch_var = tk.BooleanVar(value=is_merchandise)
+        merch_type_var = tk.StringVar(value=merch_type)
+
+        tk.Checkbutton(edit_window, text="Is Merchandise", variable=is_merch_var).pack()
+
+        tk.Label(edit_window, text="Merchandise Type:").pack()
+        merch_entry = tk.Entry(edit_window, textvariable=merch_type_var)
+        merch_entry.pack()
+
+        def save_changes():
+            new_date = date_entry.get()
+            new_amount_str = amount_entry.get().strip()
+            new_type = expense_type_entry.get().strip()
+            new_is_merch = is_merch_var.get()
+            new_merch_type = merch_entry.get().strip() if new_is_merch else ""
+
+            for widget in edit_window.pack_slaves():
+                if isinstance(widget, tk.Label) and widget.cget("fg") == "red":
+                    widget.destroy()
+
+            try:
+                new_amount = float(new_amount_str)
+                if new_amount < 0:
+                    raise ValueError
+            except ValueError:
+                warning = tk.Label(edit_window, text="Please enter a valid non-negative number for amount.", fg="red")
+                warning.pack(side="top")
+                edit_window.update() 
+                edit_window.after(2000, warning.destroy)
+                return
+
+            try:
+                datetime.strptime(new_date, "%Y-%m-%d")
+            except ValueError:
+                warning = tk.Label(edit_window, text="Please enter date in YYYY-MM-DD format.", fg="red")
+                warning.pack(side="top")
+                edit_window.update() 
+                edit_window.after(2000, warning.destroy)
+                return
+
+            if new_is_merch and not new_merch_type:
+                warning = tk.Label(edit_window, text="Please enter merchandise type.", fg="red")
+                warning.pack(side="top")
+                edit_window.update() 
+                edit_window.after(2000, warning.destroy)
+                return
+
+            dashboard_functions.update_expense(
+                expense_id, new_date, new_amount, new_type, new_is_merch, new_merch_type
+            )
+            self.load_expense_data()
+            edit_window.destroy()
+
+        def delete_expense():
+            dashboard_functions.delete_expense(expense_id)
+            self.load_expense_data()
+            edit_window.destroy()
+
+        tk.Button(edit_window, text="Save", command=save_changes).pack(pady=10)
+        tk.Button(edit_window, text="Delete", fg="red", command=delete_expense).pack()

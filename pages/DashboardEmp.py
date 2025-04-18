@@ -163,16 +163,17 @@ class DashboardEmployee(tk.Frame):
         self.close_out_page = tk.Frame(self.main_content)
         self.close_out_page.pack(fill="both", expand=True)
 
-        container_frame = tk.Frame(self.close_out_page)
-        container_frame.pack(fill="both", expand=True)
-        container_frame.grid_rowconfigure(0, weight=1)
-        container_frame.grid_columnconfigure(0, weight=1)
-        container_frame.grid_columnconfigure(1, weight=1)
+        self.close_out_container_frame = tk.Frame(self.close_out_page)
+        self.close_out_container_frame.pack(fill="both", expand=True)
+        self.close_out_container_frame.grid_rowconfigure(0, weight=1)
+        self.close_out_container_frame.grid_rowconfigure(1, weight=3)
+        self.close_out_container_frame.grid_columnconfigure(0, weight=1)
+        self.close_out_container_frame.grid_columnconfigure(1, weight=1)
 
-        left_frame = tk.LabelFrame(container_frame, text="Left", font=("Helvetica", 16, "bold"))
+        left_frame = tk.LabelFrame(self.close_out_container_frame, text="Left", font=("Helvetica", 16, "bold"))
         left_frame.grid(row=0, column=0, padx=5, pady=5, sticky="nsew")
 
-        right_frame = tk.LabelFrame(container_frame, text="right", font=("Helvetica", 16, "bold"))
+        right_frame = tk.LabelFrame(self.close_out_container_frame, text="right", font=("Helvetica", 16, "bold"))
         right_frame.grid(row=0, column=1, padx=5, pady=5, sticky="nsew")
 
         # Expense on the Left

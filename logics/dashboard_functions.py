@@ -127,7 +127,8 @@ def get_pay_data(employeeID):
             cursor = db.cursor()
 
             cursor.execute("""
-                SELECT Base_Salary AS PayAmount,
+                SELECT Week_Range AS WeekRange,
+                Base_Salary AS PayAmount,
                 Bonus_Pay AS GrossBonus,
                 (Base_Salary + Bonus_Pay) AS GrossPaid
                 FROM Employee_Pay
@@ -439,3 +440,67 @@ def get_daily_report_data(db_connection, is_manager=True):
 
     cursor.execute(query)
     return cursor.fetchall()
+
+def get_expense_for_the_month(today):
+    
+    current_year = int(today[:4])
+    current_month = int(today[5:7])
+
+    expense_data = []
+
+    try:
+        # Connect to the database
+        db = create_db_connection()
+        if db is None:
+            return expense_data
+
+        cursor = db.cursor()
+
+        # SQL query to fetch expenses for the current month
+        query = """
+        SELECT ExpenseID, Date, Amount, ExpenseType, isMerchandise, MerchType
+        FROM Expense
+        WHERE YEAR(Date) = %s AND MONTH(Date) = %s
+        """
+        cursor.execute(query, (current_year, current_month))
+        expenses = cursor.fetchall()
+
+        # Add expenses to the list
+        for expense in expenses:
+            expense_data.append(expense)
+
+        db.close()
+        cursor.close()
+
+    except mysql.connector.Error as err:
+        print(f"Error fetching expenses data: {err}")
+    
+    return expense_data
+
+def update_expense(expense_id, date, amount, expense_type, is_merch, merch_type):
+    try:
+        db = create_db_connection()
+        cursor = db.cursor()
+        cursor.execute("""
+            UPDATE Expense
+            SET Date = %s, Amount = %s, ExpenseType = %s,
+                isMerchandise = %s, MerchType = %s
+            WHERE ExpenseID = %s
+        """, (date, amount, expense_type, is_merch, merch_type, expense_id))
+        db.commit()
+        db.close()
+        cursor.close()
+    except mysql.connector.Error as err:
+        print(f"Error updating expense: {err}")
+
+
+def delete_expense(expense_id):
+    try:
+        db = create_db_connection()
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM Expense WHERE ExpenseID = %s", (expense_id,))
+        db.commit()
+        db.close()
+        cursor.close()
+    except mysql.connector.Error as err:
+        print(f"Error deleting expense: {err}")

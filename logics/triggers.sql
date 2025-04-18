@@ -45,6 +45,15 @@ BEGIN
     END IF;
 END //
 
+CREATE TRIGGER CheckingUpdateExpense
+BEFORE UPDATE ON Expense
+FOR EACH ROW
+BEGIN
+    IF NEW.isMerchandise = TRUE THEN
+        SET NEW.ExpenseType = 'Merchandise';
+    END IF;
+END //
+
 CREATE TRIGGER UpdateInvoicePaidStatus
 BEFORE UPDATE ON Invoice
 FOR EACH ROW
