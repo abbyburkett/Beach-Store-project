@@ -389,3 +389,33 @@ def handle_close_out(employeeID, date, locationID, cash, credit):
     except mysql.connector.Error as err:
         print(f"Error during handle_close_out: {err}")
         return False
+
+def get_daily_report_data(db_connection, is_manager=True):
+    cursor = db_connection.cursor(dictionary=True)
+
+    query = """
+    SELECT 
+        p.Date,
+        DAYNAME(p.Date) AS Day,
+        IFNULL(SUM(p.Cash), 0) AS Cash,
+        IFNULL(SUM(p.Credit), 0) AS Credit,
+        IFNULL(SUM(p.Cash + p.Credit), 0) AS Total,
+        e.ExpenseType,
+        e.Amount AS ExpenseAmount,
+        e.MerchType,
+        CASE WHEN e.isMerchandise THEN e.Amount ELSE NULL END AS MerchandiseAmount
+    FROM Profit p
+    LEFT JOIN Expense e 
+        ON p.Date = e.Date AND p.LocationID = e.LocationID
+    WHERE 
+        {date_filter}
+    GROUP BY 
+        p.Date, e.ExpenseType, e.Amount, e.MerchType, e.isMerchandise
+    ORDER BY 
+        p.Date ASC;
+    """.format(
+        date_filter="MONTH(p.Date) = MONTH(CURDATE()) AND YEAR(p.Date) = YEAR(CURDATE())" if is_manager else "1"
+    )
+
+    cursor.execute(query)
+    return cursor.fetchall()
