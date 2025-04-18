@@ -4,9 +4,15 @@ CREATE TRIGGER ChangeEmployeeAfterLocationDel
 AFTER DELETE ON Location
 FOR EACH ROW
 BEGIN
-    UPDATE Employee
-    SET Role = 'Employee'
-    WHERE EmployeeID = OLD.ManagerID;
+    IF NOT EXISTS (
+            SELECT 1 
+            FROM Location 
+            WHERE ManagerID = OLD.ManagerID AND LocationID != OLD.LocationID
+        ) THEN
+        UPDATE Employee
+        SET Role = 'Employee'
+        WHERE EmployeeID = OLD.ManagerID AND Role != 'Owner';
+    END IF;
 END //
 
 CREATE TRIGGER UpdateManagerRoleOnLocationUpdate

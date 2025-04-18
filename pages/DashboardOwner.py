@@ -246,7 +246,7 @@ class DashboardOwner(DashboardManager):
         # Data View
         self.data_view = ttk.Treeview(
             data_frame,
-            columns=("LocationID", "Name", "Address", "ManagerID"),
+            columns=("LocationID", "Name", "Address", "ManagerUsername"),
             show="headings",
             height=10
         )
@@ -255,12 +255,12 @@ class DashboardOwner(DashboardManager):
         self.data_view.heading("LocationID", text="Location ID")
         self.data_view.heading("Name", text="Name")
         self.data_view.heading("Address", text="Address")
-        self.data_view.heading("ManagerID", text="Manager ID")
+        self.data_view.heading("ManagerUsername", text="Manager")
 
         self.data_view.column("LocationID", width=100)
         self.data_view.column("Name", width=120)
         self.data_view.column("Address", width=200)
-        self.data_view.column("ManagerID", width=100)
+        self.data_view.column("ManagerUsername", width=100)
 
         self.data_view.bind("<<TreeviewSelect>>", self.on_location_select)
 
@@ -268,9 +268,19 @@ class DashboardOwner(DashboardManager):
     
         for item in self.data_view.get_children():
             self.data_view.delete(item)
+
         for loc in location_data:
-            # Assuming loc = (LocationID, Name, Address, ManagerID)
-            self.data_view.insert("", "end", values=loc)
+            location_id = loc[0]
+            name = loc[1]
+            address = loc[2]
+            manager_username = loc[3]
+            manager_id = loc[4]
+
+            self.data_view.insert(
+                "", "end",
+                values=(location_id, name, address, manager_username),
+                tags=(manager_id,) 
+            )
 
         # Scrollbars
         tree_scroll_y = ttk.Scrollbar(data_frame, orient="vertical", command=self.data_view.yview)
@@ -315,7 +325,7 @@ class DashboardOwner(DashboardManager):
         location_id = self.data_view.item(selected[0], "values")[0]
         success = dashboard_functions.update_location(location_id, name, address, manager_id)
         if success:
-            self.data_view.item(selected[0], values=(location_id, name, address, manager_id))
+            self.indicate(self.location_indicate, self.show_locations)
             messagebox.showinfo("Success", "Location updated successfully.")
             self.clear_location_entries()
         else:
@@ -345,6 +355,7 @@ class DashboardOwner(DashboardManager):
     
     def on_location_select(self, event):
         selected = self.data_view.selection()
+            
         if selected:
             values = self.data_view.item(selected[0], "values")
             self.location_name_entry.delete(0, tk.END)
@@ -353,7 +364,7 @@ class DashboardOwner(DashboardManager):
             self.address_entry.delete(0, tk.END)
             self.address_entry.insert(0, values[2])
 
+            manager_id = self.data_view.item(selected[0], "tags")[0]
+            
             self.manager_entry.delete(0, tk.END)
-            self.manager_entry.insert(0, values[3])
-
-
+            self.manager_entry.insert(0, manager_id)

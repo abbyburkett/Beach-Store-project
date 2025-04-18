@@ -152,7 +152,13 @@ def get_location_data():
             return location_data
 
         cursor = db.cursor()
-        cursor.execute("SELECT LocationID, Name, Address, ManagerID FROM Location")
+
+        query = """
+            SELECT L.LocationID, L.Name, L.Address, E.Username, L.ManagerID
+            FROM Location L
+            JOIN Employee E ON L.ManagerID = E.EmployeeID
+        """
+        cursor.execute(query)
         locations = cursor.fetchall()
 
         for loc in locations:
