@@ -283,6 +283,23 @@ class DashboardManager(DashboardEmployee):
         manage_label = tk.Label(self.manage_employees_page, text="Manage your employees here.", font=("Helvetica", 12))
         manage_label.pack(pady=20)
 
+        #Search employee
+        search_frame = tk.Frame(self.manage_employees_page)
+        search_frame.pack(pady=10)
+        search_label = tk.Label(search_frame, text="Search:", font=("Arial", 14), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR)
+        search_label.pack(side="left", padx=10)
+        self.search_entry = tk.Entry(search_frame, font=("Arial", 14), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.search_entry.pack(side="left", padx=10, ipadx=10)
+        self.search_entry.bind("<KeyRelease>", self.search_employees)
+
+        #Filter by role
+        filter_label = tk.Label(search_frame, text="Role:", font=("Arial", 14), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR)
+        filter_label.pack(side="left", padx=10)
+        self.role_filter = ttk.Combobox(search_frame, values=["All", "Owner", "Manager", "Employee"], font=("Arial", 14), state="readonly")
+        self.role_filter.set("All")
+        self.role_filter.pack(side="left", padx=10)
+        self.role_filter.bind("<<ComboboxSelected>>", self.filter_by_role)
+
         # Details and Data Section
         container_frame = tk.Frame(self.manage_employees_page)
         container_frame.pack(fill="both", expand=True)
@@ -378,13 +395,9 @@ class DashboardManager(DashboardEmployee):
         self.data_view.column("Pay Bonus", width=80)
 
         self.data_view.bind('<<TreeviewSelect>>', self.on_employee_select)
-        employee_data = dashboard_functions.get_all_Emp_data()
-        for item in self.data_view.get_children():
-            self.data_view.delete(item)
-
-        for emp in employee_data:
-            self.data_view.insert("", "end", values=emp)
-
+        self.employee_data = dashboard_functions.get_all_Emp_data()
+        self.update_employee_data_view(self.employee_data)
+        
         #Scollbar
         data_frame.grid_rowconfigure(0, weight=1)
         data_frame.grid_columnconfigure(0, weight=1)
@@ -543,6 +556,37 @@ class DashboardManager(DashboardEmployee):
                 else:
                     messagebox.showerror("Error", "Failed to delete employee.")
 
+    def search_employees(self, event):
+        search_text = self.search_entry.get().lower()
+        filtered_data = []
+
+        for emp in self.employee_data:
+            if search_text in emp[1].lower() or search_text in emp[2].lower() or search_text in emp[3].lower():
+                filtered_data.append(emp)
+
+        self.update_employee_data_view(filtered_data)
+
+    def filter_by_role(self, event):
+        selected_role = self.role_filter.get()
+        filtered_data = []
+
+        if selected_role == "All":
+            filtered_data = self.employee_data
+        else:
+            for emp in self.employee_data:
+                if emp[4] == selected_role:
+                    filtered_data.append(emp)
+        
+        self.update_employee_data_view(filtered_data)
+
+    def update_employee_data_view(self, emp_date):
+
+        for item in self.data_view.get_children():
+            self.data_view.delete(item)
+
+        for emp in emp_date:
+            self.data_view.insert("", "end", values=emp)
+
     def on_employee_select(self, event):
         selected_item = self.data_view.selection()
     
@@ -563,17 +607,3 @@ class DashboardManager(DashboardEmployee):
 
             self.pay_bonus_entry.delete(0, tk.END)
             self.pay_bonus_entry.insert(0, employee_data[6])  # Pay Bonus
-
-    # def show_reports(self):
-    #     self.clear_main_area()
-    #
-    #     tk.Label(self.main_area, text="Monthly Report", font=("Helvetica", 20)).pack(pady=10)
-    #
-    #     columns = ("Date", "Gross Profit", "Expense", "Merchandise", "Payroll")
-    #     self.report_tree = ttk.Treeview(self.main_area, columns=columns, show="headings", height=20)
-    #     for col in columns:
-    #         self.report_tree.heading(col, text=col)
-    #         self.report_tree.column(col, width=130)
-    #     self.report_tree.pack(pady=10)
-    #
-    #     self.load_reports()
