@@ -31,6 +31,20 @@ BEGIN
     END IF;
 END //
 
+CREATE TRIGGER CheckingOwnerBeforeDel
+BEFORE DELETE ON Employee
+FOR EACH ROW
+BEGIN
+    DECLARE owner_count INT;
+
+    SELECT COUNT(*) INTO owner_count FROM Employee WHERE Role = 'Owner';
+
+    IF OLD.Role = 'Owner' AND owner_count = 1 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot delete the last Owner account.';
+    END IF;
+END //
+
 CREATE TRIGGER UpdateInvoicePaidStatus
 BEFORE UPDATE ON Invoice
 FOR EACH ROW
