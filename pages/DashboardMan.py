@@ -2,8 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import simpledialog
 from logics import dashboard_functions
+from datetime import datetime
 from pages.DashboardEmp import DashboardEmployee
 from tkinter import messagebox
+import calendar
 import mysql.connector
 
 BACKGROUND_COLOR = "#FFF6E3"
@@ -393,14 +395,70 @@ class DashboardManager(DashboardEmployee):
         tree_scroll_y.config(command=self.data_view.xview)
 
     def show_reports(self):
+        self.clear_main_content()
+
         self.reports_page = tk.Frame(self.main_content)
         self.reports_page.pack(fill="both", expand=True)
 
-        self.reports_label = tk.Label(self.reports_page, text="Reports", fg=MAIN_CONTENT_COLOR, font=("Helvetica", 16, "bold"))
+        self.reports_label = tk.Label(
+            self.reports_page, text="Monthly Report",
+            fg="green", font=("Helvetica", 16, "bold")
+        )
         self.reports_label.pack(pady=10)
 
-        report_label = tk.Label(self.reports_page, text="Employee performance reports will be displayed here.", font=("Helvetica", 12))
-        report_label.pack(pady=20)
+        # Define table columns
+        columns = ("Day", "Date", "Gross Profit", "Expense", "Merchandise", "Payroll")
+
+        self.report_tree = ttk.Treeview(self.reports_page, columns=columns, show="headings", height=20)
+
+        for col in columns:
+            self.report_tree.heading(col, text=col)
+            self.report_tree.column(col, width=130, anchor="center")
+
+        style = ttk.Style()
+        style.configure("Treeview.Heading", font=("Helvetica", 12, "bold"))
+        style.configure("Treeview", font=("Helvetica", 11))
+
+        self.report_tree.pack(fill="both", expand=True, padx=10, pady=10)
+
+        self.load_reports()
+
+    def load_reports(self):
+        # Get report data from database
+        report_data = dashboard_functions.get_daily_report_data(self.db, is_manager=self.is_manager)
+
+        # A dictionary to aggregate by day
+        aggregated = {}
+
+        for row in report_data:
+            key = row['Date']
+            if key not in aggregated:
+                aggregated[key] = {
+                    "Day": row["Day"],
+                    "Date": row["Date"],
+                    "Cash": float(row["Cash"]),
+                    "Credit": float(row["Credit"]),
+                    "Expense": 0.0,
+                    "Merchandise": 0.0,
+                    "Payroll": 0.0  # optional; calculate if you add logic
+                }
+
+            if row["ExpenseAmount"]:
+                aggregated[key]["Expense"] += float(row["ExpenseAmount"])
+            if row["MerchandiseAmount"]:
+                aggregated[key]["Merchandise"] += float(row["MerchandiseAmount"])
+
+        # Insert into treeview
+        for date, data in aggregated.items():
+            gross_profit = data["Cash"] + data["Credit"]
+            self.report_tree.insert("", "end", values=(
+                data["Day"],
+                data["Date"],
+                f"${gross_profit:,.2f}",
+                f"${data['Expense']:,.2f}",
+                f"${data['Merchandise']:,.2f}",
+                f"${data['Payroll']:,.2f}"  # Update if you implement payroll
+            ))
 
     def create_employee(self):
         username = self.username_entry.get()
@@ -498,3 +556,17 @@ class DashboardManager(DashboardEmployee):
 
             self.pay_bonus_entry.delete(0, tk.END)
             self.pay_bonus_entry.insert(0, employee_data[6])  # Pay Bonus
+
+    # def show_reports(self):
+    #     self.clear_main_area()
+    #
+    #     tk.Label(self.main_area, text="Monthly Report", font=("Helvetica", 20)).pack(pady=10)
+    #
+    #     columns = ("Date", "Gross Profit", "Expense", "Merchandise", "Payroll")
+    #     self.report_tree = ttk.Treeview(self.main_area, columns=columns, show="headings", height=20)
+    #     for col in columns:
+    #         self.report_tree.heading(col, text=col)
+    #         self.report_tree.column(col, width=130)
+    #     self.report_tree.pack(pady=10)
+    #
+    #     self.load_reports()
