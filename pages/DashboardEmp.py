@@ -102,14 +102,14 @@ class DashboardEmployee(tk.Frame):
         pay_label = tk.Label(self.home_page, text = "Pay Table", fg = MAIN_CONTENT_COLOR)
         pay_label.pack(pady=10)
         
-        columns = ("PayAmount", "BonusPercentage", "GrossBonus", "GrossPaid")
+        columns = ("WeekRange", "PayAmount", "GrossBonus", "GrossPaid")
         self.pay_table = ttk.Treeview(self.home_page, columns=columns, show="headings")
 
         for col in columns:
             self.pay_table.heading(col, text=col)
             self.pay_table.column(col, anchor="center")
 
-        data = dashboard_functions.get_pay_data(self.user_id, columns)
+        data = dashboard_functions.get_pay_data(self.user_id)
 
         for row in data:
             self.pay_table.insert("", "end", values=row)

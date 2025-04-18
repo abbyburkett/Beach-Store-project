@@ -118,10 +118,30 @@ def delete_employee_from_db(employee_id):
             return False
 
 
-def get_pay_data(employeeID, columns):
-    # Placeholder data: (PayAmount, BonusPercentage, GrossBonus, GrossPaid)
+def get_pay_data(employeeID):
+    try:
+            db = create_db_connection()
+            if db is None:
+                return False
 
-    return [[1000, 0.32, 1234, 12334]]
+            cursor = db.cursor()
+
+            cursor.execute("""
+                SELECT Base_Salary AS PayAmount,
+                Bonus_Pay AS GrossBonus,
+                (Base_Salary + Bonus_Pay) AS GrossPaid
+                FROM Employee_Pay
+                WHERE EmployeeID = %s
+            """, (employeeID,))
+            rows = cursor.fetchall()
+            db.close()
+            cursor.close()
+            return rows
+
+    
+    except mysql.connector.Error as err:
+        print(f"Error deleting employee: {err}")
+        return []
     
 def get_location_data():
     location_data = []

@@ -6,6 +6,8 @@ FILEPATH = "../Tables.sql"
 
 TRIGGERPATH = "logics/triggers.sql"
 
+PAYVIEWPATH = "logics/pay_view.sql"
+
 def run_sql_file(file_path = FILEPATH):
     try:
         db_password = os.getenv('MYSQL_PASSWORD')
@@ -45,6 +47,7 @@ def run_sql_file(file_path = FILEPATH):
         db.commit()
         print("Table SQL file executed successfully.")
 
+        # reading the trigger SQL
         with open(TRIGGERPATH, 'r') as file:
             trigger_sql = file.read()
 
@@ -61,6 +64,18 @@ def run_sql_file(file_path = FILEPATH):
                     cursor.execute(statement)
                 except mysql.connector.Error as e:
                     print(f"Error executing trigger: {e}")
+        
+        # reading the pay view SQL
+        with open(PAYVIEWPATH, 'r') as file:
+            pay_view_sql = file.read()
+
+        statements = [stmt.strip() for stmt in pay_view_sql.split(';') if stmt.strip()]
+
+        for stmt in statements:
+            try:
+                cursor.execute(stmt)
+            except mysql.connector.Error as e:
+                print(f"Error executing statement: {e}\nStatement: {stmt}")
 
 
         # Insert default users (Employee, Manager, Owner) if they don't already exist
