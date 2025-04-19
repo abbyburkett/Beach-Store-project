@@ -91,13 +91,8 @@ class DashboardOwner(DashboardManager):
             messagebox.showerror("Error", "Failed to create owner.")
 
     def show_reports(self):
-        # Clear previous content
         self.clear_main_content()
 
-        reports_label = tk.Label(self.main_content, text="Owner Reports", font=("Helvetica", 16, "bold"))
-        reports_label.pack(pady=10)
-
-        # Dropdown for Month Selection
         month_frame = tk.Frame(self.main_content)
         month_frame.pack(pady=5)
 
@@ -105,90 +100,45 @@ class DashboardOwner(DashboardManager):
         month_label.pack(side="left", padx=(0, 5))
 
         months = ["January", "February", "March", "April", "May", "June",
-                  "July", "August", "September", "October", "November", "December"]
+                "July", "August", "September", "October", "November", "December"]
 
         self.selected_month = tk.StringVar()
         month_dropdown = ttk.Combobox(month_frame, textvariable=self.selected_month, values=months, state="readonly")
         month_dropdown.pack(side="left")
 
-        # Treeview setup
-        columns = ("Day", "Date", "Gross Profit", "Expense", "Merchandise", "Payroll")
-        self.report_tree = ttk.Treeview(self.main_content, columns=columns, show="headings", height=20)
+        month_dropdown.bind("<<ComboboxSelected>>", lambda event: self.load_reports())
+        super().show_reports()
+        # self.load_reports()
 
-        for col in columns:
-            self.report_tree.heading(col, text=col)
-            self.report_tree.column(col, width=130, anchor="center")
-
-        self.report_tree.pack(fill="both", expand=True, padx=10, pady=10)
-
-        # Load initial data for current month
-        self.selected_month.set(datetime.now().strftime('%B'))  # Default to current month
-        self.load_reports(self.report_tree)
-
-        # Bind dropdown change
-        month_dropdown.bind("<<ComboboxSelected>>", lambda event: self.load_reports(self.report_tree))
-
-    def load_reports(self, tree):
-        tree.delete(*tree.get_children())
-        cursor = self.db.cursor()
-
+    def load_reports(self):
+        self.report_tree.delete(*self.report_tree.get_children())
         try:
-            month = self.selected_month.get()
-            if not month:
+            month_map = {
+                "January": "01", "February": "02", "March": "03", "April": "04",
+                "May": "05", "June": "06", "July": "07", "August": "08",
+                "September": "09", "October": "10", "November": "11", "December": "12"
+            }
+
+            selected_month = self.selected_month.get()
+            if not selected_month:
                 return
 
-            month_number = datetime.strptime(month, "%B").month
-            year = datetime.today().year
+            selected_month_number = month_map[selected_month]
+            temp_today = self.today 
 
-            first_day = f"{year}-{month_number:02d}-01"
-            last_day = f"{year}-{month_number:02d}-{calendar.monthrange(year, month_number)[1]}"
+            try:
+                base_date = datetime.strptime(self.today, "%Y-%m-%d")
+                owner_date = base_date.replace(month=int(selected_month_number))
+                self.today = owner_date.strftime("%Y-%m-%d")  
+                super().load_reports()
+            except Exception as e:
+                print(f"Date conversion error: {e}")
+                return
 
-            date_filter = f"WHERE Date BETWEEN '{first_day}' AND '{last_day}'"
+            self.today = temp_today 
 
-            # Get profit
-            cursor.execute(f"""
-                SELECT Date, SUM(Cash + Credit) 
-                FROM Profit 
-                {date_filter}
-                GROUP BY Date
-            """)
-            profits = {row[0]: row[1] for row in cursor.fetchall()}
-
-            # Get expenses (and merchandise)
-            cursor.execute(f"""
-                SELECT Date, SUM(Amount), SUM(CASE WHEN isMerchandise THEN Amount ELSE 0 END)
-                FROM Expense 
-                {date_filter}
-                GROUP BY Date
-            """)
-            expenses = {row[0]: (row[1], row[2]) for row in cursor.fetchall()}
-
-            # Get payroll
-            cursor.execute(f"""
-                SELECT Date, SUM(e.PayRate) 
-                FROM ClockInOut c 
-                JOIN Employee e ON c.EmployeeID = e.EmployeeID 
-                {date_filter}
-                GROUP BY Date
-            """)
-            payrolls = {row[0]: row[1] for row in cursor.fetchall()}
-
-            all_dates = sorted(set(profits.keys()) | set(expenses.keys()) | set(payrolls.keys()))
-
-            for date in all_dates:
-                profit = profits.get(date, 0)
-                expense, merch = expenses.get(date, (0, 0))
-                payroll = payrolls.get(date, 0)
-                day = datetime.strptime(str(date), "%Y-%m-%d").strftime('%A')
-
-                tree.insert("", "end", values=(
-                    day, date, round(profit, 2), round(expense, 2), round(merch, 2), round(payroll, 2)
-                ))
-
-            cursor.close()
-
-        except mysql.connector.Error as err:
-            messagebox.showerror("Database Error", f"Error: {err}")
+        except Exception as e:
+            print("In owner load report:", e)
 
     def show_locations(self):
         self.locations_page = tk.Frame(self.main_content)

@@ -21,14 +21,11 @@ class DashboardManager(DashboardEmployee):
         self.isManager = True
         self.isOwner = False
 
-
-        #Establish database connection
         self.db = dashboard_functions.create_db_connection()
         if self.db is None:
             messagebox.showerror("Database Error", "Database Error")
         else:
             self.cursor = self.db.cursor()
-
         self.dashboard_label.config(text=f"Welcome to the Manager Dashboard")
     def create_widgets(self):
         super().create_widgets()
@@ -543,7 +540,6 @@ class DashboardManager(DashboardEmployee):
             self.pay_bonus_entry.insert(0, employee_data[6])  # Pay Bonus
 
     def show_reports(self):
-        self.clear_main_content()
 
         self.reports_page = tk.Frame(self.main_content)
         self.reports_page.pack(fill="both", expand=True)
@@ -555,7 +551,12 @@ class DashboardManager(DashboardEmployee):
         self.reports_label.pack(pady=10)
 
         # Define table columns
-        columns = ("Day", "Date", "Gross Profit", "Expense", "Merchandise", "Payroll")
+        columns = (
+            "Day", "Date", "Gross Profit", 
+            "Expense", "Expense Type",
+            "Merchandise", "Merchandise Type", 
+            "Payroll"
+        )
 
         self.report_tree = ttk.Treeview(self.reports_page, columns=columns, show="headings", height=20)
 
@@ -568,45 +569,91 @@ class DashboardManager(DashboardEmployee):
         style.configure("Treeview", font=("Helvetica", 11))
 
         self.report_tree.pack(fill="both", expand=True, padx=10, pady=10)
+                
+        self.details_text = tk.Text(self.reports_page, height=4, wrap="word", font=("Helvetica", 10))
+        self.details_text.pack(fill="x", padx=10, pady=(0, 10))
+
+        scrollbar = tk.Scrollbar(self.reports_page, command=self.details_text.yview)
+        self.details_text.configure(yscrollcommand=scrollbar.set)
+        scrollbar.pack(side="right", fill="y")
+        self.report_tree.bind("<<TreeviewSelect>>", self.on_report_selected)
 
         self.load_reports()
 
     def load_reports(self):
-        # Get report data from database
-        report_data = dashboard_functions.get_daily_report_data(self.db, is_manager=self.isManager)
 
+        report_data = dashboard_functions.get_daily_report_data(location = self.location, today = self.today)
         # A dictionary to aggregate by day
-        aggregated = {}
+        self.full_report_data = {}
 
         for row in report_data:
             key = row['Date']
-            if key not in aggregated:
-                aggregated[key] = {
+            if key not in self.full_report_data:
+
+                self.full_report_data[key] = {
                     "Day": row["Day"],
                     "Date": row["Date"],
                     "Cash": float(row["Cash"]),
                     "Credit": float(row["Credit"]),
                     "Expense": 0.0,
                     "Merchandise": 0.0,
-                    "Payroll": 0.0  # optional; calculate if you add logic
+                    "Payroll": float(row["Payroll"]) if row["Payroll"] is not None else 0.0,
+                    "ExpenseTypes": set(),
+                    "MerchandiseTypes": set()
                 }
 
             if row["ExpenseAmount"]:
-                aggregated[key]["Expense"] += float(row["ExpenseAmount"])
+                self.full_report_data[key]["Expense"] += float(row["ExpenseAmount"])
+                if row["ExpenseType"]:
+                    self.full_report_data[key]["ExpenseTypes"].add(row["ExpenseType"])
+
             if row["MerchandiseAmount"]:
-                aggregated[key]["Merchandise"] += float(row["MerchandiseAmount"])
+                self.full_report_data[key]["Merchandise"] += float(row["MerchandiseAmount"])
+                if row["MerchandiseType"]:
+                    self.full_report_data[key]["MerchandiseTypes"].add(row["MerchandiseType"])
 
         # Insert into treeview
-        for date, data in aggregated.items():
+        for date, data in self.full_report_data.items():
             gross_profit = data["Cash"] + data["Credit"]
+            expense_types = ", ".join(data["ExpenseTypes"])
+            merch_types = ", ".join(data["MerchandiseTypes"])
+
             self.report_tree.insert("", "end", values=(
                 data["Day"],
                 data["Date"],
                 f"${gross_profit:,.2f}",
                 f"${data['Expense']:,.2f}",
+                expense_types,
                 f"${data['Merchandise']:,.2f}",
-                f"${data['Payroll']:,.2f}"  # Update if you implement payroll
+                merch_types,
+                f"${data['Payroll']:,.2f}"
             ))
+
+
+    def on_report_selected(self, event):
+        selected = self.report_tree.selection()
+
+        if selected:
+            item = self.report_tree.item(selected[0])
+            values = item['values']
+            
+            date_str = values[1] 
+            try:
+                selected_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+            except ValueError:
+                print(f"Invalid date format: {date_str}")
+                return
+
+            # Access the data for the selected date
+            data = self.full_report_data.get(selected_date)
+
+            if data:
+                expense_types = ", ".join(data.get("ExpenseTypes", []))
+                merch_types = ", ".join(data.get("MerchandiseTypes", []))
+
+                self.details_text.delete("1.0", tk.END)
+                self.details_text.insert(tk.END, f"Expense Types: {expense_types or 'N/A'}\n")
+                self.details_text.insert(tk.END, f"Merchandise Types: {merch_types or 'N/A'}")
 
     def show_close_out(self):
         super().show_close_out()
