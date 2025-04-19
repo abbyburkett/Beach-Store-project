@@ -417,35 +417,40 @@ def handle_close_out(employeeID, date, locationID, cash, credit):
         print(f"Error during handle_close_out: {err}")
         return False
 
-def get_daily_report_data(db_connection, is_manager=True):
-    cursor = db_connection.cursor(dictionary=True)
+def get_daily_report_data(location, today = None):
 
-    query = """
-    SELECT 
-        p.Date,
-        DAYNAME(p.Date) AS Day,
-        IFNULL(SUM(p.Cash), 0) AS Cash,
-        IFNULL(SUM(p.Credit), 0) AS Credit,
-        IFNULL(SUM(p.Cash + p.Credit), 0) AS Total,
-        e.ExpenseType,
-        e.Amount AS ExpenseAmount,
-        e.MerchType,
-        CASE WHEN e.isMerchandise THEN e.Amount ELSE NULL END AS MerchandiseAmount
-    FROM Profit p
-    LEFT JOIN Expense e 
-        ON p.Date = e.Date AND p.LocationID = e.LocationID
-    WHERE 
-        {date_filter}
-    GROUP BY 
-        p.Date, e.ExpenseType, e.Amount, e.MerchType, e.isMerchandise
-    ORDER BY 
-        p.Date ASC;
-    """.format(
-        date_filter="MONTH(p.Date) = MONTH(CURDATE()) AND YEAR(p.Date) = YEAR(CURDATE())" if is_manager else "1"
-    )
+    report_data = []
+    try:
+        db = create_db_connection()
+        cursor = db.cursor(dictionary=True)
 
-    cursor.execute(query)
-    return cursor.fetchall()
+        if today:
+            current_month = int(today[5:7])
+            current_year = int(today[:4])
+            print(current_month)
+            print(current_year)
+            cursor.execute("""
+                    SELECT 
+                        Date,
+                        Day,
+                        Cash,
+                        Credit,
+                        ExpenseType,
+                        ExpenseValue AS ExpenseAmount,
+                        MerchandiseType,
+                        MerchandiseValue AS MerchandiseAmount,
+                        Payroll
+                    FROM Daily_Report_By_Location
+                    WHERE MONTH(Date) = %s AND YEAR(Date) = %s AND LocationID = %s
+                    ORDER BY Date;
+                """, (current_month, current_year, location))
+        report_data = cursor.fetchall()
+        db.commit()
+        db.close()
+        cursor.close()
+    except mysql.connector.Error as err:
+        print(f"Error updating expense: {err}")
+    return report_data
 
 def get_expense_for_the_month(today):
     

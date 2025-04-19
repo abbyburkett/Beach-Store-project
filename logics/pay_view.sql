@@ -1,3 +1,5 @@
+USE BeachStore;
+
 CREATE VIEW Employee_Pay AS
 SELECT
     c.EmployeeID,
