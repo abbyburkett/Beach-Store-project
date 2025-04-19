@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS Employee (
     UserName VARCHAR(255) UNIQUE,
     PayRate DOUBLE,
     PayBonus DOUBLE,
+    IsDeleted BOOLEAN DEFAULT FALSE,
     Role ENUM('Owner', 'Manager', 'Employee')
 );
 
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS Location (
     Name VARCHAR(255) UNIQUE,
     Address VARCHAR(255),
     ManagerID INT,
+    IsDeleted BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (ManagerID) REFERENCES Employee(EmployeeID)
 );
 

@@ -58,7 +58,7 @@ def get_all_Emp_data():
                 return employee_data
             cursor = db.cursor()
 
-            cursor.execute("SELECT EmployeeID, UserName, FName, LName, Role, PayRate, PayBonus FROM Employee")
+            cursor.execute("SELECT EmployeeID, UserName, FName, LName, Role, PayRate, PayBonus FROM Employee WHERE IsDeleted = FALSE")
             employees = cursor.fetchall()
 
             for emp in employees:
@@ -108,7 +108,9 @@ def delete_employee_from_db(employee_id):
 
             cursor = db.cursor()
 
-            cursor.execute("DELETE FROM Employee WHERE EmployeeID = %s", (employee_id,))
+            # cursor.execute("DELETE FROM Employee WHERE EmployeeID = %s", (employee_id,))
+            cursor.execute("UPDATE Employee SET IsDeleted = TRUE WHERE EmployeeID = %s", (employee_id,))
+
             db.commit()
             db.close()
             cursor.close()
@@ -157,6 +159,7 @@ def get_location_data():
             SELECT L.LocationID, L.Name, L.Address, E.Username, L.ManagerID
             FROM Location L
             JOIN Employee E ON L.ManagerID = E.EmployeeID
+            WHERE L.IsDeleted = FALSE
         """
         cursor.execute(query)
         locations = cursor.fetchall()
@@ -189,7 +192,7 @@ def add_location(name, address, manager_id):
         update_query = """
             UPDATE Employee
             SET Role = 'Manager'
-            WHERE EmployeeID = %s
+            WHERE EmployeeID = %s AND Role != "Owner"
         """
         cursor.execute(update_query, (manager_id,))
         db.commit()
@@ -231,7 +234,8 @@ def delete_location(location_id):
 
         cursor = db.cursor()
         
-        cursor.execute("DELETE FROM Location WHERE LocationID = %s", (location_id,))
+        # cursor.execute("DELETE FROM Location WHERE LocationID = %s", (location_id,))
+        cursor.execute("UPDATE Location SET IsDeleted = TRUE WHERE LocationID = %s", (location_id,))
         
         db.commit()
         db.close()
@@ -427,8 +431,7 @@ def get_daily_report_data(location, today = None):
         if today:
             current_month = int(today[5:7])
             current_year = int(today[:4])
-            print(current_month)
-            print(current_year)
+
             cursor.execute("""
                     SELECT 
                         Date,

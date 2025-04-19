@@ -114,7 +114,7 @@ def run_sql_file(file_path = FILEPATH):
             cursor.execute("""
                 INSERT INTO Location (Name, Address, ManagerID)
                 VALUES (%s, %s, %s)
-            """, ("Aloha", "123 dfsadk sadjasnd", 1))
+            """, ("Aloha", "123 dfsadk sadjasnd", 2))
 
         db.commit()
         

@@ -37,6 +37,25 @@ BEGIN
     END IF;
 END //
 
+CREATE TRIGGER ChangeEmployeeAfterLocationSoftDel
+AFTER UPDATE ON Location
+FOR EACH ROW
+BEGIN
+    IF OLD.IsDeleted = FALSE AND NEW.IsDeleted = TRUE THEN
+        IF NOT EXISTS (
+            SELECT 1 
+            FROM Location 
+            WHERE ManagerID = OLD.ManagerID 
+              AND LocationID != OLD.LocationID
+              AND IsDeleted = FALSE
+        ) THEN
+            UPDATE Employee
+            SET Role = 'Employee'
+            WHERE EmployeeID = OLD.ManagerID AND Role != 'Owner';
+        END IF;
+    END IF;
+END //
+
 CREATE TRIGGER CheckingOwnerBeforeDel
 BEFORE DELETE ON Employee
 FOR EACH ROW
