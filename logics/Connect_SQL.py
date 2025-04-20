@@ -93,23 +93,23 @@ def run_sql_file(file_path = FILEPATH):
 
 
         # Insert default users (Employee, Manager, Owner) if they don't already exist
-        cursor.execute("SELECT COUNT(*) FROM Employee WHERE UserName = 'Employee'")
+        cursor.execute("SELECT COUNT(*) FROM Employee WHERE Role = 'Employee'")
         if cursor.fetchone()[0] == 0:
             cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role, PayRate, PayBonus) VALUES (%s, %s, %s, %s, %s, %s, %s)", 
                         ('Employee', hash_password("123"), "Emp", "loyee", 'Employee', 15.00, 10.00))
 
-        cursor.execute("SELECT COUNT(*) FROM Employee WHERE UserName = 'Manager'")
+        cursor.execute("SELECT COUNT(*) FROM Employee WHERE Role = 'Manager'")
         if cursor.fetchone()[0] == 0:
             cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role, PayRate, PayBonus) VALUES (%s, %s, %s, %s, %s, %s, %s)", 
                         ('Manager', hash_password("456"), "Mana", "ger", 'Manager', 20.00, 10.00))
 
-        cursor.execute("SELECT COUNT(*) FROM Employee WHERE UserName = 'Owner'")
+        cursor.execute("SELECT COUNT(*) FROM Employee WHERE Role = 'Owner'")
         if cursor.fetchone()[0] == 0:
             cursor.execute("INSERT INTO Employee (UserName, PinPassword, FName, LName, Role, PayRate, PayBonus) VALUES (%s, %s, %s, %s, %s, %s, %s)", 
                         ('Owner', hash_password("789"), "Own", "er", 'Owner', 30.00, 10.00))
             
         # # Insert default location if it doesn't already exist
-        cursor.execute("SELECT COUNT(*) FROM Location WHERE Name = 'Aloha'")
+        cursor.execute("SELECT COUNT(*) FROM Location WHERE IsDeleted = FALSE")
         if cursor.fetchone()[0] == 0:
             cursor.execute("""
                 INSERT INTO Location (Name, Address, ManagerID)
