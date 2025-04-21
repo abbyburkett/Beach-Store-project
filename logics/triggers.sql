@@ -91,7 +91,7 @@ BEGIN
 END //
 
 
-CREATE TRIGGER IF NOT SetPaidOnInsert
+CREATE TRIGGER IF NOT EXISTS SetPaidOnInsert
 BEFORE INSERT ON Invoice
 FOR EACH ROW
 BEGIN
@@ -101,5 +101,18 @@ BEGIN
          SET NEW.Paid = FALSE;
      END IF;
  END//
+
+CREATE TRIGGER IF NOT EXISTS UpdateEmpPayRateBonus
+AFTER UPDATE ON Employee
+FOR EACH ROW
+BEGIN
+    IF OLD.PayRate != NEW.PayRate THEN
+        INSERT INTO PayRateBonusHistory (EmployeeID, PayRate, PayBonus, EffectiveDate)
+        VALUES (NEW.EmployeeID, NEW.PayRate, NEW.PayBonus, NOW());
+    ELSEIF OLD.PayBonus != NEW.PayBonus THEN
+        INSERT INTO PayRateBonusHistory (EmployeeID, PayRate, PayBonus, EffectiveDate)
+        VALUES (NEW.EmployeeID, NEW.PayRate, NEW.PayBonus, NOW());
+    END IF;
+END//
 
 DELIMITER ;

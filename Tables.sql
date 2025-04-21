@@ -78,3 +78,12 @@ CREATE TABLE IF NOT EXISTS Withdrawal (
     LocationID INT,
     FOREIGN KEY (LocationID) REFERENCES Location(LocationID)
 );
+
+CREATE TABLE IF NOT EXISTS PayRateBonusHistory (
+    HistoryID INT PRIMARY KEY AUTO_INCREMENT,
+    EmployeeID INT,
+    PayRate DOUBLE,
+    PayBonus DOUBLE,
+    EffectiveDate DATE,
+    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
+);

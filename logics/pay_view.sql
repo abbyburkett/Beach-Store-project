@@ -4,9 +4,9 @@ CREATE OR REPLACE VIEW Employee_Pay AS
 SELECT
     c.EmployeeID,
     CONCAT(
-        DATE_FORMAT(DATE_SUB(c.ClockIn, INTERVAL WEEKDAY(c.ClockIn) DAY), '%b %d'),
+        DATE_FORMAT(DATE_SUB(c.ClockIn, INTERVAL WEEKDAY(c.ClockIn) DAY), '%Y-%b %d'),
         ' - ',
-        DATE_FORMAT(DATE_ADD(c.ClockIn, INTERVAL (6 - WEEKDAY(c.ClockIn)) DAY), '%b %d')
+        DATE_FORMAT(DATE_ADD(c.ClockIn, INTERVAL (6 - WEEKDAY(c.ClockIn)) DAY), '%Y-%b %d')
     ) AS Week_Range,
     c.LocationID,
     SUM(TIMESTAMPDIFF(SECOND, c.ClockIn, c.ClockOut) / 3600.0 * e.PayRate) AS Base_Salary,

@@ -23,9 +23,9 @@ SELECT
             FROM Employee_Pay ep
             JOIN Employee emp ON emp.EmployeeID = ep.EmployeeID
             WHERE CONCAT(
-                        DATE_FORMAT(DATE_SUB(p.Date, INTERVAL WEEKDAY(p.Date) DAY), '%b %d'),
+                        DATE_FORMAT(DATE_SUB(p.Date, INTERVAL WEEKDAY(p.Date) DAY), '%Y-%b %d'),
                         ' - ',
-                        DATE_FORMAT(DATE_ADD(p.Date, INTERVAL (6 - WEEKDAY(p.Date)) DAY),'%b %d')
+                        DATE_FORMAT(DATE_ADD(p.Date, INTERVAL (6 - WEEKDAY(p.Date)) DAY),'%Y-%b %d')
                         ) = ep.Week_Range
             AND ep.LocationID = p.LocationID), NULL) AS Payroll
 
