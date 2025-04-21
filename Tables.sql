@@ -1,5 +1,5 @@
 -- This line will be removed after finish with the project
--- DROP DATABASE IF EXISTS BeachStore; 
+DROP DATABASE IF EXISTS BeachStore; 
 
 CREATE DATABASE IF NOT EXISTS BeachStore;
 
@@ -77,4 +77,13 @@ CREATE TABLE IF NOT EXISTS Withdrawal (
     Date DATETIME DEFAULT CURRENT_TIMESTAMP,
     LocationID INT,
     FOREIGN KEY (LocationID) REFERENCES Location(LocationID)
+);
+
+CREATE TABLE IF NOT EXISTS PayRateBonusHistory (
+    HistoryID INT PRIMARY KEY AUTO_INCREMENT,
+    EmployeeID INT,
+    PayRate DOUBLE,
+    PayBonus DOUBLE,
+    EffectiveDate DATE,
+    FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
 );

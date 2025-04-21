@@ -102,4 +102,25 @@ BEGIN
      END IF;
  END//
 
+CREATE TRIGGER IF NOT EXISTS UpdateEmpPayRateBonus
+AFTER UPDATE ON Employee
+FOR EACH ROW
+BEGIN
+    IF OLD.PayRate != NEW.PayRate THEN
+        INSERT INTO PayRateBonusHistory (EmployeeID, PayRate, PayBonus, EffectiveDate)
+        VALUES (NEW.EmployeeID, NEW.PayRate, NEW.PayBonus, NOW());
+    ELSEIF OLD.PayBonus != NEW.PayBonus THEN
+        INSERT INTO PayRateBonusHistory (EmployeeID, PayRate, PayBonus, EffectiveDate)
+        VALUES (NEW.EmployeeID, NEW.PayRate, NEW.PayBonus, NOW());
+    END IF;
+END//
+
+CREATE TRIGGER IF NOT EXISTS CreateEmpPayRateBonus
+AFTER INSERT ON Employee
+FOR EACH ROW
+BEGIN
+    INSERT INTO PayRateBonusHistory (EmployeeID, PayRate, PayBonus, EffectiveDate)
+    VALUES (NEW.EmployeeID, NEW.PayRate, NEW.PayBonus, NOW());
+END//
+
 DELIMITER ;

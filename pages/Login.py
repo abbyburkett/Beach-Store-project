@@ -66,5 +66,9 @@ class Login(tk.Frame):
                 self.controller.show_dashboardEmp(results[1])
             elif results[2] == "Owner":
                 self.controller.show_dashboardOwner(results[1])
+
+            self.username_entry.delete(0, tk.END)
+            self.password_entry.delete(0, tk.END)
+
         else:
             print("Invalid credentials, please try again.")
