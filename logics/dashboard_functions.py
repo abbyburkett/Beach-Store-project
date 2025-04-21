@@ -470,7 +470,6 @@ def get_expense_for_the_month(today):
 
         cursor = db.cursor()
 
-        # SQL query to fetch expenses for the current month
         query = """
         SELECT ExpenseID, Date, Amount, ExpenseType, isMerchandise, MerchType
         FROM Expense
@@ -479,7 +478,6 @@ def get_expense_for_the_month(today):
         cursor.execute(query, (current_year, current_month))
         expenses = cursor.fetchall()
 
-        # Add expenses to the list
         for expense in expenses:
             expense_data.append(expense)
 
@@ -488,7 +486,7 @@ def get_expense_for_the_month(today):
 
     except mysql.connector.Error as err:
         print(f"Error fetching expenses data: {err}")
-    
+        
     return expense_data
 
 def update_expense(expense_id, date, amount, expense_type, is_merch, merch_type):
@@ -518,3 +516,77 @@ def delete_expense(expense_id):
         cursor.close()
     except mysql.connector.Error as err:
         print(f"Error deleting expense: {err}")
+
+def load_invoices():
+    try:
+        db = create_db_connection()
+        cursor = db.cursor()
+        cursor.execute("SELECT InvoiceNumber, Date, Company, AmountTotal, AmountPaid, DueDate, PaidWay, Paid FROM Invoice")
+        invoices = cursor.fetchall()
+
+        cursor.close()
+        db.close()
+    except mysql.connector.Error as err:
+        print(f"Error deleting expense: {err}")
+    
+    return invoices
+    
+
+def insert_invoice(company, amount, amount_paid, payway, due_date):
+    try:
+        db = create_db_connection()
+        cursor = db.cursor()
+        query = ("INSERT INTO Invoice (Company, AmountTotal, AmountPaid, PaidWay, DueDate)"
+                     "VALUES (%s, %s, %s, %s, %s) ")
+        cursor.execute(query, (company, amount, amount_paid, payway, due_date))
+        db.commit()
+        cursor.close()
+        db.close()
+
+        return True
+    except mysql.connector.Error as err:
+        # print(f"Error updating expense: {err}")
+        messagebox.showerror("Error", err)
+
+        return False
+    
+def update_invoice_payment(invoice_number, new_payment):
+    try:
+        db = create_db_connection()
+        cursor = db.cursor()
+        cursor.execute("SELECT AmountPaid, AmountTotal FROM Invoice WHERE InvoiceNumber = %s", (invoice_number,))
+        result = cursor.fetchone()
+        if result:
+            amount_paid, amount = result
+            updated_amount = float(amount_paid) + float(new_payment)
+
+            if updated_amount > amount:
+                messagebox.showerror("Error", "Payment exceeds total amount.")
+                return
+
+            # Update the AmountPaid
+            cursor.execute("UPDATE Invoice SET AmountPaid = %s WHERE InvoiceNumber = %s",
+                        (updated_amount, invoice_number))
+            db.commit()
+        cursor.close()
+        db.close()
+
+        return True
+    except mysql.connector.Error as err:
+        print(f"Error updating expense: {err}")
+
+        return False
+    
+def delete_invoice(invoice_number):
+    try:
+        db = create_db_connection()
+        cursor = db.cursor()
+        cursor.execute("DELETE FROM Invoice WHERE InvoiceNumber = %s",(invoice_number,))
+        db.commit()
+        cursor.close()
+        db.close()
+
+        return True
+    except mysql.connector.Error as err:
+        messagebox.showerror("Error", "Failed to delete invoice. {e}")
+        return False
