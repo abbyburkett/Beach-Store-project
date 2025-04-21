@@ -9,10 +9,10 @@ SELECT
         DATE_FORMAT(DATE_ADD(c.ClockIn, INTERVAL (6 - WEEKDAY(c.ClockIn)) DAY), '%Y-%b %d')
     ) AS Week_Range,
     c.LocationID,
-    SUM(TIMESTAMPDIFF(SECOND, c.ClockIn, c.ClockOut) / 3600.0 * e.PayRate) AS Base_Salary,
+    SUM(TIMESTAMPDIFF(SECOND, c.ClockIn, c.ClockOut) / 3600.0 * pr.PayRate) AS Base_Salary,
     SUM(
         CASE WHEN c.AfterBal > c.BeforeBal 
-             THEN (c.AfterBal - c.BeforeBal) * e.PayBonus 
+             THEN (c.AfterBal - c.BeforeBal) * pr.PayBonus 
              ELSE 0 
         END
     ) AS Bonus_Pay
@@ -27,6 +27,6 @@ JOIN PayRateBonusHistory pr
     )
 
 GROUP BY 
-    e.EmployeeID,
+    c.EmployeeID,
     c.LocationID,
     Week_Range;

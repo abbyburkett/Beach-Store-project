@@ -115,4 +115,12 @@ BEGIN
     END IF;
 END//
 
+CREATE TRIGGER IF NOT EXISTS CreateEmpPayRateBonus
+AFTER INSERT ON Employee
+FOR EACH ROW
+BEGIN
+    INSERT INTO PayRateBonusHistory (EmployeeID, PayRate, PayBonus, EffectiveDate)
+    VALUES (NEW.EmployeeID, NEW.PayRate, NEW.PayBonus, NOW());
+END//
+
 DELIMITER ;
