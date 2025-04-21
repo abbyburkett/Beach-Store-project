@@ -638,5 +638,4 @@ def insert_withdrawal(location_id, amount):
         return True
     except mysql.connector.Error as err:
         print(f"Error inserting withdrawal: {err}")
-
         return False
