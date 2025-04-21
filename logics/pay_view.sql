@@ -17,7 +17,15 @@ SELECT
         END
     ) AS Bonus_Pay
 FROM ClockInOut c
-JOIN Employee e ON c.EmployeeID = e.EmployeeID
+JOIN PayRateBonusHistory pr
+    ON c.EmployeeID = pr.EmployeeID
+    AND pr.EffectiveDate <= c.ClockIn
+    AND pr.EffectiveDate = (
+        SELECT MAX(EffectiveDate) 
+        FROM PayRateBonusHistory 
+        WHERE EmployeeID = pr.EmployeeID AND EffectiveDate <= c.ClockIn
+    )
+
 GROUP BY 
     e.EmployeeID,
     c.LocationID,

@@ -1,5 +1,5 @@
 -- This line will be removed after finish with the project
--- DROP DATABASE IF EXISTS BeachStore; 
+DROP DATABASE IF EXISTS BeachStore; 
 
 CREATE DATABASE IF NOT EXISTS BeachStore;
 
