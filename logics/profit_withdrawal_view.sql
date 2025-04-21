@@ -7,10 +7,10 @@ SELECT
 FROM (
     SELECT
         LocationID,
-        SUM(Cash + Credit) AS TotalRevenue,
+        SUM(DISTINCT (Cash + Credit)) AS TotalRevenue,
         SUM(COALESCE(ExpenseValue,0) + COALESCE(Payroll, 0)) AS TotalExpense
     FROM Daily_Report_By_Location
-    GROUP BY LocationID
+    GROUP BY Daily_Report_By_Location.LocationID, Daily_Report_By_Location.Date
 ) AS dr
 LEFT JOIN (
     SELECT

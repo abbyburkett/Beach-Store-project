@@ -592,3 +592,51 @@ def delete_invoice(invoice_number):
     except mysql.connector.Error as err:
         messagebox.showerror("Error", "Failed to delete invoice. {e}")
         return False
+    
+def get_withdrawal_data(location_id):
+    withdrawal_data = []
+    try:
+        db = create_db_connection()
+        cursor = db.cursor()
+        cursor.execute("SELECT Date, Amount FROM Withdrawal WHERE LocationID = %s", (location_id,))
+        data = cursor.fetchall()
+        cursor.close()
+        db.close()
+
+        for info in data:
+            withdrawal_data.append(info)
+    except mysql.connector.Error as err:
+        print(f"Error getting withdrawal data: {err}")
+
+    return withdrawal_data
+
+def get_profit(location_id):
+    try:
+        db = create_db_connection()
+        cursor = db.cursor()
+        cursor.execute("SELECT Profit FROM Profit_And_Withdrawal WHERE LocationID = %s", (location_id,))
+        data = cursor.fetchone()
+        cursor.close()
+        db.close()
+        return data[0] if data else 0.0
+    except mysql.connector.Error as err:
+        print(f"Error getting profit: {err}")
+        return 0.0
+
+def insert_withdrawal(location_id, amount):
+    try:
+        db = create_db_connection()
+        cursor = db.cursor()
+
+        query = "INSERT INTO Withdrawal (Amount, LocationID) VALUES (%s, %s)"
+        cursor.execute(query, (amount, location_id))
+
+        db.commit()
+        cursor.close()
+        db.close()
+
+        return True
+    except mysql.connector.Error as err:
+        print(f"Error inserting withdrawal: {err}")
+
+        return False

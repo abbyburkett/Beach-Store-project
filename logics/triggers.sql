@@ -1,6 +1,6 @@
 DELIMITER //
 
-CREATE TRIGGER ChangeEmployeeAfterLocationDel
+CREATE TRIGGER IF NOT EXISTS ChangeEmployeeAfterLocationDel
 AFTER DELETE ON Location
 FOR EACH ROW
 BEGIN
@@ -15,7 +15,7 @@ BEGIN
     END IF;
 END //
 
-CREATE TRIGGER UpdateManagerRoleOnLocationUpdate
+CREATE TRIGGER IF NOT EXISTS UpdateManagerRoleOnLocationUpdate
 BEFORE UPDATE ON Location
 FOR EACH ROW
 BEGIN
@@ -37,7 +37,7 @@ BEGIN
     END IF;
 END //
 
-CREATE TRIGGER ChangeEmployeeAfterLocationSoftDel
+CREATE TRIGGER IF NOT EXISTS ChangeEmployeeAfterLocationSoftDel
 AFTER UPDATE ON Location
 FOR EACH ROW
 BEGIN
@@ -56,7 +56,7 @@ BEGIN
     END IF;
 END //
 
-CREATE TRIGGER CheckingOwnerBeforeDel
+CREATE TRIGGER IF NOT EXISTS CheckingOwnerBeforeDel
 BEFORE DELETE ON Employee
 FOR EACH ROW
 BEGIN
@@ -70,7 +70,7 @@ BEGIN
     END IF;
 END //
 
-CREATE TRIGGER CheckingUpdateExpense
+CREATE TRIGGER IF NOT EXISTS CheckingUpdateExpense
 BEFORE UPDATE ON Expense
 FOR EACH ROW
 BEGIN
@@ -79,7 +79,7 @@ BEGIN
     END IF;
 END //
 
-CREATE TRIGGER UpdateInvoicePaidStatus
+CREATE TRIGGER IF NOT EXISTS UpdateInvoicePaidStatus
 BEFORE UPDATE ON Invoice
 FOR EACH ROW
 BEGIN
