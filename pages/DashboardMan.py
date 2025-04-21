@@ -21,12 +21,12 @@ class DashboardManager(DashboardEmployee):
         self.isManager = True
         self.isOwner = False
 
-        self.db = dashboard_functions.create_db_connection()
-        if self.db is None:
-            messagebox.showerror("Database Error", "Database Error")
-        else:
-            self.cursor = self.db.cursor()
-        self.dashboard_label.config(text=f"Welcome to the Manager Dashboard")
+        # self.db = dashboard_functions.create_db_connection()
+        # if self.db is None:
+        #     messagebox.showerror("Database Error", "Database Error")
+        # else:
+        #     self.cursor = self.db.cursor()
+        # self.dashboard_label.config(text=f"Welcome to the Manager Dashboard")
     def create_widgets(self):
         super().create_widgets()
 
@@ -139,12 +139,9 @@ class DashboardManager(DashboardEmployee):
         due_date = self.due_date_entry.get()
         payway = self.payway_entry.get()
         amount_paid = self.amount_paid_entry.get()
-
-
         if not (company and amount and due_date and payway and amount_paid ):
             messagebox.showerror("Error", "Please fill in all fields")
             return
-
         try:
             #ensure amount is a valid float
             amount = float(amount)
@@ -153,86 +150,98 @@ class DashboardManager(DashboardEmployee):
             if amount_paid > amount:
                 messagebox.showerror("Error", "Amount paid cannot exceed total amount.")
                 return
-
-            cursor = self.db.cursor()
-            query = ("INSERT INTO Invoice (Company, AmountTotal, AmountPaid, PaidWay, DueDate)"
-                     "VALUES (%s, %s, %s, %s, %s) ")
-            cursor.execute(query, (company, amount, amount_paid, payway, due_date))
-            self.db.commit()
-            cursor.close()
-            messagebox.showinfo("Invoice Added", "Invoice Added")
-            #Refresh invoice list
-            self.load_invoices()
         except Exception as e:
             messagebox.showerror("Error", e)
 
+            # cursor = self.db.cursor()
+            # query = ("INSERT INTO Invoice (Company, AmountTotal, AmountPaid, PaidWay, DueDate)"
+            #          "VALUES (%s, %s, %s, %s, %s) ")
+            # cursor.execute(query, (company, amount, amount_paid, payway, due_date))
+            # self.db.commit()
+            # cursor.close()
+
+        result = dashboard_functions.insert_invoice(company, amount, amount_paid, payway, due_date)
+
+        if result:
+            messagebox.showinfo("Invoice Added", "Invoice Added")
+            self.load_invoices()
+
+            self.company_entry.delete(0, tk.END)
+            self.amount_entry.delete(0, tk.END)
+            self.due_date_entry.delete(0, tk.END)
+            self.payway_entry.delete(0, tk.END)
+            self.amount_paid_entry.delete(0, tk.END)
+        else: 
+            print("Something went wrong with the database connection")
     def load_invoices(self):
-        """Fetch and display invoices from the database."""
         for row in self.tree.get_children():
             self.tree.delete(row)  # Clear existing entries
+        # try:
+        #     cursor = self.db.cursor()
+        #     cursor.execute("SELECT InvoiceNumber, Date, Company, AmountTotal, AmountPaid, DueDate, PaidWay, Paid FROM Invoice")
+        #     invoices = cursor.fetchall()
+        #     cursor.close()
 
-        try:
-            cursor = self.db.cursor()
-            cursor.execute("SELECT InvoiceNumber, Date, Company, AmountTotal, AmountPaid, DueDate, PaidWay, Paid FROM Invoice")
-            invoices = cursor.fetchall()
-            cursor.close()
+        invoices = dashboard_functions.load_invoices() or []
+        
+        for invoice in invoices:
+            invoice_number, date_received, company, amount, amount_paid, due_date, paid_way, status = invoice
 
-            for invoice in invoices:
-                invoice_number, date_received, company, amount, amount_paid, due_date, paid_way, status = invoice
+            amount = float(amount)
+            amount_paid = float(amount_paid)
 
-                amount = float(amount)
-                amount_paid = float(amount_paid)
+            #Displays date_received as only yy/mm/dd
+            date_received = date_received.strftime("%Y-%m-%d")
 
-                #Displays date_received as only yy/mm/dd
-                date_received = date_received.strftime("%Y-%m-%d")
+            #Set the status of the invoice
+            if amount_paid >= amount:
+                status = "Paid"
+            elif amount_paid < amount:
+                status = "Partially Paid"
+            else:
+                status = "Unpaid"
 
-                #Set the status of the invoice
-                if amount_paid >= amount:
-                    status = "Paid"
-                elif amount_paid < amount:
-                    status = "Partially Paid"
-                else:
-                    status = "Unpaid"
+            if amount_paid > amount:
+                messagebox.showerror("Error", "Amount paid can't exceed total amount.")
+                return
 
-                if amount_paid > amount:
-                    messagebox.showerror("Error", "Amount paid can't exceed total amount.")
-                    return
+            #Insert into treeview, adding the Date received (current date)
+            self.tree.insert("", "end", values=(invoice_number, date_received, company, amount, amount_paid, due_date, paid_way, status))
 
-                #Insert into treeview, adding the Date received (current date)
-                self.tree.insert("", "end", values=(invoice_number, date_received, company, amount, amount_paid, due_date, paid_way, status))
-
-        except mysql.connector.Error as err:
-            messagebox.showerror("Database Error", f"Error: {err}")
+        # except mysql.connector.Error as err:
+        #     messagebox.showerror("Database Error", f"Error: {err}")
 
     def update_invoice_payment(self, invoice_number, new_payment):
-        try:
-            cursor = self.db.cursor()
+        # try:
+        #     cursor = self.db.cursor()
 
-            cursor.execute("SELECT AmountPaid, AmountTotal FROM Invoice WHERE InvoiceNumber = %s", (invoice_number,))
-            result = cursor.fetchone()
+        #     cursor.execute("SELECT AmountPaid, AmountTotal FROM Invoice WHERE InvoiceNumber = %s", (invoice_number,))
+            # result = cursor.fetchone()
 
-            if result:
-                amount_paid, amount = result
-                updated_amount = float(amount_paid) + float(new_payment)
+            # if result:
+            #     amount_paid, amount = result
+            #     updated_amount = float(amount_paid) + float(new_payment)
 
-                if updated_amount > amount:
-                    messagebox.showerror("Error", "Payment exceeds total amount.")
-                    return
+            #     if updated_amount > amount:
+            #         messagebox.showerror("Error", "Payment exceeds total amount.")
+            #         return
 
-                # Update the AmountPaid
-                cursor.execute("UPDATE Invoice SET AmountPaid = %s WHERE InvoiceNumber = %s",
-                            (updated_amount, invoice_number))
-                self.db.commit()
+            #     # Update the AmountPaid
+            #     cursor.execute("UPDATE Invoice SET AmountPaid = %s WHERE InvoiceNumber = %s",
+            #                 (updated_amount, invoice_number))
+            #     self.db.commit()
+        result = dashboard_functions.update_invoice_payment(invoice_number, new_payment)
 
-                messagebox.showinfo("Success", "Invoice payment updated successfully.")
-                self.load_invoices()  # Refresh the table
-            else:
-                messagebox.showerror("Error", "Invoice not found.")
+        if result:
+            messagebox.showinfo("Success", "Invoice payment updated successfully.")
+            self.load_invoices()  # Refresh the table
+        else:
+            messagebox.showerror("Error", "Invoice not found.")
 
-                cursor.close()
+                # cursor.close()
 
-        except Exception as e:
-            messagebox.showerror("Error", f"Could not update invoice payment.\n{e}")
+        # except Exception as e:
+        #     messagebox.showerror("Error", f"Could not update invoice payment.\n{e}")
 
     def prompt_partial_payment(self):
         selected_item = self.tree.selection()
@@ -258,17 +267,21 @@ class DashboardManager(DashboardEmployee):
         invoice_number = invoice['values'][0]
 
         # Confirm deletion
-        result = messagebox.askyesno("Delete Invoice", f"Are you sure you want to delete Invoice #{invoice_number}?")
-        if result:
-            try:
-                cursor = self.db.cursor()
-                cursor.execute("DELETE FROM Invoice WHERE InvoiceNumber = %s",(invoice_number,))
-                self.db.commit()
-                cursor.close()
+        yes_no_result = messagebox.askyesno("Delete Invoice", f"Are you sure you want to delete Invoice #{invoice_number}?")
+        if yes_no_result:
+            result = dashboard_functions.delete_invoice(invoice_number)
+            if result:
                 messagebox.showinfo("Success", "Invoice deleted successfully.")
                 self.load_invoices()
-            except Exception as e:
-                messagebox.showerror("Error", "Failed to delete invoice. {e}")
+            else:
+                print("Failed to delete invoice. Something is wrong with the database connection")
+        #     try:
+        #         cursor = self.db.cursor()
+        #         cursor.execute("DELETE FROM Invoice WHERE InvoiceNumber = %s",(invoice_number,))
+        #         self.db.commit()
+        #         cursor.close()
+            # except Exception as e:
+            #     messagebox.showerror("Error", "Failed to delete invoice. {e}")
 
     def show_employees(self):
         self.manage_employees_page = tk.Frame(self.main_content)
@@ -552,7 +565,7 @@ class DashboardManager(DashboardEmployee):
 
         # Define table columns
         columns = (
-            "Day", "Date", "Gross Profit", 
+            "Day", "Date", "Gross Revenue", 
             "Expense", "Expense Type",
             "Merchandise", "Merchandise Type", 
             "Payroll"

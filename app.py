@@ -56,7 +56,7 @@ class MyApp(tk.Frame):
 
     def set_location(self, locationID):
         self.location = locationID
-        print(self.location)
+        print("Current location ID: ", self.location)
 
     def show_frame(self, cont):
         frame = self.frames[cont]

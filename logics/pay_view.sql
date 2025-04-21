@@ -1,6 +1,6 @@
 USE BeachStore;
 
-CREATE VIEW Employee_Pay AS
+CREATE OR REPLACE VIEW Employee_Pay AS
 SELECT
     c.EmployeeID,
     CONCAT(
