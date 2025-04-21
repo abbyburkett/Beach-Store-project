@@ -21,13 +21,6 @@ class DashboardOwner(DashboardManager):
         self.isManager = False
         self.isOwner = True
 
-        # Establish database connection
-        self.db = dashboard_functions.create_db_connection()
-        if self.db is None:
-            messagebox.showerror("Database Error", "Database Error")
-        else:
-            self.cursor = self.db.cursor()
-
         self.dashboard_label.config(text=f"Welcome to the Owner Dashboard")
 
     def create_widgets(self):
@@ -35,16 +28,21 @@ class DashboardOwner(DashboardManager):
 
         self.location_indicate = tk.Label(self.side_bar, text="", bg=SIDE_BAR_COLOR)
         self.location_btn = tk.Button(self.side_bar, text="Location", font=("Bold", 15), bd=0, fg=SIDEBAR_TEXT_COLOR, command=lambda: self.indicate(self.location_indicate, self.show_locations))
+        self.withdrawal_indicate = tk.Label(self.side_bar, text="", bg=SIDE_BAR_COLOR)
+        self.withdrawal_btn = tk.Button(self.side_bar, text="Withdrawal", font=("Bold", 15), bd=0, fg=SIDEBAR_TEXT_COLOR, command=lambda: self.indicate(self.withdrawal_indicate, self.show_withdrawals))
 
     def display_widgets(self):
         super().display_widgets()
 
         self.location_btn.place(x=10, y=350)
         self.location_indicate.place(x=3, y=350, width=5, height=25)
+        self.withdrawal_btn.place(x=10, y=400)
+        self.withdrawal_indicate.place(x=3, y=400, width=5, height=25)
 
     def hide_indicator(self):
         super().hide_indicator()
         self.location_indicate.config(bg = SIDE_BAR_COLOR)
+        self.withdrawal_indicate.config(bg = SIDE_BAR_COLOR)
 
     def show_employees(self):
         super().show_employees()
@@ -231,7 +229,6 @@ class DashboardOwner(DashboardManager):
                 values=(location_id, name, address, manager_username),
                 tags=(manager_id,) 
             )
-
         # Scrollbars
         tree_scroll_y = ttk.Scrollbar(data_frame, orient="vertical", command=self.data_view.yview)
         tree_scroll_y.grid(row=0, column=1, sticky="ns")
@@ -318,3 +315,11 @@ class DashboardOwner(DashboardManager):
             
             self.manager_entry.delete(0, tk.END)
             self.manager_entry.insert(0, manager_id)
+
+    def show_withdrawals(self):
+        self.clear_main_content()
+        withdrawal_frame = tk.Frame(self.main_content)
+        withdrawal_frame.pack(pady=5)
+
+        month_label = tk.Label(withdrawal_frame, text="Withdrawal", font=("Helvetica", 12))
+        month_label.pack(side="left", padx=(0, 5))
