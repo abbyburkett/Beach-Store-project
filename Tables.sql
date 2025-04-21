@@ -1,5 +1,5 @@
 -- This line will be removed after finish with the project
-DROP DATABASE IF EXISTS BeachStore; 
+-- DROP DATABASE IF EXISTS BeachStore; 
 
 CREATE DATABASE IF NOT EXISTS BeachStore;
 
@@ -74,5 +74,7 @@ CREATE TABLE IF NOT EXISTS Invoice (
 CREATE TABLE IF NOT EXISTS Withdrawal (
     WithdrawalID INT PRIMARY KEY AUTO_INCREMENT,
     Amount DOUBLE,
-    Date DATETIME DEFAULT CURRENT_TIMESTAMP
+    Date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    LocationID INT,
+    FOREIGN KEY (LocationID) REFERENCES Location(LocationID)
 );

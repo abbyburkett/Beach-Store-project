@@ -26,7 +26,7 @@ class DashboardManager(DashboardEmployee):
         #     messagebox.showerror("Database Error", "Database Error")
         # else:
         #     self.cursor = self.db.cursor()
-        # self.dashboard_label.config(text=f"Welcome to the Manager Dashboard")
+        self.dashboard_label.config(text=f"Welcome to the Manager Dashboard")
     def create_widgets(self):
         super().create_widgets()
 
@@ -565,7 +565,7 @@ class DashboardManager(DashboardEmployee):
 
         # Define table columns
         columns = (
-            "Day", "Date", "Gross Profit", 
+            "Day", "Date", "Gross Revenue", 
             "Expense", "Expense Type",
             "Merchandise", "Merchandise Type", 
             "Payroll"

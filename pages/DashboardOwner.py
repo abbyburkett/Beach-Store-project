@@ -321,5 +321,78 @@ class DashboardOwner(DashboardManager):
         withdrawal_frame = tk.Frame(self.main_content)
         withdrawal_frame.pack(pady=5)
 
-        month_label = tk.Label(withdrawal_frame, text="Withdrawal", font=("Helvetica", 12))
-        month_label.pack(side="left", padx=(0, 5))
+        top_frame = tk.Frame(withdrawal_frame)
+        top_frame.pack(fill="both", expand=True, padx=10, pady=10)
+
+        top_label = tk.Label(top_frame, text="Withdrawal History", font=("Helvetica", 14, "bold"))
+        top_label.pack(pady=(0, 10))
+
+        tree_frame = tk.Frame(top_frame)
+        tree_frame.pack(fill="both", expand=True)
+        columns = ("Date", "Amount")
+        self.withdrawal_tree = ttk.Treeview(tree_frame, columns=columns, show="headings", height=8)
+        for col in columns:
+            self.withdrawal_tree.heading(col, text=col)
+            self.withdrawal_tree.column(col, anchor="center", width=150)
+        self.withdrawal_tree.pack(fill="both", expand=True)
+        scrollbar = ttk.Scrollbar(top_frame, orient="vertical", command=self.withdrawal_tree.yview)
+        scrollbar.pack(side="right", fill="y")
+        self.withdrawal_tree.configure(yscrollcommand=scrollbar.set)
+
+        self.load_withdrawal_history()
+
+        bottom_frame = tk.Frame(withdrawal_frame)
+        bottom_frame.pack(fill="x", padx=10, pady=20)
+
+        profit_label = tk.Label(bottom_frame, text="Available Profit: ", font=("Helvetica", 12))
+        profit_label.grid(row=0, column=0, sticky="w")
+
+        self.available_profit_var = tk.StringVar()
+
+        profit_amount = tk.Label(bottom_frame, textvariable=self.available_profit_var, font=("Helvetica", 12, "bold"))
+        profit_amount.grid(row=0, column=1, sticky="w", padx=(5, 20))
+
+        profit_value = dashboard_functions.get_profit(self.location)
+        self.available_profit_var.set(f"${profit_value:.2f}")
+
+        withdraw_label = tk.Label(bottom_frame, text="Withdraw Amount:", font=("Helvetica", 12))
+        withdraw_label.grid(row=1, column=0, sticky="w")
+
+        self.withdraw_entry = tk.Entry(bottom_frame, width=15)
+        self.withdraw_entry.grid(row=1, column=1, sticky="w", padx=(5, 20))
+
+        withdraw_button = tk.Button(bottom_frame, text="Withdraw", command=self.make_withdrawal)
+        withdraw_button.grid(row=1, column=2, padx=10)
+    
+    def load_withdrawal_history(self):
+        for row in self.withdrawal_tree.get_children():
+            self.withdrawal_tree.delete(row)
+
+        withdrawal_data = dashboard_functions.get_withdrawal_data(self.location)
+
+        for date, amount in withdrawal_data:
+            self.withdrawal_tree.insert("", "end", values=(date.strftime("%Y-%m-%d"), f"${amount:.2f}"))
+
+    def make_withdrawal(self):
+        try:
+            amount = float(self.withdraw_entry.get())
+            if not amount:
+                messagebox.showwarning("Missing Input", "Please enter a withdrawal amount.")
+                return
+            if amount <= 0:
+                messagebox.showerror("Invalid Input", "Please enter a valid positive number.")
+                return
+            available = float(self.available_profit_var.get().replace('$', ''))
+            if amount > available:
+                messagebox.showerror("Insufficient Profit", "Withdrawal amount exceeds available profit.")
+                return
+            
+            result = dashboard_functions.insert_withdrawal(self.location, amount)
+
+            if result: 
+                messagebox.showinfo("Success", f"Withdrawal of ${amount:.2f} successful.")
+                self.withdraw_entry.delete(0, tk.END)
+                self.indicate(self.withdrawal_indicate, self.show_withdrawals)
+
+        except Exception as e:
+            messagebox.showerror("Error", e)

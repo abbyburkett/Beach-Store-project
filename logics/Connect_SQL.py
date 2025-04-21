@@ -10,6 +10,8 @@ PAYVIEWPATH = "logics/pay_view.sql"
 
 REPORTPATH = "logics/report_view.sql"
 
+WITHDRAWALPATH = "logics/profit_withdrawal_view.sql"
+
 def run_sql_file(file_path = FILEPATH):
     try:
         db_password = os.getenv('MYSQL_PASSWORD')
@@ -81,6 +83,18 @@ def run_sql_file(file_path = FILEPATH):
 
         # reading the report view SQL
         with open(REPORTPATH, 'r') as file:
+            pay_view_sql = file.read()
+
+        statements = [stmt.strip() for stmt in pay_view_sql.split(';') if stmt.strip()]
+
+        for stmt in statements:
+            try:
+                cursor.execute(stmt)
+            except mysql.connector.Error as e:
+                print(f"Error executing statement: {e}\nStatement: {stmt}")
+
+        # reading the withdrawal view SQL
+        with open(WITHDRAWALPATH, 'r') as file:
             pay_view_sql = file.read()
 
         statements = [stmt.strip() for stmt in pay_view_sql.split(';') if stmt.strip()]

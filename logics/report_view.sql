@@ -1,6 +1,6 @@
 Use BeachStore;
 
-CREATE VIEW Daily_Report_By_Location AS
+CREATE OR REPLACE VIEW Daily_Report_By_Location AS
 SELECT  
     p.Date,
     DAYNAME(p.Date) AS Day,
