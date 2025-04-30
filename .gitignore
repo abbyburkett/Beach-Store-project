@@ -3,3 +3,4 @@ __pycache__/
 .env
 .idea/
 testing_data.sql
+.DS_Store
