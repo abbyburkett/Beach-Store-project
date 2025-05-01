@@ -606,8 +606,8 @@ class DashboardManager(DashboardEmployee):
                 self.full_report_data[key] = {
                     "Day": row["Day"],
                     "Date": row["Date"],
-                    "Cash": float(row["Cash"]),
-                    "Credit": float(row["Credit"]),
+                    "Cash": float(row["Cash"]) if row["Cash"] is not None else 0.0,
+                    "Credit": float(row["Credit"]) if row["Credit"] is not None else 0.0,
                     "Expense": 0.0,
                     "Merchandise": 0.0,
                     "Payroll": float(row["Payroll"]) if row["Payroll"] is not None else 0.0,
