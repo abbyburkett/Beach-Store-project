@@ -25,7 +25,6 @@ JOIN PayRateBonusHistory pr
         FROM PayRateBonusHistory 
         WHERE EmployeeID = pr.EmployeeID AND EffectiveDate <= c.ClockIn
     )
-
 GROUP BY 
     c.EmployeeID,
     c.LocationID,

@@ -84,6 +84,6 @@ CREATE TABLE IF NOT EXISTS PayRateBonusHistory (
     EmployeeID INT,
     PayRate DOUBLE,
     PayBonus DOUBLE,
-    EffectiveDate DATE,
+    EffectiveDate DATETIME,
     FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID)
 );

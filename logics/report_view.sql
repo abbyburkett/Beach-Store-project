@@ -1,10 +1,33 @@
-Use BeachStore;
+USE BeachStore;
 
 CREATE OR REPLACE VIEW Daily_Report_By_Location AS
+WITH RECURSIVE calendar AS (
+    SELECT MIN(DATE_FORMAT(Date, '%Y-%m-01')) AS Date
+    FROM Profit
+    UNION ALL
+    SELECT DATE_ADD(Date, INTERVAL 1 DAY)
+    FROM calendar
+    WHERE Date < LAST_DAY((SELECT MAX(Date) FROM Profit))
+),
+date_location AS (
+    SELECT 
+        c.Date,
+        l.LocationID
+    FROM calendar c
+    CROSS JOIN (SELECT LocationID FROM Location WHERE IsDeleted = FALSE) l
+),
+payroll_data AS (
+    SELECT 
+        ep.EmployeeID,
+        ep.Week_Range,
+        ep.LocationID,
+        (ep.Base_Salary + ep.Bonus_Pay) AS TotalPay
+    FROM Employee_Pay ep
+)
 SELECT  
-    p.Date,
-    DAYNAME(p.Date) AS Day,
-    p.LocationID,
+    dl.Date,
+    DAYNAME(dl.Date) AS Day,
+    dl.LocationID,
     p.Cash,
     p.Credit,
     
@@ -19,15 +42,18 @@ SELECT
     END AS MerchandiseValue,
 
     IF(
-            DAYNAME(p.Date) = 'Sunday', (SELECT SUM(ep.Base_Salary + ep.Bonus_Pay)
-            FROM Employee_Pay ep
-            JOIN Employee emp ON emp.EmployeeID = ep.EmployeeID
-            WHERE CONCAT(
-                        DATE_FORMAT(DATE_SUB(p.Date, INTERVAL WEEKDAY(p.Date) DAY), '%Y-%b %d'),
-                        ' - ',
-                        DATE_FORMAT(DATE_ADD(p.Date, INTERVAL (6 - WEEKDAY(p.Date)) DAY),'%Y-%b %d')
-                        ) = ep.Week_Range
-            AND ep.LocationID = p.LocationID), NULL) AS Payroll
+        DAYNAME(dl.Date) = 'Sunday',
+        (
+            SELECT SUM(TotalPay)
+            FROM payroll_data pd
+            WHERE pd.LocationID = dl.LocationID
+            AND pd.Week_Range = CONCAT(
+                DATE_FORMAT(DATE_SUB(dl.Date, INTERVAL WEEKDAY(dl.Date) DAY), '%Y-%b %d'),
+                ' - ',
+                DATE_FORMAT(DATE_ADD(dl.Date, INTERVAL (6 - WEEKDAY(dl.Date)) DAY),'%Y-%b %d')
+            )
+        ), NULL) AS Payroll
 
-FROM Profit p
-LEFT JOIN Expense e ON p.Date = e.Date AND p.LocationID = e.LocationID;
+FROM date_location dl
+LEFT JOIN Profit p ON p.Date = dl.Date AND p.LocationID = dl.LocationID
+LEFT JOIN Expense e ON e.Date = dl.Date AND e.LocationID = dl.LocationID;
