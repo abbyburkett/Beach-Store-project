@@ -120,30 +120,28 @@ def delete_employee_from_db(employee_id):
             return False
 
 
-def get_pay_data(employeeID, locationID):
+def get_clock_data(employeeID, locationID):
     try:
-            db = create_db_connection()
-            if db is None:
-                return False
+        db = create_db_connection()
+        if db is None:
+            return []
 
-            cursor = db.cursor()
+        cursor = db.cursor()
 
-            cursor.execute("""
-                SELECT Week_Range AS WeekRange,
-                Base_Salary AS PayAmount,
-                Bonus_Pay AS GrossBonus,
-                (Base_Salary + Bonus_Pay) AS GrossPaid
-                FROM Employee_Pay
-                WHERE EmployeeID = %s AND LocationID = %s
-            """, (employeeID, locationID))
-            rows = cursor.fetchall()
-            db.close()
-            cursor.close()
-            return rows
+        cursor.execute("""
+            SELECT Date, ClockIn, ClockOut, BeforeBal, AfterBal
+            FROM ClockInOut
+            WHERE EmployeeID = %s AND LocationID = %s
+            ORDER BY Date DESC
+        """, (employeeID, locationID))
 
-    
+        rows = cursor.fetchall()
+        db.close()
+        cursor.close()
+        return rows
+
     except mysql.connector.Error as err:
-        print(f"Error deleting employee: {err}")
+        print(f"Error fetching clock records: {err}")
         return []
     
 def get_location_data():

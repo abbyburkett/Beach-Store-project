@@ -104,25 +104,25 @@ class DashboardEmployee(tk.Frame):
         self.clock_in = tk.Button(self.home_page, text="Clock In", font=("Bold", 36), bd=0, command=self.handle_clock_in)
         self.clock_in.pack(pady=10)
         
-        pay_label = tk.Label(self.home_page, text = "Pay Table", fg = MAIN_CONTENT_COLOR)
-        pay_label.pack(pady=10)
-        
-        columns = ("WeekRange", "PayAmount", "GrossBonus", "GrossPaid")
-        self.pay_table = ttk.Treeview(self.home_page, columns=columns, show="headings")
+        clock_label = tk.Label(self.home_page, text="Clock In/Out Record", fg=MAIN_CONTENT_COLOR)
+        clock_label.pack(pady=10)
+
+        columns = ("Date", "ClockIn", "ClockOut", "BeforeBal", "AfterBal")
+        self.clock_table = ttk.Treeview(self.home_page, columns=columns, show="headings")
 
         for col in columns:
-            self.pay_table.heading(col, text=col)
-            self.pay_table.column(col, anchor="center")
+            self.clock_table.heading(col, text=col)
+            self.clock_table.column(col, anchor="center")
 
-        data = dashboard_functions.get_pay_data(self.user_id, self.location)
+        data = dashboard_functions.get_clock_data(self.user_id, self.location)
 
         for row in data:
-            self.pay_table.insert("", "end", values=row)
+            self.clock_table.insert("", "end", values=row)
 
-        scrollbar = ttk.Scrollbar(self.home_page, orient="vertical", command=self.pay_table.yview)
-        self.pay_table.configure(yscrollcommand=scrollbar.set)
+        scrollbar = ttk.Scrollbar(self.home_page, orient="vertical", command=self.clock_table.yview)
+        self.clock_table.configure(yscrollcommand=scrollbar.set)
 
-        self.pay_table.pack(side="left", fill="both", expand=True)
+        self.clock_table.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
 
         print("The current Employee ID is: ", self.user_id)
