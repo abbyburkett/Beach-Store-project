@@ -299,7 +299,7 @@ class DashboardManager(DashboardEmployee):
         search_frame.pack(pady=10)
         search_label = tk.Label(search_frame, text="Search:", font=("Arial", 14), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR)
         search_label.pack(side="left", padx=10)
-        self.search_entry = tk.Entry(search_frame, font=("Arial", 14), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.search_entry = tk.Entry(search_frame, font=("Arial", 14), bg="white", fg="black")
         self.search_entry.pack(side="left", padx=10, ipadx=10)
         self.search_entry.bind("<KeyRelease>", self.search_employees)
 
@@ -329,42 +329,43 @@ class DashboardManager(DashboardEmployee):
         username_label = tk.Label(detail_frame, text="Username", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
         username_label.grid(row=0, column=0, padx=5, pady=(5, 0), sticky="w")
 
-        self.username_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.username_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black")
         self.username_entry.grid(row=1, column=0, padx=5, pady=(0, 10), sticky="w")
+        self.username_entry.focus_set()
 
         # First Name
         fname_label = tk.Label(detail_frame, text="First Name", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
         fname_label.grid(row=2, column=0, padx=5, pady=(5, 0), sticky="w")
 
-        self.fname_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.fname_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black")
         self.fname_entry.grid(row=3, column=0, padx=5, pady=(0, 10), sticky="w")
 
         # Last Name
         lname_label = tk.Label(detail_frame, text="Last Name", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
         lname_label.grid(row=4, column=0, padx=5, pady=(5, 0), sticky="w")
 
-        self.lname_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.lname_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black")
         self.lname_entry.grid(row=5, column=0, padx=5, pady=(0, 10), sticky="w")
 
         # Password
         password_label = tk.Label(detail_frame, text="Password", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
         password_label.grid(row=6, column=0, padx=5, pady=(5, 0), sticky="w")
 
-        self.password_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.password_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black")
         self.password_entry.grid(row=7, column=0, padx=5, pady=(0, 10), sticky="w")
 
         # Pay Rate
         pay_rate_label = tk.Label(detail_frame, text="Pay Rate", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
         pay_rate_label.grid(row=8, column=0, padx=5, pady=(5, 0), sticky="w")
 
-        self.pay_rate_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.pay_rate_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black")
         self.pay_rate_entry.grid(row=9, column=0, padx=5, pady=(0, 10), sticky="w")
 
         # Pay Bonus
         pay_bonus_label = tk.Label(detail_frame, text="Pay Bonus", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
         pay_bonus_label.grid(row=10, column=0, padx=5, pady=(5, 0), sticky="w")
 
-        self.pay_bonus_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.pay_bonus_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black")
         self.pay_bonus_entry.grid(row=11, column=0, padx=5, pady=(0, 10), sticky="w")
 
         #Buttons
