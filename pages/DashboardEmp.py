@@ -90,14 +90,22 @@ class DashboardEmployee(tk.Frame):
         self.close_out_indicate.config(bg = SIDE_BAR_COLOR)
 
     def clear_main_content(self):
+        # Instead of destroying widgets, just hide them
         for widget in self.main_content.winfo_children():
-            widget.destroy()
+            widget.pack_forget()
     
     def handleLogout(self):
         print("Handle Logout")
         self.controller.show_Login()
     
     def show_home_page(self):
+        # Check if home_page already exists
+        if hasattr(self, 'home_page') and self.home_page.winfo_exists():
+            # If it exists, just show it
+            self.home_page.pack(fill="both", expand=True)
+            return
+
+        # Create new home page if it doesn't exist
         self.home_page = tk.Frame(self.main_content)
         self.home_page.pack(fill="both", expand=True)
 
@@ -306,13 +314,22 @@ class DashboardEmployee(tk.Frame):
             tk.messagebox.showerror("Expense", "Expense failed")
  
     def handle_clock_in(self):
-        
         try:
-            balance = float(self.input_balance_in.get())
+            # Check if the input is empty or contains the placeholder
+            input_text = self.input_balance_in.get()
+            if not input_text or input_text == "Enter here:":
+                messagebox.showerror("Invalid Input", "Please enter a valid balance.")
+                return
+                
+            balance = float(input_text)
             success = dashboard_functions.clock_in(self.user_id, self.today, self.location, balance)
 
             if success:
                 tk.messagebox.showinfo("Clock In", "Clock In completed successfully!")
+                # Clear the input and restore placeholder
+                self.input_balance_in.delete(0, tk.END)
+                self.input_balance_in.insert(0, "Enter here:")
+                self.input_balance_in.config(fg='grey')
             else:
                 tk.messagebox.showerror("Clock In", "Clock In failed")
 
