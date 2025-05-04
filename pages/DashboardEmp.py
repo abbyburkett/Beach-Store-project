@@ -106,6 +106,24 @@ class DashboardEmployee(tk.Frame):
 
         self.input_balance_in = tk.Entry(self.home_page, font=("Arial", 16), width=30)
         self.input_balance_in.pack(pady=(20, 5))
+        
+        # Add placeholder text
+        self.input_balance_in.insert(0, "Enter here:")
+        self.input_balance_in.config(fg='grey')
+        
+        # Bind events for placeholder behavior
+        def on_focus_in(event):
+            if self.input_balance_in.get() == "Enter here:":
+                self.input_balance_in.delete(0, tk.END)
+                self.input_balance_in.config(fg='black')
+                
+        def on_focus_out(event):
+            if not self.input_balance_in.get():
+                self.input_balance_in.insert(0, "Enter here:")
+                self.input_balance_in.config(fg='grey')
+                
+        self.input_balance_in.bind('<FocusIn>', on_focus_in)
+        self.input_balance_in.bind('<FocusOut>', on_focus_out)
 
         self.clock_in = tk.Button(self.home_page, text="Clock In", font=("Bold", 36), bd=0, command=self.handle_clock_in)
         self.clock_in.pack(pady=10)
