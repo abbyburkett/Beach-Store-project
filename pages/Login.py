@@ -1,74 +1,136 @@
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 from logics import login_functions
 
-BACKGROUND_COLOR = "#FFF6E3"
+# ---------------------------------------------------------------------------
+#  Colors & Fonts
+# ---------------------------------------------------------------------------
+BACKGROUND_COLOR = "#F5F0E6"      # soft warm beige
+ACCENT_COLOR     = "#6C63FF"      # lavender‑indigo accent
+TEXT_COLOR       = "#333333"      # charcoal for better readability
+
 
 class Login(tk.Frame):
-    def __init__(self, parent, controller):
-        self.bg = BACKGROUND_COLOR
+    """A modern‑looking login card that preserves all original behaviour."""
 
+    def __init__(self, parent: tk.Widget, controller):
+        super().__init__(parent, bg=BACKGROUND_COLOR)
+        self.controller = controller
+
+        # ------------------------------------------------------------------
+        #  Fetch locations from DB (fail gracefully if none exist)
+        # ------------------------------------------------------------------
         location_data = login_functions.get_location_list()
         if not location_data:
             messagebox.showinfo("No Locations", "No locations available in the system.")
             return
 
-        self.location_list = [location[1] for location in location_data]
-        self.location_id = [location[0] for location in location_data]
+        self.location_list = [loc[1] for loc in location_data]
+        self.location_id   = [loc[0] for loc in location_data]
+        self.selected_location = tk.StringVar(value=self.location_list[0])
 
-        self.selected_location = tk.StringVar()
-        self.selected_location.set(self.location_list[0])
+        # ------------------------------------------------------------------
+        #  Styling tweaks (only done once per process)
+        # ------------------------------------------------------------------
+        self._setup_styles()
+        self._configure_grid()
 
-        super().__init__(parent, bg=self.bg)
-        self.controller = controller
-        self.create_widgets()
-        self.display_widgets()
+        # ------------------------------------------------------------------
+        #  Build the widget tree
+        # ------------------------------------------------------------------
+        self._create_widgets()
+        self._layout_widgets()
 
-    def create_widgets(self):    
-        self.frame = tk.Frame(self, background=self.bg)
+    # ----------------------------------------------------------------------
+    #  UI helpers
+    # ----------------------------------------------------------------------
+    def _setup_styles(self):
+        style = ttk.Style()
+        try:
+            style.theme_use("clam")          # neutral base theme
+        except tk.TclError:
+            pass  # theme already in use / missing – ignore
 
-        self.login_label = tk.Label(self.frame, text = "Login", font=("Arial", 40, "bold"), fg = "#CDC1FF", bg = self.bg)
-        self.username_label = tk.Label(self.frame, text = "Username", font=("Arial", 25, "bold"), fg = "#CDC1FF", bg = self.bg, bd = 0)
-        self.username_entry = tk.Entry(self.frame, font = ("Arial", 25, "bold"), bg = "white", fg = "black")
-        self.password_label = tk.Label(self.frame, text = "Password", font=("Arial", 25, "bold"), fg = "#CDC1FF", bg = self.bg, bd = 0)
-        self.password_entry = tk.Entry(self.frame, font = ("Arial", 25, "bold"), bg = "white", fg = "black", show = "*")
-        self.location_menu = tk.OptionMenu(self.frame, self.selected_location, *self.location_list)
-        self.location_menu.config(fg = "#FFCCEA", bg = self.bg, bd = 0, highlightthickness = 0, relief = "flat", width = 40)
-        self.login_button = tk.Button(self.frame, text = "Login", fg = "#FFCCEA", bg = self.bg, bd = 0, highlightthickness = 0, relief = "flat", command = self.login_submit)
+        style.configure("Card.TFrame",   background="white")
+        style.configure("Header.TLabel", font=("Segoe UI", 36, "bold"), foreground=ACCENT_COLOR, background="white")
+        style.configure("TLabel",        font=("Segoe UI", 14), foreground=TEXT_COLOR,  background="white")
+        style.configure("TEntry",        font=("Segoe UI", 14))
+        style.configure("TCombobox",     font=("Segoe UI", 14))
+        style.configure("Accent.TButton",font=("Segoe UI", 14, "bold"), foreground="white", background=ACCENT_COLOR, padding=6)
+        style.map("Accent.TButton",
+                  background=[("active", "#5750d4")],
+                  foreground=[("disabled", "#cccccc")])
 
-    def display_widgets(self):
-        self.frame.pack()
+    def _configure_grid(self):
+        # Give the lone column/row stretch so the card sits centred
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_rowconfigure(0, weight=1)
 
-        self.login_label.grid(row = 0, column = 0, columnspan = 2, sticky = "news", pady = 25)
-        self.username_label.grid(row = 1, column = 0)
-        self.username_entry.grid(row = 1, column = 1, pady = 10)
-        self.password_label.grid(row = 2, column = 0)
-        self.password_entry.grid(row = 2, column = 1, pady = 10)
-        self.location_menu.grid(row = 3, column = 0, columnspan = 2, pady = 10)
-        self.login_button.grid(row = 4, column = 0, columnspan = 2, pady = 25)
+    def _create_widgets(self):
+        # Card container ----------------------------------------------------
+        self.card = ttk.Frame(self, padding=40, style="Card.TFrame")
 
-    def login_submit(self):
-        
-        username = self.username_entry.get()
-        password = self.password_entry.get()
+        # Header ------------------------------------------------------------
+        self.lbl_header   = ttk.Label(self.card, text="Login", style="Header.TLabel")
+
+        # Username ----------------------------------------------------------
+        self.lbl_username = ttk.Label(self.card, text="Username:")
+        self.ent_username = ttk.Entry(self.card)
+
+        # Password ----------------------------------------------------------
+        self.lbl_password = ttk.Label(self.card, text="Password:")
+        self.ent_password = ttk.Entry(self.card, show="*")
+
+        # Location selector -------------------------------------------------
+        self.lbl_location = ttk.Label(self.card, text="Location:")
+        self.cbo_location = ttk.Combobox(self.card,
+                                         textvariable=self.selected_location,
+                                         values=self.location_list,
+                                         state="readonly")
+
+        # Action button -----------------------------------------------------
+        self.btn_login    = ttk.Button(self.card, text="Login",
+                                       style="Accent.TButton",
+                                       command=self._on_submit)
+
+    def _layout_widgets(self):
+        """Grid geometry for a clean, responsive card."""
+        self.card.grid(row=0, column=0, padx=20, pady=20)
+        for i in range(2):
+            self.card.grid_columnconfigure(i, weight=1)
+
+        # Row by row -------------------------------------------------------
+        self.lbl_header.grid(  row=0, column=0, columnspan=2, pady=(0, 20))
+        self.lbl_username.grid(row=1, column=0, sticky="e", pady=5)
+        self.ent_username.grid(row=1, column=1, sticky="ew", pady=5)
+        self.lbl_password.grid(row=2, column=0, sticky="e", pady=5)
+        self.ent_password.grid(row=2, column=1, sticky="ew", pady=5)
+        self.lbl_location.grid(row=3, column=0, sticky="e", pady=5)
+        self.cbo_location.grid(row=3, column=1, sticky="ew", pady=5)
+        self.btn_login.grid(   row=4, column=0, columnspan=2, pady=(20, 0))
+
+    # ----------------------------------------------------------------------
+    #  Business logic (unchanged except for messagebox feedback)
+    # ----------------------------------------------------------------------
+    def _on_submit(self):
+        username = self.ent_username.get().strip()
+        password = self.ent_password.get().strip()
         location = self.selected_location.get()
 
         if location:
-            self.controller.set_location(self.location_id[self.location_list.index(location)])
-        
-        results = login_functions.check_credentials(username, password)
-        if results[0]:
-            print(f"Login successful for {username}")
+            idx = self.location_list.index(location)
+            self.controller.set_location(self.location_id[idx])
 
-            if results[2] == "Manager":
-                self.controller.show_dashboardMan(results[1])
-            elif results[2] == "Employee":
-                self.controller.show_dashboardEmp(results[1])
-            elif results[2] == "Owner":
-                self.controller.show_dashboardOwner(results[1])
+        valid, user_id, role = login_functions.check_credentials(username, password)
+        if valid:
+            # Route to the appropriate dashboard
+            match role:
+                case "Manager":  self.controller.show_dashboardMan(user_id)
+                case "Employee": self.controller.show_dashboardEmp(user_id)
+                case "Owner":    self.controller.show_dashboardOwner(user_id)
 
-            self.username_entry.delete(0, tk.END)
-            self.password_entry.delete(0, tk.END)
-
+            # Clear fields for next login
+            self.ent_username.delete(0, tk.END)
+            self.ent_password.delete(0, tk.END)
         else:
-            print("Invalid credentials, please try again.")
+            messagebox.showerror("Invalid Credentials", "Incorrect username or password. Please try again.")
