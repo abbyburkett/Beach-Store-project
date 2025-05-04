@@ -18,7 +18,8 @@ class DashboardEmployee(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent, bg=BACKGROUND_COLOR)
         self.controller = controller
-        # self.user_id = self.controller.user_id
+        self.user_id = None
+        self.location = None
         self.today = controller.today
         self.create_widgets()
         self.display_widgets()
@@ -28,6 +29,11 @@ class DashboardEmployee(tk.Frame):
         self.isOwner = False
 
         self.clear_main_content()
+
+    def set_user_data(self, user_id, location):
+        self.user_id = user_id
+        self.location = location
+        self.show_home_page()  # Show home page after user data is set
 
     def create_widgets(self):
         self.dashboard_label = tk.Label(self, text=f"Welcome to the Employee Dashboard", font=("Arial", 40, "bold"), fg="#CDC1FF", bg=BACKGROUND_COLOR)
@@ -158,8 +164,8 @@ class DashboardEmployee(tk.Frame):
             report_label = tk.Label(self.profile_page, text=f"Role: {user[3]}", font=("Helvetica", 12))
             report_label.pack(anchor="w", padx=20, pady=5)
 
-            separator = tk.Label(self.profile_page, text="--------------------------------------", font=("Helvetica", 12, "italic"))
-            separator.pack(anchor="w", padx=20, pady=5)
+            report_label = tk.Label(self.profile_page, text="--------------------------------------", font=("Helvetica", 12, "italic"))
+            report_label.pack(anchor="w", padx=20, pady=5)
 
     def show_close_out(self):
         self.close_out_page = tk.Frame(self.main_content)

@@ -27,6 +27,7 @@ class DashboardManager(DashboardEmployee):
         # else:
         #     self.cursor = self.db.cursor()
         self.dashboard_label.config(text=f"Welcome to the Manager Dashboard")
+        self.show_home_page()  # Show home page by default
     def create_widgets(self):
         super().create_widgets()
 

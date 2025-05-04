@@ -22,6 +22,7 @@ class DashboardOwner(DashboardManager):
         self.isOwner = True
 
         self.dashboard_label.config(text=f"Welcome to the Owner Dashboard")
+        self.show_home_page()  # Show home page by default
 
     def create_widgets(self):
         super().create_widgets()

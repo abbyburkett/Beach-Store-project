@@ -68,20 +68,17 @@ class MyApp(tk.Frame):
     def show_dashboardEmp(self, user_id):
         self.user_id = user_id
         self.show_frame(DashboardEmployee)
-        self.frames[DashboardEmployee].user_id = self.user_id
-        self.frames[DashboardEmployee].location = self.location
+        self.frames[DashboardEmployee].set_user_data(self.user_id, self.location)
     
     def show_dashboardMan(self, user_id):
         self.user_id = user_id
         self.show_frame(DashboardManager)
-        self.frames[DashboardManager].user_id = self.user_id
-        self.frames[DashboardManager].location = self.location
+        self.frames[DashboardManager].set_user_data(self.user_id, self.location)
 
     def show_dashboardOwner(self, user_id):
         self.user_id = user_id
         self.show_frame(DashboardOwner)
-        self.frames[DashboardOwner].user_id = self.user_id
-        self.frames[DashboardOwner].location = self.location
+        self.frames[DashboardOwner].set_user_data(self.user_id, self.location)
 
 root = tk.Tk()
 root.title("Beach Store")
