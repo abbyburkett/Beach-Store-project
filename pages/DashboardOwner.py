@@ -165,6 +165,7 @@ class DashboardOwner(DashboardManager):
 
         self.location_name_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
         self.location_name_entry.grid(row=1, column=0, padx=5, pady=(0, 10), sticky="w")
+        self.location_name_entry.focus_set()
 
         # Address
         self.address_label = tk.Label(detail_frame, text="Address", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)

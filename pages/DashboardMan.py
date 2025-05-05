@@ -331,6 +331,7 @@ class DashboardManager(DashboardEmployee):
 
         self.username_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black")
         self.username_entry.grid(row=1, column=0, padx=5, pady=(0, 10), sticky="w")
+        self.username_entry.focus_set()
 
         # First Name
         fname_label = tk.Label(detail_frame, text="First Name", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
