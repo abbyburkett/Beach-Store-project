@@ -214,6 +214,7 @@ class DashboardEmployee(tk.Frame):
         row = 0
         tk.Label(left_frame, text="Date (YYYY-MM-DD):").grid(row=row, column=0, sticky="w", padx=10, pady=2)
         self.expense_date = tk.Entry(left_frame, bg="white", fg="black", bd=2)
+        self.expense_date = tk.Entry(left_frame)
         self.expense_date.grid(row=row, column=1, sticky="ew", padx=10)
         self.expense_date.insert(0, self.today)
         self.expense_date.focus_set()
@@ -221,11 +222,13 @@ class DashboardEmployee(tk.Frame):
         row += 1
         tk.Label(left_frame, text="Amount:").grid(row=row, column=0, sticky="w", padx=10, pady=2)
         self.expense_amount = tk.Entry(left_frame, bg="white", fg="black", bd=2)
+        self.expense_amount = tk.Entry(left_frame)
         self.expense_amount.grid(row=row, column=1, sticky="ew", padx=10)
 
         row += 1
         tk.Label(left_frame, text="Expense Type:").grid(row=row, column=0, sticky="w", padx=10, pady=2)
         self.expense_type = tk.Entry(left_frame, bg="white", fg="black", bd=2)
+        self.expense_type = tk.Entry(left_frame)
         self.expense_type.grid(row=row, column=1, sticky="ew", padx=10)
 
         row += 1
@@ -237,6 +240,7 @@ class DashboardEmployee(tk.Frame):
         row += 1
         self.merch_label = tk.Label(left_frame, text="Merchandise Type:")
         self.merch_type = tk.Entry(left_frame, bg="white", fg="black", bd=2)
+        self.merch_type = tk.Entry(left_frame)
         self.merch_row = row
 
         row += 1
@@ -255,6 +259,7 @@ class DashboardEmployee(tk.Frame):
         row += 1
         tk.Label(right_frame, text="Cash:").grid(row=row, column=0, sticky="w", padx=20, pady=2)
         self.cash_entry = tk.Entry(right_frame, bg="white", fg="black", bd=2)
+        self.cash_entry = tk.Entry(right_frame)
         self.cash_entry.grid(row=row, column=1, sticky="ew", padx=20)
 
         row += 1
@@ -398,6 +403,7 @@ class DashboardEmployee(tk.Frame):
 
         self.username_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="grey")
         self.username_entry.insert(0, "Enter here:")
+        self.username_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black", relief="solid", bd=1)
         self.username_entry.grid(row=1, column=0, padx=5, pady=(0, 10), sticky="w")
         self.username_entry.bind('<FocusIn>', lambda e: self._clear_placeholder(self.username_entry))
         self.username_entry.bind('<FocusOut>', lambda e: self._add_placeholder(self.username_entry))
@@ -408,6 +414,7 @@ class DashboardEmployee(tk.Frame):
 
         self.fname_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="grey")
         self.fname_entry.insert(0, "Enter here:")
+        self.fname_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black", relief="solid", bd=1)
         self.fname_entry.grid(row=3, column=0, padx=5, pady=(0, 10), sticky="w")
         self.fname_entry.bind('<FocusIn>', lambda e: self._clear_placeholder(self.fname_entry))
         self.fname_entry.bind('<FocusOut>', lambda e: self._add_placeholder(self.fname_entry))
@@ -418,6 +425,7 @@ class DashboardEmployee(tk.Frame):
 
         self.lname_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="grey")
         self.lname_entry.insert(0, "Enter here:")
+        self.lname_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black", relief="solid", bd=1)
         self.lname_entry.grid(row=5, column=0, padx=5, pady=(0, 10), sticky="w")
         self.lname_entry.bind('<FocusIn>', lambda e: self._clear_placeholder(self.lname_entry))
         self.lname_entry.bind('<FocusOut>', lambda e: self._add_placeholder(self.lname_entry))
@@ -428,6 +436,7 @@ class DashboardEmployee(tk.Frame):
 
         self.password_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="grey")
         self.password_entry.insert(0, "Enter here:")
+        self.password_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black", show="*", relief="solid", bd=1)
         self.password_entry.grid(row=7, column=0, padx=5, pady=(0, 10), sticky="w")
         self.password_entry.bind('<FocusIn>', lambda e: self._clear_placeholder(self.password_entry, is_password=True))
         self.password_entry.bind('<FocusOut>', lambda e: self._add_placeholder(self.password_entry, is_password=True))
@@ -438,6 +447,7 @@ class DashboardEmployee(tk.Frame):
 
         self.pay_rate_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="grey")
         self.pay_rate_entry.insert(0, "Enter here:")
+        self.pay_rate_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black", relief="solid", bd=1)
         self.pay_rate_entry.grid(row=9, column=0, padx=5, pady=(0, 10), sticky="w")
         self.pay_rate_entry.bind('<FocusIn>', lambda e: self._clear_placeholder(self.pay_rate_entry))
         self.pay_rate_entry.bind('<FocusOut>', lambda e: self._add_placeholder(self.pay_rate_entry))
@@ -448,6 +458,7 @@ class DashboardEmployee(tk.Frame):
 
         self.pay_bonus_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="grey")
         self.pay_bonus_entry.insert(0, "Enter here:")
+        self.pay_bonus_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black", relief="solid", bd=1)
         self.pay_bonus_entry.grid(row=11, column=0, padx=5, pady=(0, 10), sticky="w")
         self.pay_bonus_entry.bind('<FocusIn>', lambda e: self._clear_placeholder(self.pay_bonus_entry))
         self.pay_bonus_entry.bind('<FocusOut>', lambda e: self._add_placeholder(self.pay_bonus_entry))
