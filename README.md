@@ -44,6 +44,14 @@ A dashboard system application that uses GUI to manage and monitor employee perf
     - **Owner**:  
       `Username: Owner`  
       `Password: 789`
+      
+6. **Create Employees, Managers, and Owners** (for real life):
+   - Owners can create all employees, managers, and other owners.
+   - Managers can only create employees and other managers. They cannot create or delete owners.
+   - Regular employees do not have access to the Manage Employees tab
+   - Log into Owner or Manager dashboards, and click on `Manage Employees` tab
+   - Add first and last name, username, password, pay rate, and pay bonus for the new employee.
+   - There is an update button in case an employee forgets their password or their pay bonus changes.
 
 ---
 ## Database Setup
