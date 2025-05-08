@@ -14,7 +14,7 @@ A dashboard system application that uses GUI to manage and monitor employee perf
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/your-username/Beach-Store-project.git
+    git clone https://github.com/abbyburkett/Beach-Store-project.git
     cd Beach-Store-project
     ```
     
