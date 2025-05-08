@@ -50,13 +50,13 @@ A dashboard system application that uses GUI to manage and monitor employee perf
 
 Make sure your MySQL server is running and that the following tables are created:
 - `Employee`
-- 'Location'
+- `Location`
 - `ClockInOut`
 - `Profit`
 - `Expense`
 - `Invoice`
-- 'Withdrawal'
-- 'PayRateBonusHistory'
+- `Withdrawal`
+- `PayRateBonusHistory`
 
 Update your database connection parameters in the code to match your MySQL configuration.
 
