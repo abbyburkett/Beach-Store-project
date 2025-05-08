@@ -1,5 +1,5 @@
 # Beach-Store-project
-A dashboard system application that uses GUI to manage and monitor employee performance, daily and monthly sales, expenses, and payroll at a beach store. This was built by using Python, Tkinter, and MySQL.
+A dashboard system application that uses GUI to manage and monitor employee performance, daily and monthly sales, expenses, and payroll at the Aloha Beach Store in Clearwater, FL and other locations. This was built by using Python, Tkinter, and MySQL.
 
 ---
 ## Features
