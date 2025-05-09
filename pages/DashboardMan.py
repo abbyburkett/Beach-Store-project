@@ -628,16 +628,9 @@ class DashboardManager(DashboardEmployee):
         if selected:
             item = self.report_tree.item(selected[0])
             values = item['values']
-            
             date_str = values[1] 
-            try:
-                selected_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-            except ValueError:
-                print(f"Invalid date format: {date_str}")
-                return
-
             # Access the data for the selected date
-            data = self.full_report_data.get(selected_date)
+            data = self.full_report_data.get(date_str)
 
             if data:
                 expense_types = ", ".join(data.get("ExpenseTypes", []))

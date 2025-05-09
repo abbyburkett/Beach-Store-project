@@ -210,7 +210,6 @@ class DashboardEmployee(tk.Frame):
         row = 0
         tk.Label(left_frame, text="Date (YYYY-MM-DD):").grid(row=row, column=0, sticky="w", padx=10, pady=2)
         self.expense_date = tk.Entry(left_frame, bg="white", fg="black", bd=2)
-        self.expense_date = tk.Entry(left_frame)
         self.expense_date.grid(row=row, column=1, sticky="ew", padx=10)
         self.expense_date.insert(0, self.today)
         self.expense_date.focus_set()
@@ -218,13 +217,11 @@ class DashboardEmployee(tk.Frame):
         row += 1
         tk.Label(left_frame, text="Amount:").grid(row=row, column=0, sticky="w", padx=10, pady=2)
         self.expense_amount = tk.Entry(left_frame, bg="white", fg="black", bd=2)
-        self.expense_amount = tk.Entry(left_frame)
         self.expense_amount.grid(row=row, column=1, sticky="ew", padx=10)
 
         row += 1
         tk.Label(left_frame, text="Expense Type:").grid(row=row, column=0, sticky="w", padx=10, pady=2)
         self.expense_type = tk.Entry(left_frame, bg="white", fg="black", bd=2)
-        self.expense_type = tk.Entry(left_frame)
         self.expense_type.grid(row=row, column=1, sticky="ew", padx=10)
 
         row += 1
@@ -236,7 +233,6 @@ class DashboardEmployee(tk.Frame):
         row += 1
         self.merch_label = tk.Label(left_frame, text="Merchandise Type:")
         self.merch_type = tk.Entry(left_frame, bg="white", fg="black", bd=2)
-        self.merch_type = tk.Entry(left_frame)
         self.merch_row = row
 
         row += 1
@@ -255,7 +251,6 @@ class DashboardEmployee(tk.Frame):
         row += 1
         tk.Label(right_frame, text="Cash:").grid(row=row, column=0, sticky="w", padx=20, pady=2)
         self.cash_entry = tk.Entry(right_frame, bg="white", fg="black", bd=2)
-        self.cash_entry = tk.Entry(right_frame)
         self.cash_entry.grid(row=row, column=1, sticky="ew", padx=20)
 
         row += 1
