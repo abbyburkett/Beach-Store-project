@@ -213,24 +213,7 @@ class DashboardManager(DashboardEmployee):
         #     messagebox.showerror("Database Error", f"Error: {err}")
 
     def update_invoice_payment(self, invoice_number, new_payment):
-        # try:
-        #     cursor = self.db.cursor()
 
-        #     cursor.execute("SELECT AmountPaid, AmountTotal FROM Invoice WHERE InvoiceNumber = %s", (invoice_number,))
-            # result = cursor.fetchone()
-
-            # if result:
-            #     amount_paid, amount = result
-            #     updated_amount = float(amount_paid) + float(new_payment)
-
-            #     if updated_amount > amount:
-            #         messagebox.showerror("Error", "Payment exceeds total amount.")
-            #         return
-
-            #     # Update the AmountPaid
-            #     cursor.execute("UPDATE Invoice SET AmountPaid = %s WHERE InvoiceNumber = %s",
-            #                 (updated_amount, invoice_number))
-            #     self.db.commit()
         result = dashboard_functions.update_invoice_payment(invoice_number, new_payment)
 
         if result:
@@ -276,13 +259,7 @@ class DashboardManager(DashboardEmployee):
                 self.load_invoices()
             else:
                 print("Failed to delete invoice. Something is wrong with the database connection")
-        #     try:
-        #         cursor = self.db.cursor()
-        #         cursor.execute("DELETE FROM Invoice WHERE InvoiceNumber = %s",(invoice_number,))
-        #         self.db.commit()
-        #         cursor.close()
-            # except Exception as e:
-            #     messagebox.showerror("Error", "Failed to delete invoice. {e}")
+
 
     def show_employees(self):
         self.manage_employees_page = tk.Frame(self.main_content)

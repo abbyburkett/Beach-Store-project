@@ -138,6 +138,7 @@ def get_clock_data(employeeID, locationID):
         rows = cursor.fetchall()
         db.close()
         cursor.close()
+
         return rows
 
     except mysql.connector.Error as err:
@@ -305,10 +306,17 @@ def clock_out(user_id, date, locationID):
         cursor = db.cursor()
 
         cursor.execute("""
-                    UPDATE ClockInOut
-                    Set ClockOut = NOW()
-                    Where EmployeeID = %s AND Date = %s AND LocationID = %s AND ClockIn = ClockOut 
-               """, (user_id, date, locationID))
+                            UPDATE ClockInOut
+                            SET ClockOut = NOW()
+                            WHERE ClockInOutID = (
+                                SELECT ClockInOutID FROM (
+                                    SELECT ClockInOutID FROM ClockInOut
+                                    WHERE EmployeeID = %s AND Date = %s AND LocationID = %s AND ClockIn = ClockOut
+                                    ORDER BY ClockIn DESC
+                                    LIMIT 1
+                                ) AS Latest
+                            )
+                        """, (user_id, date, locationID))
         db.commit()
         db.close()
         cursor.close()
@@ -406,10 +414,17 @@ def handle_close_out(employeeID, date, locationID, cash, credit):
             """, (employeeID, cash, credit, date, locationID))
 
         update_clock_out = """
-            UPDATE ClockInOut
-            SET AfterBal = %s
-            WHERE EmployeeID = %s AND Date = %s AND LocationID = %s AND ClockIn != ClockOut 
-        """
+                                UPDATE ClockInOut
+                                SET AfterBal = %s
+                                WHERE ClockInOutID = (
+                                    SELECT ClockInOutID FROM (
+                                        SELECT ClockInOutID FROM ClockInOut
+                                        WHERE EmployeeID = %s AND Date = %s AND LocationID = %s AND ClockIn != ClockOut
+                                        ORDER BY ClockIn DESC
+                                        LIMIT 1
+                                    ) AS Latest
+                                )
+                            """
         cursor.execute(update_clock_out, (after_balance, employeeID, date, locationID))
 
         db.commit()
