@@ -306,7 +306,7 @@ class DashboardManager(DashboardEmployee):
         username_label = tk.Label(detail_frame, text="Username", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
         username_label.grid(row=0, column=0, padx=5, pady=(5, 0), sticky="w")
 
-        self.username_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.username_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black")
         self.username_entry.grid(row=1, column=0, padx=5, pady=(0, 10), sticky="w")
         self.username_entry.focus_set()
 
@@ -314,14 +314,14 @@ class DashboardManager(DashboardEmployee):
         fname_label = tk.Label(detail_frame, text="First Name", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
         fname_label.grid(row=2, column=0, padx=5, pady=(5, 0), sticky="w")
 
-        self.fname_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.fname_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black")
         self.fname_entry.grid(row=3, column=0, padx=5, pady=(0, 10), sticky="w")
 
         # Last Name
         lname_label = tk.Label(detail_frame, text="Last Name", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
         lname_label.grid(row=4, column=0, padx=5, pady=(5, 0), sticky="w")
 
-        self.lname_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.lname_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black")
         self.lname_entry.grid(row=5, column=0, padx=5, pady=(0, 10), sticky="w")
 
         # Password
@@ -335,7 +335,7 @@ class DashboardManager(DashboardEmployee):
         pay_rate_label = tk.Label(detail_frame, text="Pay Rate", font=("Arial", 16, "bold"), fg=MAIN_CONTENT_COLOR, bg=BACKGROUND_COLOR, bd=0)
         pay_rate_label.grid(row=8, column=0, padx=5, pady=(5, 0), sticky="w")
 
-        self.pay_rate_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg=MAIN_CONTENT_COLOR, fg="black")
+        self.pay_rate_entry = tk.Entry(detail_frame, font=("Arial", 16, "bold"), bg="white", fg="black")
         self.pay_rate_entry.grid(row=9, column=0, padx=5, pady=(0, 10), sticky="w")
 
         # Pay Bonus
